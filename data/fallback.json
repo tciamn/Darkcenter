@@ -1,0 +1,304 @@
+{
+  "meta": {
+    "last_updated": "2026-05-15",
+    "version": "2026-05",
+    "sources": [
+      "FracTracker Alliance",
+      "Oil & Gas Watch",
+      "IM3",
+      "U.S. EPA eGRID",
+      "U.S. EIA",
+      "EDGAR",
+      "U.S. EPA COBRA Health Impact Model"
+    ],
+    "notes": "All figures use low-scenario capacity factors unless otherwise noted. Health impacts represent national model averages via COBRA. High estimates included where available from source spreadsheet."
+  },
+  "totals": {
+    "facilities": 2820,
+    "capacity_gw_low": 578.8,
+    "capacity_gw_high": 606.0,
+    "co2_gt_low": 1.431,
+    "co2_gt_high": 1.910,
+    "deaths_low": 4520,
+    "deaths_high": 13372,
+    "health_cost_b_low": 71.2,
+    "health_cost_b_high": 203.6,
+    "grid_count": 2741,
+    "btm_count": 79,
+    "comparable_country": "Indonesia",
+    "homes_equivalent_low": 269916500,
+    "homes_equivalent_high": 323913797
+  },
+  "states": [
+    {
+      "state": "TX", "name": "Texas",
+      "count": 286,
+      "capacity_mw_low": 84633, "capacity_mw_high": 92000,
+      "co2_mt_low": 230361413, "co2_mt_high": 307148551,
+      "deaths_low": 484, "deaths_high": 1452,
+      "health_cost_m_low": 7600, "health_cost_m_high": 22800,
+      "asthma_low": 338624, "asthma_high": 1015872
+    },
+    {
+      "state": "VA", "name": "Virginia",
+      "count": 686,
+      "capacity_mw_low": 83000, "capacity_mw_high": 95000,
+      "co2_mt_low": 227657800, "co2_mt_high": 303543734,
+      "deaths_low": 804, "deaths_high": 2412,
+      "health_cost_m_low": 9800, "health_cost_m_high": 29400,
+      "asthma_low": 532860, "asthma_high": 1598580
+    },
+    {
+      "state": "OH", "name": "Ohio",
+      "count": 133,
+      "capacity_mw_low": 27421, "capacity_mw_high": 30000,
+      "co2_mt_low": 111732444, "co2_mt_high": 148976592,
+      "deaths_low": 284, "deaths_high": 852,
+      "health_cost_m_low": 4400, "health_cost_m_high": 13200,
+      "asthma_low": 191319, "asthma_high": 573957
+    },
+    {
+      "state": "PA", "name": "Pennsylvania",
+      "count": 107,
+      "capacity_mw_low": 24196, "capacity_mw_high": 26000,
+      "co2_mt_low": 77856270, "co2_mt_high": 103808360,
+      "deaths_low": 201, "deaths_high": 603,
+      "health_cost_m_low": 3200, "health_cost_m_high": 9600,
+      "asthma_low": 134060, "asthma_high": 402180
+    },
+    {
+      "state": "UT", "name": "Utah",
+      "count": 25,
+      "capacity_mw_low": 19251, "capacity_mw_high": 21000,
+      "co2_mt_low": 42082900, "co2_mt_high": 56110533,
+      "deaths_low": 182, "deaths_high": 546,
+      "health_cost_m_low": 1900, "health_cost_m_high": 5700,
+      "asthma_low": 97561, "asthma_high": 292683
+    },
+    {
+      "state": "WY", "name": "Wyoming",
+      "count": 15,
+      "capacity_mw_low": 16329, "capacity_mw_high": 18000,
+      "co2_mt_low": 72284260, "co2_mt_high": 96379013,
+      "deaths_low": 227, "deaths_high": 681,
+      "health_cost_m_low": 3100, "health_cost_m_high": 9300,
+      "asthma_low": 157432, "asthma_high": 472296
+    },
+    {
+      "state": "NM", "name": "New Mexico",
+      "count": 25,
+      "capacity_mw_low": 16309, "capacity_mw_high": 18000,
+      "co2_mt_low": 53113680, "co2_mt_high": 70818240,
+      "deaths_low": 168, "deaths_high": 504,
+      "health_cost_m_low": 2400, "health_cost_m_high": 7200,
+      "asthma_low": 120031, "asthma_high": 360093
+    },
+    {
+      "state": "GA", "name": "Georgia",
+      "count": 192,
+      "capacity_mw_low": 16174, "capacity_mw_high": 18000,
+      "co2_mt_low": 136932800, "co2_mt_high": 182577067,
+      "deaths_low": 399, "deaths_high": 1197,
+      "health_cost_m_low": 5100, "health_cost_m_high": 15300,
+      "asthma_low": 293442, "asthma_high": 880326
+    },
+    {
+      "state": "IN", "name": "Indiana",
+      "count": 39,
+      "capacity_mw_low": 12818, "capacity_mw_high": 14000,
+      "co2_mt_low": 31554490, "co2_mt_high": 42072653,
+      "deaths_low": 120, "deaths_high": 360,
+      "health_cost_m_low": 2100, "health_cost_m_high": 6300,
+      "asthma_low": 88124, "asthma_high": 264372
+    },
+    {
+      "state": "WV", "name": "West Virginia",
+      "count": 10,
+      "capacity_mw_low": 10116, "capacity_mw_high": 11000,
+      "co2_mt_low": 30473810, "co2_mt_high": 40631747,
+      "deaths_low": 29, "deaths_high": 87,
+      "health_cost_m_low": 800, "health_cost_m_high": 2400,
+      "asthma_low": 30820, "asthma_high": 92460
+    },
+    {
+      "state": "IL", "name": "Illinois",
+      "count": 66,
+      "capacity_mw_low": 7368, "capacity_mw_high": 8000,
+      "co2_mt_low": 24838740, "co2_mt_high": 33118320,
+      "deaths_low": 112, "deaths_high": 336,
+      "health_cost_m_low": 2800, "health_cost_m_high": 8400,
+      "asthma_low": 98342, "asthma_high": 295026
+    },
+    {
+      "state": "AZ", "name": "Arizona",
+      "count": 79,
+      "capacity_mw_low": 6848, "capacity_mw_high": 7198,
+      "co2_mt_low": 29697724, "co2_mt_high": 44102172,
+      "deaths_low": 68, "deaths_high": 179,
+      "health_cost_m_low": 1076, "health_cost_m_high": 2280,
+      "asthma_low": 51053, "asthma_high": 79927
+    },
+    {
+      "state": "AL", "name": "Alabama",
+      "count": 13,
+      "capacity_mw_low": 3158, "capacity_mw_high": 3258,
+      "co2_mt_low": 19437403, "co2_mt_high": 25916538,
+      "deaths_low": 40, "deaths_high": 92,
+      "health_cost_m_low": 638, "health_cost_m_high": 1111,
+      "asthma_low": 30276, "asthma_high": 42445
+    },
+    {
+      "state": "NC", "name": "North Carolina",
+      "count": 55,
+      "capacity_mw_low": 5200, "capacity_mw_high": 6000,
+      "co2_mt_low": 18000000, "co2_mt_high": 24000000,
+      "deaths_low": 75, "deaths_high": 225,
+      "health_cost_m_low": 1800, "health_cost_m_high": 5400,
+      "asthma_low": 62000, "asthma_high": 186000
+    },
+    {
+      "state": "FL", "name": "Florida",
+      "count": 45,
+      "capacity_mw_low": 3600, "capacity_mw_high": 4000,
+      "co2_mt_low": 11000000, "co2_mt_high": 14666667,
+      "deaths_low": 55, "deaths_high": 165,
+      "health_cost_m_low": 1200, "health_cost_m_high": 3600,
+      "asthma_low": 42000, "asthma_high": 126000
+    },
+    {
+      "state": "TN", "name": "Tennessee",
+      "count": 30,
+      "capacity_mw_low": 3500, "capacity_mw_high": 4000,
+      "co2_mt_low": 12000000, "co2_mt_high": 16000000,
+      "deaths_low": 50, "deaths_high": 150,
+      "health_cost_m_low": 1100, "health_cost_m_high": 3300,
+      "asthma_low": 38000, "asthma_high": 114000
+    },
+    {
+      "state": "CO", "name": "Colorado",
+      "count": 42,
+      "capacity_mw_low": 3800, "capacity_mw_high": 4200,
+      "co2_mt_low": 8500000, "co2_mt_high": 11333333,
+      "deaths_low": 35, "deaths_high": 105,
+      "health_cost_m_low": 850, "health_cost_m_high": 2550,
+      "asthma_low": 28000, "asthma_high": 84000
+    },
+    {
+      "state": "NY", "name": "New York",
+      "count": 50,
+      "capacity_mw_low": 6117, "capacity_mw_high": 7000,
+      "co2_mt_low": 4555870, "co2_mt_high": 6074493,
+      "deaths_low": 13, "deaths_high": 39,
+      "health_cost_m_low": 400, "health_cost_m_high": 1200,
+      "asthma_low": 12870, "asthma_high": 38610
+    },
+    {
+      "state": "NV", "name": "Nevada",
+      "count": 37,
+      "capacity_mw_low": 4699, "capacity_mw_high": 5200,
+      "co2_mt_low": 9499755, "co2_mt_high": 12666340,
+      "deaths_low": 48, "deaths_high": 144,
+      "health_cost_m_low": 1000, "health_cost_m_high": 3000,
+      "asthma_low": 44120, "asthma_high": 132360
+    },
+    {
+      "state": "MI", "name": "Michigan",
+      "count": 25,
+      "capacity_mw_low": 4078, "capacity_mw_high": 4500,
+      "co2_mt_low": 10103010, "co2_mt_high": 13470680,
+      "deaths_low": 44, "deaths_high": 132,
+      "health_cost_m_low": 900, "health_cost_m_high": 2700,
+      "asthma_low": 40230, "asthma_high": 120690
+    },
+    {
+      "state": "MO", "name": "Missouri",
+      "count": 22,
+      "capacity_mw_low": 2900, "capacity_mw_high": 3200,
+      "co2_mt_low": 7200000, "co2_mt_high": 9600000,
+      "deaths_low": 30, "deaths_high": 90,
+      "health_cost_m_low": 720, "health_cost_m_high": 2160,
+      "asthma_low": 24000, "asthma_high": 72000
+    },
+    {
+      "state": "OR", "name": "Oregon",
+      "count": 28,
+      "capacity_mw_low": 3200, "capacity_mw_high": 3600,
+      "co2_mt_low": 3800000, "co2_mt_high": 5066667,
+      "deaths_low": 18, "deaths_high": 54,
+      "health_cost_m_low": 500, "health_cost_m_high": 1500,
+      "asthma_low": 14000, "asthma_high": 42000
+    },
+    {
+      "state": "WA", "name": "Washington",
+      "count": 35,
+      "capacity_mw_low": 4100, "capacity_mw_high": 4600,
+      "co2_mt_low": 2900000, "co2_mt_high": 3866667,
+      "deaths_low": 15, "deaths_high": 45,
+      "health_cost_m_low": 450, "health_cost_m_high": 1350,
+      "asthma_low": 11000, "asthma_high": 33000
+    },
+    {
+      "state": "MD", "name": "Maryland",
+      "count": 32,
+      "capacity_mw_low": 2800, "capacity_mw_high": 3100,
+      "co2_mt_low": 5500000, "co2_mt_high": 7333333,
+      "deaths_low": 28, "deaths_high": 84,
+      "health_cost_m_low": 620, "health_cost_m_high": 1860,
+      "asthma_low": 20000, "asthma_high": 60000
+    },
+    {
+      "state": "MA", "name": "Massachusetts",
+      "count": 24,
+      "capacity_mw_low": 1600, "capacity_mw_high": 1800,
+      "co2_mt_low": 2200000, "co2_mt_high": 2933333,
+      "deaths_low": 12, "deaths_high": 36,
+      "health_cost_m_low": 380, "health_cost_m_high": 1140,
+      "asthma_low": 9800, "asthma_high": 29400
+    },
+    {
+      "state": "NJ", "name": "New Jersey",
+      "count": 29,
+      "capacity_mw_low": 2100, "capacity_mw_high": 2400,
+      "co2_mt_low": 3100000, "co2_mt_high": 4133333,
+      "deaths_low": 18, "deaths_high": 54,
+      "health_cost_m_low": 480, "health_cost_m_high": 1440,
+      "asthma_low": 14000, "asthma_high": 42000
+    },
+    {
+      "state": "SC", "name": "South Carolina",
+      "count": 18,
+      "capacity_mw_low": 2400, "capacity_mw_high": 2700,
+      "co2_mt_low": 4900000, "co2_mt_high": 6533333,
+      "deaths_low": 20, "deaths_high": 60,
+      "health_cost_m_low": 490, "health_cost_m_high": 1470,
+      "asthma_low": 15000, "asthma_high": 45000
+    },
+    {
+      "state": "IA", "name": "Iowa",
+      "count": 20,
+      "capacity_mw_low": 2200, "capacity_mw_high": 2500,
+      "co2_mt_low": 5200000, "co2_mt_high": 6933333,
+      "deaths_low": 18, "deaths_high": 54,
+      "health_cost_m_low": 520, "health_cost_m_high": 1560,
+      "asthma_low": 16000, "asthma_high": 48000
+    },
+    {
+      "state": "MN", "name": "Minnesota",
+      "count": 18,
+      "capacity_mw_low": 1900, "capacity_mw_high": 2100,
+      "co2_mt_low": 4100000, "co2_mt_high": 5466667,
+      "deaths_low": 16, "deaths_high": 48,
+      "health_cost_m_low": 410, "health_cost_m_high": 1230,
+      "asthma_low": 13000, "asthma_high": 39000
+    },
+    {
+      "state": "KY", "name": "Kentucky",
+      "count": 12,
+      "capacity_mw_low": 2100, "capacity_mw_high": 2400,
+      "co2_mt_low": 5800000, "co2_mt_high": 7733333,
+      "deaths_low": 22, "deaths_high": 66,
+      "health_cost_m_low": 580, "health_cost_m_high": 1740,
+      "asthma_low": 18000, "asthma_high": 54000
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "datacenter-impact-tool",
+  "version": "1.0.0",
+  "description": "Community-facing tool showing energy, emissions, and health impacts of US data centers",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "sync-data": "node scripts/sync-data.js",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "eslint": "^9.0.0",
+    "vite": "^5.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/datacenter-impact-tool.git"
+  },
+  "keywords": [
+    "data-centers",
+    "ai",
+    "emissions",
+    "health-impact",
+    "open-source",
+    "community",
+    "environment",
+    "fractracker"
+  ]
+}
