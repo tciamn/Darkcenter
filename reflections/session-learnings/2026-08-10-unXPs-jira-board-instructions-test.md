@@ -24,3 +24,19 @@ Start with:
 2. Install Ollama on Onyx (independent instance — not dependent on OGMax)
 3. Benchmark Onyx hardware, propose models before downloading
 4. External drive structure: 4TB (model files), 2TB (working content, audio, transcripts, outputs)
+
+### P1 Completion — 2026-08-10
+Onyx sovereign stack verified operational by Steward. Confirmed on Onyx directly:
+- whisper-cli ✓ — GPU-accelerated, M3 Max Metal backend, transcribes in ~600ms
+- MacWhisper ✓ — app present
+- Ollama ✓ — installed and running
+- qwen2.5:14b ✓ — pulled (9.0GB, primary model)
+- qwen2.5:7b ✓ — pulled (4.7GB, GTD triage)
+- External drives — deferred, not a blocker
+
+### CW Filesystem Warning — Critical
+Claude Cowork reported Onyx state but was reading OGMax's filesystem.
+All models CW claimed were on Onyx (qwen2.5:14b, llama3.1:8b, qwen3.6, ggml-base.en.bin, kore-ml venv) were actually on OGMax.
+Root cause: CW runs on the local machine it's open on. If open on OGMax, it sees OGMax — it cannot reach across to Onyx.
+Rule: never trust CW's filesystem reports for a machine other than the one it's running on.
+CC holds the cross-device map. CW sees one machine at a time.
