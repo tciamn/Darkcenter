@@ -56,9 +56,9 @@ Onyx sovereign stack fully operational. Verified by Steward.
 | mlx venv (~/.venvs/mlx) | ✓ | mlx-lm 0.29.1 installed |
 | llama3.1-8b-mlx base model | ✓ | 4.2GB, load-tested at 61 tok/sec |
 | kore-v0.1 adapter | ✓ | Path-corrected for Onyx username |
-| kore-v1.1 adapter | ✓ | Path-corrected for Onyx username |
+| kore-v1.1 adapter | ✓ | Path-corrected for Onyx username; inference verified 42.5 tok/sec, 4.85 GB |
 | External drives (4TB/2TB) | Deferred | Not a blocker |
-| configs/kore-v1.1-train.json | Pending | Needs transfer from OGMax |
+| configs/kore-v1.1-train.json | ✓ | Path-corrected for Onyx username, verified 2026-08-11 |
 
 ## CW Warning — Do Not Trust Cross-Device Filesystem Reports
 Claude Cowork reads the local machine it runs on. If open on OGMax, it reports OGMax's filesystem as if it were Onyx's. Confirmed during P1 session — CW reported OGMax models as being on Onyx.
