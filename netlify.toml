@@ -1,0 +1,11 @@
+[build]
+  command   = "npm run build"
+  publish   = "dist"
+  functions = "netlify/functions"
+
+# Rewrite /api/* to the Netlify function so the client uses a clean path
+# instead of /.netlify/functions/sheets-proxy
+[[redirects]]
+  from   = "/api/sheets"
+  to     = "/.netlify/functions/sheets-proxy"
+  status = 200

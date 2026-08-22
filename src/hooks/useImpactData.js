@@ -2,19 +2,20 @@
  * useImpactData.js
  *
  * Fetches impact data with a two-layer strategy:
- *   1. Google Sheets (live, primary source of truth)
+ *   1. /api/sheets proxy (live, primary source of truth — key stays server-side)
  *   2. data/fallback.json (local snapshot, always available)
  *
  * The fallback is shown immediately so the tool is never blank.
- * If Sheets loads successfully and differs from the fallback,
+ * If the proxy loads successfully and differs from the fallback,
  * the UI updates automatically.
  */
 
 import { useState, useEffect } from "react";
 import fallbackData from "../../data/fallback.json";
 
+// VITE_SHEETS_ID is the document identifier, not a credential — safe to expose.
+// The API key is intentionally absent from the client; it lives in the proxy function.
 const SHEETS_ID    = import.meta.env.VITE_SHEETS_ID;
-const API_KEY      = import.meta.env.VITE_SHEETS_API_KEY;
 const FORCE_FALLBACK = import.meta.env.VITE_FORCE_FALLBACK === "true";
 
 function parseNum(val) {
@@ -24,17 +25,16 @@ function parseNum(val) {
 }
 
 async function fetchSheetTab(tabName, range) {
-  const encoded = encodeURIComponent(`'${tabName}'!${range}`);
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEETS_ID}/values/${encoded}?key=${API_KEY}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Sheets API ${res.status}: ${tabName}`);
+  const params = new URLSearchParams({ tab: tabName, range });
+  const res = await fetch(`/api/sheets?${params}`);
+  if (!res.ok) throw new Error(`Proxy ${res.status}: ${tabName}`);
   const data = await res.json();
   return data.values || [];
 }
 
 async function loadFromSheets() {
-  if (FORCE_FALLBACK || !SHEETS_ID || !API_KEY) {
-    throw new Error("Sheets credentials not configured");
+  if (FORCE_FALLBACK || !SHEETS_ID) {
+    throw new Error("Sheets not configured");
   }
 
   // ── Totals ────────────────────────────────────────────────────────────────
@@ -82,7 +82,12 @@ async function loadFromSheets() {
   const states = [];
   for (const row of stateRows) {
     const code = String(row[0] || "").trim().toUpperCase();
-    if (!STATE_ABBREVS.has(code) || !row[2] || parseNum(row[2]) === 0) continue;
+    if (!STATE_ABBREVS.has(code)) continue;
+    if (row.length < 23) {
+      console.warn(`Skipping short row for ${code}: only ${row.length} columns`);
+      continue;
+    }
+    if (!row[2] || parseNum(row[2]) === 0) continue;
     states.push({
       state: code,
       name:  STATE_NAMES[code] || code,
@@ -122,7 +127,6 @@ export function useImpactData() {
         }
       } catch (err) {
         if (!cancelled) {
-          // Fallback already shown — just note the error silently
           setError(err.message);
           setSource("fallback");
           console.warn("⚠️  Sheets unavailable, using fallback data:", err.message);

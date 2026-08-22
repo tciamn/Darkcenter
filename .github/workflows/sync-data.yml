@@ -1,0 +1,33 @@
+name: Sync Data
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # Mondays 06:00 UTC
+  workflow_dispatch:       # Allow manual runs from the GitHub Actions UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Fetch latest data from Google Sheets
+        run: node scripts/sync-data.js
+        env:
+          SHEETS_ID:      ${{ secrets.SHEETS_ID }}
+          SHEETS_API_KEY: ${{ secrets.SHEETS_API_KEY }}
+
+      - name: Commit updated fallback.json if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto-sync fallback.json [skip ci]"
+          file_pattern: data/fallback.json
