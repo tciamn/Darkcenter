@@ -13,8 +13,9 @@
 import { useState, useEffect } from "react";
 import fallbackData from "../../data/fallback.json";
 
-const SHEETS_ID  = import.meta.env.VITE_SHEETS_ID;
-const API_KEY    = import.meta.env.VITE_SHEETS_API_KEY;
+const SHEETS_ID    = import.meta.env.VITE_SHEETS_ID;
+const API_KEY      = import.meta.env.VITE_SHEETS_API_KEY;
+const FORCE_FALLBACK = import.meta.env.VITE_FORCE_FALLBACK === "true";
 
 function parseNum(val) {
   if (!val) return 0;
@@ -32,7 +33,7 @@ async function fetchSheetTab(tabName, range) {
 }
 
 async function loadFromSheets() {
-  if (!SHEETS_ID || !API_KEY) {
+  if (FORCE_FALLBACK || !SHEETS_ID || !API_KEY) {
     throw new Error("Sheets credentials not configured");
   }
 
