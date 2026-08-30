@@ -58,6 +58,12 @@ A self-sustaining cooperative tech infrastructure that:
 - [ ] Offer services to broader movement organizations
 - [ ] Become a node in the federated cooperative hosting network
 
+### Phase 4 — Distributed infrastructure (long term)
+- [ ] Explore Holochain-native apps for cooperative data stewardship
+- [ ] Run Edge Nodes for the Holo hosting network
+- [ ] Build or adopt apps designed for truly distributed infrastructure
+- [ ] Move from cooperative governance of servers → cooperative governance without servers
+
 ---
 
 ## Key Organizations / Resources
@@ -74,6 +80,47 @@ A self-sustaining cooperative tech infrastructure that:
 | Disroot | https://disroot.org | Free comms layer (NL, donation) |
 | Systemli | https://systemli.org | Free activist comms (DE, donation) |
 | Framasoft | https://framasoft.org | Digital freedom non-profit (FR) |
+| Holochain | https://holochain.org | Distributed app framework (Phase 4) |
+| Holo hosting | https://holo.host | Sovereign infrastructure for Holochain apps |
+
+---
+
+## Holochain — Long-Term Infrastructure Vision
+
+Holochain is a fundamentally different infrastructure paradigm — not cooperative governance of servers, but **eliminating the server model entirely**.
+
+### How it works
+- **Agent-centric** — each user/org maintains their own cryptographically signed data chain on their own device
+- **DHT (Distributed Hash Table)** — shared data lives across peer nodes, not a central database
+- **Local-first** — data stays on your device by default, selectively shared with peers
+- **Peers validate** data against app rules before storing — no single point of trust or failure
+- **Edge Nodes** — community-run containerized nodes that stay always-on when users are offline
+- **HTTP gateways** — make DHT data readable by any browser without custom integration
+- **Web Conductor** (new 2026) — Holochain apps now accessible in a standard browser
+
+### Why it matters for Future Labs
+| Strength | Relevance to TCIA |
+|---|---|
+| Data commoning | Built for cooperative data stewardship — reduces risk of extraction |
+| No central server | True infrastructure sovereignty — nothing to seize or shut down |
+| Community Edge Nodes | Future Labs members run nodes, not just consume hosting |
+| Agent-centric | Each member org owns its own data chain — no landlord |
+| Anti-extraction by design | Aligns with movement values at the protocol level |
+
+### Honest limitations today
+- Apps must be **built for Holochain** — cannot run Supernote Private Cloud, WordPress, etc.
+- Still maturing — Web Conductor browser support only just landed in 2026
+- Small developer pool — fewer ready-made apps vs. traditional stack
+- Not a drop-in replacement for anything on the near-term stack
+
+### Positioning in the roadmap
+| Phase | Path |
+|---|---|
+| Phase 1–2 | VPS + Coop Cloud — practical, runs Supernote Private Cloud today |
+| Phase 3 | Owned servers + federated coop hosting network |
+| Phase 4 | Holochain — distributed apps, Edge Nodes, cooperative data commons |
+
+**Sources:** [Holochain](https://holochain.org) · [Holo hosting](https://holo.host) · [Data Commoning blog](https://blog.holochain.org/data-commoning-with-holochain-pt-1/) · [Holo roadmap](https://holo.host/roadmap/)
 
 ---
 
