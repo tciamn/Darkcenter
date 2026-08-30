@@ -116,3 +116,54 @@ server {
 - iPad
 - iPhone (OG Max)
 - Any other Supernote devices
+
+---
+
+## Hosting Options Research
+
+### Context
+- The steward is a basic May First member ($50/yr — email, Nextcloud, XMPP, video conf, 10GB). No VPS on basic plan.
+- May First VPS requires upgrading to a hosting plan first, then adding VPS ($45–$70/mo depending on org budget range).
+- SiteGround (current WordPress host) does NOT support Docker — cannot host Supernote Private Cloud there.
+
+### US-Based
+
+| Org | Model | Free? | VPS? | Link |
+|---|---|---|---|---|
+| **May First** | Coop/movement | Basic $50/yr | +$45–70/mo | https://mayfirst.coop |
+
+### EU / Europe-Based
+
+| Org | Country | Model | Free? | VPS? | Link |
+|---|---|---|---|---|---|
+| **Disroot** | 🇳🇱 Netherlands | Volunteer collective | ✅ Donation | ❌ | https://disroot.org |
+| **Greenhost** | 🇳🇱 Netherlands | Ethical/activist | ❌ €5.75+/mo | ✅ | https://greenhost.net |
+| **Systemli** | 🇩🇪 Germany | Left collective | ✅ Donation | ❌ | https://systemli.org |
+| **Framasoft** | 🇫🇷 France | Non-profit | ✅ Donation | ❌ | https://framasoft.org |
+| **Fairkom** | 🇦🇹 Austria | Coop/FOSS | ❌ Quote | Partial | https://fairkom.eu |
+| **Infomaniak** | 🇨🇭 Switzerland | Employee-owned | ❌ ~$28+/mo | ✅ | https://infomaniak.com |
+
+### Toolkit (not a host)
+
+**Coop Cloud** (https://coopcloud.tech)
+- A self-hosting toolkit/platform — not a host itself
+- Makes deploying FOSS apps (Nextcloud, WordPress, Jitsi, etc.) easier for co-ops
+- Still in public beta
+- Runs on top of: **Hetzner** (corporate, ~€4–6/mo) or **Servers.coop** (co-op VPS provider)
+- Free/open source tool — you pay for the underlying server only
+- Docs: https://docs.coopcloud.tech
+
+**Servers.coop** — co-op VPS provider that pairs with Coop Cloud (to be researched)
+
+### Recommendation Summary
+
+| Priority | Best Pick |
+|---|---|
+| Movement alignment | May First (upgrade hosting plan + VPS) |
+| EU privacy + reliability | Infomaniak (Swiss, employee-owned) |
+| EU activist alignment + VPS | Greenhost (Amsterdam, renewable energy) |
+| Free comms only (no VPS) | Disroot or Systemli |
+| Budget raw VPS | Hetzner (~€4–6/mo) via Coop Cloud |
+
+### Next: Still to research
+- [ ] Servers.coop — co-op VPS provider
