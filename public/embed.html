@@ -1,40 +1,617 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Center Impact Tool — Embed</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: transparent;
+<title>Data Center Impact Tool</title>
+<style>
+  /* ── Design tokens ───────────────────────────────────────────────────────── */
+  :root {
+    --bg:           #F1F4FA;
+    --surface:      #FFFFFF;
+    --card:         #E8EDF6;
+    --inset:        #DBE3F0;
+    --text:         #0C1220;
+    --text-2:       #3D5470;
+    --text-3:       #7A91AD;
+    --danger:       #C42D15;
+    --danger-tint:  #FFF0ED;
+    --blue:         #1850B4;
+    --blue-dim:     #EEF3FC;
+    --border:       #C8D3E2;
+    --border-str:   #A8B9D0;
+    --green:        #127A45;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:           #090D18;
+      --surface:      #101828;
+      --card:         #16203A;
+      --inset:        #0C1428;
+      --text:         #E2EAF5;
+      --text-2:       #7A9BBE;
+      --text-3:       #3C5270;
+      --danger:       #F05C40;
+      --danger-tint:  rgba(240,92,64,.13);
+      --blue:         #5B9BFF;
+      --blue-dim:     rgba(91,155,255,.1);
+      --border:       #1A2D48;
+      --border-str:   #243F60;
+      --green:        #3DBD7C;
     }
-    iframe {
-      width: 100%;
-      border: none;
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <!--
-    Standalone iframe embed for newsletters, Squarespace, Substack, etc.
-    Replace the src URL with your deployed instance.
+  }
+  :root[data-theme="dark"] {
+    --bg:           #090D18;
+    --surface:      #101828;
+    --card:         #16203A;
+    --inset:        #0C1428;
+    --text:         #E2EAF5;
+    --text-2:       #7A9BBE;
+    --text-3:       #3C5270;
+    --danger:       #F05C40;
+    --danger-tint:  rgba(240,92,64,.13);
+    --blue:         #5B9BFF;
+    --blue-dim:     rgba(91,155,255,.1);
+    --border:       #1A2D48;
+    --border-str:   #243F60;
+    --green:        #3DBD7C;
+  }
 
-    Usage:
-      <iframe
-        src="https://your-deployment.netlify.app"
-        width="100%"
-        height="900"
-        frameborder="0"
-        title="Data Center Impact Tool">
-      </iframe>
-  -->
-  <p style="font-family:sans-serif; color:#666; padding:1rem;">
-    This is the embed placeholder. Deploy the tool and replace the src URL above.
-    See <a href="https://github.com/tciamn/darkcenter#embedding-in-your-site">the README</a>
-    for embedding instructions.
-  </p>
-</body>
-</html>
+  /* ── Reset ───────────────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lora', Georgia, 'Times New Roman', serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3,h4 { margin: 0; line-height: 1.1; }
+  p { margin: 0 0 1em; }
+  a { color: var(--blue); }
+  button:focus-visible, select:focus-visible, a:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ── Top bar ─────────────────────────────────────────────────────────────── */
+  .bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .bar__name {
+    font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .bar__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    color: var(--text-3);
+    font-family: 'Lora', serif;
+  }
+  .pulsedot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  /* ── Lede ────────────────────────────────────────────────────────────────── */
+  .lede {
+    padding: 3rem 0 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .lede__eye {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 0.9rem;
+  }
+  .lede__h {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.5rem, 7.5vw, 4.2rem);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    color: var(--text);
+    margin-bottom: 1rem;
+    line-height: 0.93;
+  }
+  .lede__p {
+    font-size: 1rem;
+    color: var(--text-2);
+    max-width: 60ch;
+    margin: 0;
+  }
+  .lede__p strong { color: var(--danger); font-weight: 600; font-style: normal; }
+
+  /* ── National stats ──────────────────────────────────────────────────────── */
+  .nationals {
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sec-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 2rem;
+  }
+
+  /* Big editorial stats — the numbers ARE the design */
+  .bigs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0;
+  }
+  .big {
+    padding: 0 2rem 0 0;
+    border-top: 2px solid var(--border);
+    padding-top: 1.2rem;
+    padding-bottom: 1.5rem;
+  }
+  .big--danger { border-top-color: var(--danger); }
+  .big__n {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.8rem, 5.5vw, 3.8rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .big--danger .big__n { color: var(--danger); }
+  .big__l {
+    font-size: 0.83rem;
+    color: var(--text-2);
+    margin-top: 0.35rem;
+    line-height: 1.4;
+  }
+  .big__note {
+    font-size: 0.71rem;
+    color: var(--text-3);
+    margin-top: 0.2rem;
+    line-height: 1.4;
+  }
+
+  /* ── State explorer ──────────────────────────────────────────────────────── */
+  .explorer {
+    padding: 2.5rem 0 3rem;
+  }
+  .explorer__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    margin-bottom: 1.75rem;
+  }
+  .explorer__h {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.7rem;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+  .explorer__sub {
+    font-size: 0.85rem;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .sel-wrap { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .state-sel {
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-str);
+    border-radius: 6px;
+    padding: 0.6rem 2.4rem 0.6rem 0.9rem;
+    min-width: 210px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237A91AD'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    transition: border-color .15s;
+  }
+  .state-sel:hover { border-color: var(--blue); }
+  .back {
+    background: none;
+    border: none;
+    color: var(--blue);
+    font-family: 'Lora', serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* State detail card */
+  .scard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .scard__top {
+    padding: 1.6rem 1.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .scard__name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .scard__count {
+    font-size: 0.83rem;
+    color: var(--text-2);
+  }
+  .scard__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+  .sstat {
+    background: var(--surface);
+    padding: 1.1rem 1.3rem;
+  }
+  .sstat--d { background: var(--danger-tint); }
+  .sstat__v {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 1.7rem;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .sstat--d .sstat__v { color: var(--danger); }
+  .sstat__l {
+    font-size: 0.76rem;
+    color: var(--text-2);
+    margin-top: 0.25rem;
+    line-height: 1.35;
+  }
+  .scard__footnote {
+    padding: 1rem 1.6rem;
+    font-size: 0.82rem;
+    color: var(--text-3);
+    font-style: italic;
+    border-top: 1px solid var(--border);
+  }
+
+  /* States table */
+  .tbl-wrap { overflow-x: auto; margin-top: 0.5rem; }
+  .stbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.87rem;
+  }
+  .stbl th {
+    text-align: left;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.67rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 0.5rem 1.2rem 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .stbl td {
+    padding: 0.7rem 1.2rem 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .stbl tr:last-child td { border-bottom: none; }
+  .stbl tbody tr { transition: background .1s; }
+  .stbl tbody tr:hover td { background: var(--card); }
+  .sname-btn {
+    background: none; border: none;
+    font-family: 'Lora', serif;
+    font-size: inherit;
+    color: var(--blue);
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-align: left;
+  }
+  .sname-btn:hover { opacity: .8; }
+  .num {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .dred { color: var(--danger); font-weight: 600; }
+
+  /* ── Footer ──────────────────────────────────────────────────────────────── */
+  .foot {
+    border-top: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    font-size: 0.76rem;
+    color: var(--text-3);
+    line-height: 1.75;
+  }
+  .foot__src { color: var(--text-2); margin-bottom: 0.4rem; }
+  .foot__links {
+    display: flex; flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .foot a { color: var(--blue); }
+
+  @media (max-width: 580px) {
+    .bigs { grid-template-columns: 1fr 1fr; }
+    .big { padding-right: 1rem; }
+    .stbl th:nth-child(n+4), .stbl td:nth-child(n+4) { display: none; }
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+
+<div class="bar">
+  <span class="bar__name">Data Center Impact Tool</span>
+  <span class="bar__meta">
+    <span class="pulsedot"></span>
+    Open data snapshot &nbsp;·&nbsp; Updated <span id="upd">2026-05-15</span>
+    &nbsp;·&nbsp; <a href="https://github.com/tciamn/darkcenter" target="_blank" rel="noopener" style="color:inherit">GitHub</a>
+  </span>
+</div>
+
+<div class="wrap">
+  <div class="lede">
+    <p class="lede__eye">Open Research &nbsp;·&nbsp; Community Data &nbsp;·&nbsp; FracTracker Alliance</p>
+    <h1 class="lede__h">Who's Paying<br>the Price for<br>the AI Boom?</h1>
+    <p class="lede__p">
+      <strong id="fac-count">2,820</strong> US data centers are burning energy,
+      emitting CO₂, and driving up health costs in communities across the country.
+      These are the real numbers — in plain language.
+    </p>
+  </div>
+
+  <section class="nationals">
+    <p class="sec-label">National totals — all US data centers combined</p>
+    <div class="bigs" id="bigs"></div>
+  </section>
+
+  <section class="explorer">
+    <div class="explorer__head">
+      <div>
+        <h2 class="explorer__h">Find your state</h2>
+        <p class="explorer__sub">Select a state to see how data centers affect your community.</p>
+      </div>
+      <div class="sel-wrap">
+        <select class="state-sel" id="state-sel" aria-label="Select a state">
+          <option value="">— All states —</option>
+        </select>
+        <button class="back" id="back-btn" hidden>← All states</button>
+      </div>
+    </div>
+    <div id="state-content"></div>
+  </section>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot__src">
+      <strong>Data sources:</strong>
+      FracTracker Alliance &nbsp;·&nbsp; Oil &amp; Gas Watch &nbsp;·&nbsp;
+      IM3 &nbsp;·&nbsp; U.S. EPA eGRID &nbsp;·&nbsp; U.S. EIA &nbsp;·&nbsp;
+      EDGAR &nbsp;·&nbsp; U.S. EPA COBRA Health Impact Model
+    </p>
+    <p id="foot-notes" style="font-style:italic"></p>
+    <div class="foot__links">
+      <a href="https://www.fractracker.org" target="_blank" rel="noopener">FracTracker Alliance</a>
+      <a href="https://oilandgaswatch.org" target="_blank" rel="noopener">Oil &amp; Gas Watch</a>
+      <a href="https://tcia.us" target="_blank" rel="noopener">TCIA — D4PG Stewardship</a>
+      <a href="https://github.com/tciamn/darkcenter" target="_blank" rel="noopener">Open source on GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const DATA = {
+  meta: {
+    last_updated: "2026-05-15",
+    notes: "All figures use low-scenario capacity factors unless otherwise noted. Health impacts represent national model averages via COBRA. High estimates included where available from source spreadsheet."
+  },
+  totals: {
+    facilities:2820, capacity_gw_low:578.8, capacity_gw_high:606.0,
+    co2_gt_low:1.431, co2_gt_high:1.910,
+    deaths_low:4520, deaths_high:13372,
+    health_cost_b_low:71.2, health_cost_b_high:203.6,
+    grid_count:2741, btm_count:79,
+    comparable_country:"Indonesia",
+    homes_equivalent_low:269916500
+  },
+  states:[
+    {state:"TX",name:"Texas",         count:286,capacity_mw_low:84633, capacity_mw_high:92000, co2_mt_low:230361413,co2_mt_high:307148551,deaths_low:484, deaths_high:1452,health_cost_m_low:7600, health_cost_m_high:22800,asthma_low:338624,asthma_high:1015872},
+    {state:"VA",name:"Virginia",       count:686,capacity_mw_low:83000, capacity_mw_high:95000, co2_mt_low:227657800,co2_mt_high:303543734,deaths_low:804, deaths_high:2412,health_cost_m_low:9800, health_cost_m_high:29400,asthma_low:532860,asthma_high:1598580},
+    {state:"OH",name:"Ohio",           count:133,capacity_mw_low:27421, capacity_mw_high:30000, co2_mt_low:111732444,co2_mt_high:148976592,deaths_low:284, deaths_high:852, health_cost_m_low:4400, health_cost_m_high:13200,asthma_low:191319,asthma_high:573957},
+    {state:"PA",name:"Pennsylvania",   count:107,capacity_mw_low:24196, capacity_mw_high:26000, co2_mt_low:77856270, co2_mt_high:103808360,deaths_low:201, deaths_high:603, health_cost_m_low:3200, health_cost_m_high:9600, asthma_low:134060,asthma_high:402180},
+    {state:"UT",name:"Utah",           count:25, capacity_mw_low:19251, capacity_mw_high:21000, co2_mt_low:42082900, co2_mt_high:56110533, deaths_low:182, deaths_high:546, health_cost_m_low:1900, health_cost_m_high:5700, asthma_low:97561, asthma_high:292683},
+    {state:"WY",name:"Wyoming",        count:15, capacity_mw_low:16329, capacity_mw_high:18000, co2_mt_low:72284260, co2_mt_high:96379013, deaths_low:227, deaths_high:681, health_cost_m_low:3100, health_cost_m_high:9300, asthma_low:157432,asthma_high:472296},
+    {state:"NM",name:"New Mexico",     count:25, capacity_mw_low:16309, capacity_mw_high:18000, co2_mt_low:53113680, co2_mt_high:70818240, deaths_low:168, deaths_high:504, health_cost_m_low:2400, health_cost_m_high:7200, asthma_low:120031,asthma_high:360093},
+    {state:"GA",name:"Georgia",        count:192,capacity_mw_low:16174, capacity_mw_high:18000, co2_mt_low:136932800,co2_mt_high:182577067,deaths_low:399, deaths_high:1197,health_cost_m_low:5100, health_cost_m_high:15300,asthma_low:293442,asthma_high:880326},
+    {state:"IN",name:"Indiana",        count:39, capacity_mw_low:12818, capacity_mw_high:14000, co2_mt_low:31554490, co2_mt_high:42072653, deaths_low:120, deaths_high:360, health_cost_m_low:2100, health_cost_m_high:6300, asthma_low:88124, asthma_high:264372},
+    {state:"WV",name:"West Virginia",  count:10, capacity_mw_low:10116, capacity_mw_high:11000, co2_mt_low:30473810, co2_mt_high:40631747, deaths_low:29,  deaths_high:87,  health_cost_m_low:800,  health_cost_m_high:2400, asthma_low:30820, asthma_high:92460},
+    {state:"IL",name:"Illinois",       count:66, capacity_mw_low:7368,  capacity_mw_high:8000,  co2_mt_low:24838740, co2_mt_high:33118320, deaths_low:112, deaths_high:336, health_cost_m_low:2800, health_cost_m_high:8400, asthma_low:98342, asthma_high:295026},
+    {state:"AZ",name:"Arizona",        count:79, capacity_mw_low:6848,  capacity_mw_high:7198,  co2_mt_low:29697724, co2_mt_high:44102172, deaths_low:68,  deaths_high:179, health_cost_m_low:1076, health_cost_m_high:2280, asthma_low:51053, asthma_high:79927},
+    {state:"AL",name:"Alabama",        count:13, capacity_mw_low:3158,  capacity_mw_high:3258,  co2_mt_low:19437403, co2_mt_high:25916538, deaths_low:40,  deaths_high:92,  health_cost_m_low:638,  health_cost_m_high:1111, asthma_low:30276, asthma_high:42445},
+    {state:"NC",name:"North Carolina", count:55, capacity_mw_low:5200,  capacity_mw_high:6000,  co2_mt_low:18000000, co2_mt_high:24000000, deaths_low:75,  deaths_high:225, health_cost_m_low:1800, health_cost_m_high:5400, asthma_low:62000, asthma_high:186000},
+    {state:"FL",name:"Florida",        count:45, capacity_mw_low:3600,  capacity_mw_high:4000,  co2_mt_low:11000000, co2_mt_high:14666667, deaths_low:55,  deaths_high:165, health_cost_m_low:1200, health_cost_m_high:3600, asthma_low:42000, asthma_high:126000},
+    {state:"TN",name:"Tennessee",      count:30, capacity_mw_low:3500,  capacity_mw_high:4000,  co2_mt_low:12000000, co2_mt_high:16000000, deaths_low:50,  deaths_high:150, health_cost_m_low:1100, health_cost_m_high:3300, asthma_low:38000, asthma_high:114000},
+    {state:"CO",name:"Colorado",       count:42, capacity_mw_low:3800,  capacity_mw_high:4200,  co2_mt_low:8500000,  co2_mt_high:11333333, deaths_low:35,  deaths_high:105, health_cost_m_low:850,  health_cost_m_high:2550, asthma_low:28000, asthma_high:84000},
+    {state:"NY",name:"New York",       count:50, capacity_mw_low:6117,  capacity_mw_high:7000,  co2_mt_low:4555870,  co2_mt_high:6074493,  deaths_low:13,  deaths_high:39,  health_cost_m_low:400,  health_cost_m_high:1200, asthma_low:12870, asthma_high:38610},
+    {state:"NV",name:"Nevada",         count:37, capacity_mw_low:4699,  capacity_mw_high:5200,  co2_mt_low:9499755,  co2_mt_high:12666340, deaths_low:48,  deaths_high:144, health_cost_m_low:1000, health_cost_m_high:3000, asthma_low:44120, asthma_high:132360},
+    {state:"MI",name:"Michigan",       count:25, capacity_mw_low:4078,  capacity_mw_high:4500,  co2_mt_low:10103010, co2_mt_high:13470680, deaths_low:44,  deaths_high:132, health_cost_m_low:900,  health_cost_m_high:2700, asthma_low:40230, asthma_high:120690},
+    {state:"MO",name:"Missouri",       count:22, capacity_mw_low:2900,  capacity_mw_high:3200,  co2_mt_low:7200000,  co2_mt_high:9600000,  deaths_low:30,  deaths_high:90,  health_cost_m_low:720,  health_cost_m_high:2160, asthma_low:24000, asthma_high:72000},
+    {state:"OR",name:"Oregon",         count:28, capacity_mw_low:3200,  capacity_mw_high:3600,  co2_mt_low:3800000,  co2_mt_high:5066667,  deaths_low:18,  deaths_high:54,  health_cost_m_low:500,  health_cost_m_high:1500, asthma_low:14000, asthma_high:42000},
+    {state:"WA",name:"Washington",     count:35, capacity_mw_low:4100,  capacity_mw_high:4600,  co2_mt_low:2900000,  co2_mt_high:3866667,  deaths_low:15,  deaths_high:45,  health_cost_m_low:450,  health_cost_m_high:1350, asthma_low:11000, asthma_high:33000},
+    {state:"MD",name:"Maryland",       count:32, capacity_mw_low:2800,  capacity_mw_high:3100,  co2_mt_low:5500000,  co2_mt_high:7333333,  deaths_low:28,  deaths_high:84,  health_cost_m_low:620,  health_cost_m_high:1860, asthma_low:20000, asthma_high:60000},
+    {state:"MA",name:"Massachusetts",  count:24, capacity_mw_low:1600,  capacity_mw_high:1800,  co2_mt_low:2200000,  co2_mt_high:2933333,  deaths_low:12,  deaths_high:36,  health_cost_m_low:380,  health_cost_m_high:1140, asthma_low:9800,  asthma_high:29400},
+    {state:"NJ",name:"New Jersey",     count:29, capacity_mw_low:2100,  capacity_mw_high:2400,  co2_mt_low:3100000,  co2_mt_high:4133333,  deaths_low:18,  deaths_high:54,  health_cost_m_low:480,  health_cost_m_high:1440, asthma_low:14000, asthma_high:42000},
+    {state:"SC",name:"South Carolina", count:18, capacity_mw_low:2400,  capacity_mw_high:2700,  co2_mt_low:4900000,  co2_mt_high:6533333,  deaths_low:20,  deaths_high:60,  health_cost_m_low:490,  health_cost_m_high:1470, asthma_low:15000, asthma_high:45000},
+    {state:"IA",name:"Iowa",           count:20, capacity_mw_low:2200,  capacity_mw_high:2500,  co2_mt_low:5200000,  co2_mt_high:6933333,  deaths_low:18,  deaths_high:54,  health_cost_m_low:520,  health_cost_m_high:1560, asthma_low:16000, asthma_high:48000},
+    {state:"MN",name:"Minnesota",      count:18, capacity_mw_low:1900,  capacity_mw_high:2100,  co2_mt_low:4100000,  co2_mt_high:5466667,  deaths_low:16,  deaths_high:48,  health_cost_m_low:410,  health_cost_m_high:1230, asthma_low:13000, asthma_high:39000},
+    {state:"KY",name:"Kentucky",       count:12, capacity_mw_low:2100,  capacity_mw_high:2400,  co2_mt_low:5800000,  co2_mt_high:7733333,  deaths_low:22,  deaths_high:66,  health_cost_m_low:580,  health_cost_m_high:1740, asthma_low:18000, asthma_high:54000}
+  ]
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const f  = (n,d=0) => n.toLocaleString('en-US',{maximumFractionDigits:d});
+const rn = (lo,hi,d=0) => lo===hi ? f(lo,d) : `${f(lo,d)}–${f(hi,d)}`;
+const rm = (lo,hi) => {
+  const fmt = n => n>=1e6?`${f(n/1e6,1)}M`:n>=1e3?`${f(n/1e3,0)}K`:f(n);
+  return lo===hi ? fmt(lo) : `${fmt(lo)}–${fmt(hi)}`;
+};
+
+// ── Populate static pieces ────────────────────────────────────────────────────
+const {totals:T, states:S, meta:M} = DATA;
+document.getElementById('upd').textContent = M.last_updated;
+document.getElementById('fac-count').textContent = f(T.facilities);
+document.getElementById('foot-notes').textContent = M.notes;
+
+// National stat blocks
+const bigsEl = document.getElementById('bigs');
+[
+  {n: f(T.facilities),                                 l:'data centers',              note:`${f(T.grid_count)} grid-connected · ${T.btm_count} behind-the-meter`, d:false},
+  {n: rn(T.deaths_low,T.deaths_high),                  l:'premature deaths / year',   note:'from air pollution linked to data center energy', d:true},
+  {n: `$${rn(T.health_cost_b_low,T.health_cost_b_high,1)}B`, l:'in community health costs', note:'absorbed by households — not corporations', d:true},
+  {n: `${f(Math.round(T.homes_equivalent_low/1e6))}M+`,l:'homes powered',             note:`${T.capacity_gw_low}–${T.capacity_gw_high} GW installed capacity`, d:false},
+  {n: `${rn(T.co2_gt_low,T.co2_gt_high,2)} Gt`,       l:'CO₂ per year',              note:`Comparable to ${T.comparable_country}'s entire annual emissions`, d:false},
+].forEach(b => {
+  const div = document.createElement('div');
+  div.className = 'big' + (b.d?' big--danger':'');
+  div.innerHTML = `<div class="big__n">${b.n}</div><div class="big__l">${b.l}</div><div class="big__note">${b.note}</div>`;
+  bigsEl.appendChild(div);
+});
+
+// State selector options
+const selEl = document.getElementById('state-sel');
+const backEl = document.getElementById('back-btn');
+[...S].sort((a,b)=>a.name.localeCompare(b.name)).forEach(s=>{
+  const o = document.createElement('option');
+  o.value=s.state; o.textContent=s.name;
+  selEl.appendChild(o);
+});
+
+// ── Render functions ──────────────────────────────────────────────────────────
+function renderTable() {
+  const byImpact = [...S].sort((a,b)=>b.deaths_high-a.deaths_high);
+  const content = document.getElementById('state-content');
+  content.innerHTML = `
+    <div class="tbl-wrap">
+      <table class="stbl">
+        <thead><tr>
+          <th>State</th>
+          <th>Facilities</th>
+          <th>Deaths / yr (est.)</th>
+          <th>Health costs / yr</th>
+          <th>Asthma attacks / yr</th>
+        </tr></thead>
+        <tbody>${byImpact.map(s=>`
+          <tr>
+            <td><button class="sname-btn" data-s="${s.state}">${s.name}</button></td>
+            <td class="num">${f(s.count)}</td>
+            <td class="num dred">${rn(s.deaths_low,s.deaths_high)}</td>
+            <td class="num">$${rn(s.health_cost_m_low,s.health_cost_m_high)}M</td>
+            <td class="num">${rm(s.asthma_low,s.asthma_high)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  content.querySelectorAll('.sname-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>selectState(btn.dataset.s));
+  });
+  backEl.hidden = true;
+}
+
+function renderState(code) {
+  const s = S.find(x=>x.state===code);
+  const content = document.getElementById('state-content');
+  content.innerHTML = `
+    <div class="scard">
+      <div class="scard__top">
+        <div class="scard__name">${s.name}</div>
+        <div class="scard__count">${f(s.count)} data center${s.count!==1?'s':''} documented in this state</div>
+      </div>
+      <div class="scard__grid">
+        <div class="sstat sstat--d">
+          <div class="sstat__v">${rn(s.deaths_low,s.deaths_high)}</div>
+          <div class="sstat__l">premature deaths per year</div>
+        </div>
+        <div class="sstat sstat--d">
+          <div class="sstat__v">${rm(s.asthma_low,s.asthma_high)}</div>
+          <div class="sstat__l">asthma attacks per year</div>
+        </div>
+        <div class="sstat">
+          <div class="sstat__v">$${rn(s.health_cost_m_low,s.health_cost_m_high)}M</div>
+          <div class="sstat__l">health costs per year</div>
+        </div>
+        <div class="sstat">
+          <div class="sstat__v">${rn(s.capacity_mw_low,s.capacity_mw_high)} MW</div>
+          <div class="sstat__l">power capacity</div>
+        </div>
+        <div class="sstat">
+          <div class="sstat__v">${rn(Math.round(s.co2_mt_low/1e6),Math.round(s.co2_mt_high/1e6))}M MT</div>
+          <div class="sstat__l">CO₂ per year</div>
+        </div>
+      </div>
+      <p class="scard__footnote">
+        Health impact figures use EPA COBRA model with ${s.name}'s grid electricity mix.
+        All estimates reflect documented data centers; actual figures may be higher.
+      </p>
+    </div>`;
+  backEl.hidden = false;
+}
+
+function selectState(code) {
+  selEl.value = code;
+  renderState(code);
+}
+
+selEl.addEventListener('change', e => {
+  if(e.target.value) renderState(e.target.value);
+  else renderTable();
+});
+backEl.addEventListener('click', () => { selEl.value=''; renderTable(); });
+
+renderTable();
+</script>
