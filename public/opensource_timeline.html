@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Open Source Movement</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0f;
+    --trunk: #2ecc71;
+    --trunk-glow: rgba(46,204,113,0.25);
+    --branch-gnu: #e74c3c;
+    --branch-linux: #f39c12;
+    --branch-web: #3498db;
+    --branch-corp: #9b59b6;
+    --branch-cloud: #1abc9c;
+    --branch-ai: #e67e22;
+    --text: #d4e6d4;
+    --text-dim: #5a7a5a;
+    --card-bg: #0f1a13;
+    --card-border: #1e3a22;
+    --line: #1e3a22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  header {
+    text-align: center;
+    padding: 70px 20px 40px;
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, var(--trunk));
+  }
+
+  .header-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--trunk);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.7;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 0 40px var(--trunk-glow);
+  }
+
+  h1 span {
+    color: var(--trunk);
+  }
+
+  .subtitle {
+    margin-top: 14px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+  }
+
+  /* ── TIMELINE CANVAS ── */
+  .timeline {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 20px 100px;
+  }
+
+  /* Central trunk */
+  .trunk-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom,
+      var(--trunk) 0%,
+      var(--trunk) 70%,
+      rgba(46,204,113,0.3) 90%,
+      transparent 100%
+    );
+    box-shadow: 0 0 16px var(--trunk-glow);
+  }
+
+  /* ── YEAR MARKER ── */
+  .year-marker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 2px;
+    z-index: 10;
+  }
+
+  .year-marker .yr {
+    background: var(--bg);
+    border: 2px solid var(--trunk);
+    color: var(--trunk);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 3px 12px;
+    border-radius: 20px;
+    box-shadow: 0 0 14px var(--trunk-glow);
+  }
+
+  /* ── NODE (milestone on trunk) ── */
+  .node {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin: 0 0 6px;
+    gap: 0;
+  }
+
+  .node.left { flex-direction: row-reverse; }
+  .node.right { flex-direction: row; }
+
+  /* Dot on the trunk */
+  .node-dot {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid var(--trunk);
+    box-shadow: 0 0 12px var(--trunk-glow);
+    z-index: 5;
+    flex-shrink: 0;
+    top: 18px;
+  }
+
+  .node-dot.branch {
+    border-color: var(--branch-color);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--branch-color) 40%, transparent);
+  }
+
+  /* Connector line from dot to card */
+  .node-connector {
+    position: absolute;
+    top: 24px;
+    height: 2px;
+    background: linear-gradient(to right, var(--branch-color, var(--trunk)), transparent);
+    z-index: 3;
+  }
+  .node.left .node-connector {
+    right: 50%;
+    background: linear-gradient(to left, var(--branch-color, var(--trunk)), transparent);
+  }
+  .node.right .node-connector {
+    left: 50%;
+  }
+
+  /* Card half-widths */
+  .node-card-wrap {
+    width: calc(50% - 32px);
+    padding: 0 0 28px;
+  }
+  .node.left  .node-card-wrap { margin-right: auto; padding-right: 28px; }
+  .node.right .node-card-wrap { margin-left: auto;  padding-left: 28px; }
+
+  .node-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .node-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .node-card .tag {
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+    opacity: 0.85;
+    color: var(--branch-color, var(--trunk));
+  }
+
+  .node-card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e8f5e8;
+    margin-bottom: 5px;
+    line-height: 1.3;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .node-card p {
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: #7a9a7a;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+  }
+
+  /* Left-card arrow */
+  .node.left .node-card::after {
+    content: '';
+    position: absolute;
+    right: -7px; top: 20px;
+    border: 7px solid transparent;
+    border-left-color: var(--card-border);
+  }
+  .node.right .node-card::after {
+    content: '';
+    position: absolute;
+    left: -7px; top: 20px;
+    border: 7px solid transparent;
+    border-right-color: var(--card-border);
+  }
+
+  /* ── BRANCH HEADER ── */
+  .branch-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 18px 0 4px;
+  }
+
+  .branch-head.left  { flex-direction: row-reverse; }
+  .branch-head.right { flex-direction: row; }
+
+  .branch-label {
+    width: calc(50% - 32px);
+    padding: 6px 14px;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--branch-color) 12%, transparent);
+    border-left: 3px solid var(--branch-color);
+    color: var(--branch-color);
+  }
+
+  .branch-head.left  .branch-label { margin-right: auto; margin-right: 32px; border-left: none; border-right: 3px solid var(--branch-color); text-align: right; }
+  .branch-head.right .branch-label { margin-left: 32px; }
+
+  /* ── SPACER ── */
+  .spacer { height: 30px; }
+  .spacer-sm { height: 12px; }
+
+  /* ── TODAY dot ── */
+  .today-marker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    z-index: 10;
+  }
+
+  .today-marker .pulse-ring {
+    position: absolute;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--trunk);
+    animation: pulse 2s ease-out infinite;
+  }
+
+  .today-marker .dot-center {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--trunk);
+    box-shadow: 0 0 20px var(--trunk);
+    z-index: 2;
+  }
+
+  .today-marker .today-label {
+    position: absolute;
+    right: calc(50% + 24px);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--trunk);
+    text-transform: uppercase;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @keyframes pulse {
+    0%   { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    padding: 30px 20px 60px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #6a8a6a;
+  }
+
+  .legend-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Scroll fade-in */
+  .node, .branch-head, .year-marker {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  @media (max-width: 640px) {
+    .node, .branch-head { flex-direction: column !important; align-items: flex-start; padding-left: 30px; }
+    .node-card-wrap { width: 100% !important; padding: 0 0 20px !important; margin: 0 !important; }
+    .trunk-line { left: 14px; }
+    .node-dot { left: 14px; }
+    .node-connector { display: none; }
+    .node-card::after { display: none; }
+    .branch-label { width: 100%; margin: 0 0 0 0 !important; border-left: 3px solid var(--branch-color) !important; border-right: none !important; text-align: left !important; }
+    .year-marker .yr { font-size: 0.62rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">A Living History</div>
+  <h1>THE OPEN<br><span>SOURCE</span> TREE</h1>
+  <div class="subtitle">From free software philosophy to the infrastructure of civilization</div>
+</header>
+
+<div class="timeline">
+  <div class="trunk-line"></div>
+
+  <!-- 1983 -->
+  <div class="year-marker"><div class="yr">1983</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-gnu)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">GNU Project</div>
+        <h3>Richard Stallman announces GNU</h3>
+        <p>Stallman posts to net.unix-wizards declaring the goal of building a complete free Unix-compatible OS. The seed of free software philosophy is planted — software as shared human knowledge, not proprietary commodity.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1985 -->
+  <div class="year-marker"><div class="yr">1985</div></div>
+
+  <div class="node left" style="--branch-color: var(--branch-gnu)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Free Software Foundation</div>
+        <h3>FSF founded &amp; GNU Manifesto</h3>
+        <p>The Free Software Foundation is established to support the GNU project. The GNU Manifesto articulates the four freedoms: use, study, modify, distribute. A moral and political framework for software freedom is codified.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1989 -->
+  <div class="year-marker"><div class="yr">1989</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-gnu)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Licensing</div>
+        <h3>GNU GPL v1 released</h3>
+        <p>The first General Public License introduces "copyleft" — using copyright law to guarantee software freedom. Any derivative work must remain free. A legal innovation that would shape open source law for decades.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- 1991 -->
+  <div class="year-marker"><div class="yr">1991</div></div>
+
+  <div class="branch-head right" style="--branch-color: var(--branch-linux)">
+    <div class="branch-label">⎇ Linux Kernel Branch</div>
+  </div>
+
+  <div class="node right" style="--branch-color: var(--branch-linux)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Linux Kernel</div>
+        <h3>Linus Torvalds releases Linux 0.01</h3>
+        <p>"I'm doing a (free) operating system (just a hobby, won't be big and professional like gnu)." — A 21-year-old Finnish student posts to comp.os.minix. The kernel that would power the internet, Android, and supercomputers is born.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-gnu)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">GNU / Linux</div>
+        <h3>GNU tools + Linux kernel unite</h3>
+        <p>The GNU userland tools combined with the Linux kernel form a complete, freely distributable operating system. The GNU/Linux combination becomes the foundation of modern open source infrastructure.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1993–1994 -->
+  <div class="year-marker"><div class="yr">1993 – 1994</div></div>
+
+  <div class="branch-head left" style="--branch-color: var(--branch-web)">
+    <div class="branch-label">⎇ Open Web Branch</div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-web)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Open Web</div>
+        <h3>Debian &amp; Slackware: first distros</h3>
+        <p>The first Linux distributions package the GNU/Linux system for everyday users. Debian — founded on a Social Contract with the free software community — establishes democratic governance models that influence open source projects to this day.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node right" style="--branch-color: var(--branch-web)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Open Web</div>
+        <h3>Mosaic &amp; open web standards</h3>
+        <p>The NCSA Mosaic browser is released freely, catalysing the World Wide Web. CERN releases the web protocol code into the public domain. Open standards — not proprietary walled gardens — become the web's foundation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1995–1997 -->
+  <div class="year-marker"><div class="yr">1995 – 1997</div></div>
+
+  <div class="node left" style="--branch-color: var(--branch-web)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">LAMP Stack</div>
+        <h3>Apache, MySQL, PHP, Perl emerge</h3>
+        <p>The open source LAMP stack (Linux, Apache, MySQL, PHP/Perl) quietly becomes the engine of the commercial web. Wikipedia, early e-commerce, and millions of sites run on freely shared code — demonstrating open source's economic viability.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node right" style="--branch-color: var(--branch-web)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Collaboration</div>
+        <h3>Eric Raymond: The Cathedral &amp; the Bazaar</h3>
+        <p>Raymond's landmark essay — "given enough eyeballs, all bugs are shallow" — articulates the bazaar model of open, distributed development vs. the cathedral model. It shifts mainstream perception of open source from hobbyist to engineering methodology.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1998 -->
+  <div class="year-marker"><div class="yr">1998</div></div>
+
+  <div class="branch-head right" style="--branch-color: var(--branch-corp)">
+    <div class="branch-label">⎇ Commercial Adoption Branch</div>
+  </div>
+
+  <div class="node right" style="--branch-color: var(--branch-corp)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">OSI Founded</div>
+        <h3>"Open Source" coined — OSI born</h3>
+        <p>Christine Peterson coins "open source" as a pragmatic alternative to "free software." Bruce Perens and Eric Raymond found the Open Source Initiative. The OSD (Open Source Definition) provides the canonical license framework adopted globally.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-corp)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Mozilla</div>
+        <h3>Netscape open-sources Navigator</h3>
+        <p>Netscape releases the Navigator browser source code — the first major commercial software company to go open source. The code becomes Mozilla, then Firefox. A watershed moment: open source is not just philosophy, it's a competitive strategy.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2000–2004 -->
+  <div class="year-marker"><div class="yr">2000 – 2004</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-linux)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Linux Distros</div>
+        <h3>Red Hat IPO &amp; Ubuntu (2004)</h3>
+        <p>Red Hat's 1999 IPO proves open source can be a billion-dollar business. Ubuntu launches in 2004, bringing Linux to mainstream desktops with a community-centred, accessibility-first philosophy. "Linux for human beings."</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-web)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Creative Commons</div>
+        <h3>Lawrence Lessig founds Creative Commons</h3>
+        <p>CC licences extend the open source idea beyond software — to music, art, education, science. Wikipedia adopts CC licensing. Open knowledge becomes a movement, not just open code. The "free culture" era begins.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2005–2008 -->
+  <div class="year-marker"><div class="yr">2005 – 2008</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-linux)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Version Control</div>
+        <h3>Git released by Linus Torvalds</h3>
+        <p>Git is born out of necessity after a licensing dispute with BitKeeper. Distributed version control transforms how humanity collaborates on code — no single point of failure, no central authority. The infrastructure of open source collaboration is reinvented.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-corp)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Android</div>
+        <h3>Android released (Linux-based)</h3>
+        <p>Google releases Android — an open source mobile OS built on the Linux kernel. Within five years it will power billions of devices worldwide. Open source becomes the dominant platform for mobile computing, reshaping global digital access.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2008–2010 -->
+  <div class="year-marker"><div class="yr">2008 – 2010</div></div>
+
+  <div class="branch-head right" style="--branch-color: var(--branch-cloud)">
+    <div class="branch-label">⎇ Cloud &amp; Infrastructure Branch</div>
+  </div>
+
+  <div class="node right" style="--branch-color: var(--branch-cloud)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">GitHub</div>
+        <h3>GitHub launches (2008)</h3>
+        <p>GitHub puts Git on the web with a social layer — forking, pull requests, issues, profiles. Open source becomes networked and discoverable. Within a decade, 100M+ repositories will be hosted publicly. The commons of code becomes a planetary resource.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-cloud)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Node.js / npm</div>
+        <h3>Node.js &amp; the package ecosystem era</h3>
+        <p>Ryan Dahl releases Node.js (2009) — JavaScript on the server. npm emerges as a package registry. The era of reusable, shareable micro-packages begins. Open source shifts from large projects to modular ecosystems of interdependent libraries.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2011–2013 -->
+  <div class="year-marker"><div class="yr">2011 – 2013</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-cloud)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">OpenStack</div>
+        <h3>OpenStack &amp; cloud-native open source</h3>
+        <p>NASA and Rackspace release OpenStack — open source cloud infrastructure. Docker launches in 2013, containerising applications. Open source becomes the default substrate of cloud computing. AWS, Azure and GCP all run on Linux and open source stacks.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-corp)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Corporate Strategy</div>
+        <h3>Microsoft joins the open source world</h3>
+        <p>A company that once called Linux "a cancer" open-sources .NET (2014) and joins the Linux Foundation. The shift signals complete corporate normalisation of open source. "Love" replaces "extinguish" in Microsoft's open source strategy.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2014–2017 -->
+  <div class="year-marker"><div class="yr">2014 – 2017</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-cloud)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Kubernetes</div>
+        <h3>Kubernetes open-sourced by Google</h3>
+        <p>Google releases its internal container orchestration system as open source (2014). The CNCF (Cloud Native Computing Foundation) is founded. Kubernetes becomes the universal platform for deploying software — open source governs planetary-scale infrastructure.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-cloud)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Supply Chain</div>
+        <h3>Log4Shell &amp; supply chain reckoning</h3>
+        <p>A critical vulnerability in the ubiquitous Log4j library (2021) exposes that the open source supply chain underpinning global commerce has no central steward. The US government, Linux Foundation and major corporations begin investing in open source security as critical infrastructure.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2018–2020 -->
+  <div class="year-marker"><div class="yr">2018 – 2020</div></div>
+
+  <div class="branch-head right" style="--branch-color: var(--branch-ai)">
+    <div class="branch-label">⎇ Open Source AI Branch</div>
+  </div>
+
+  <div class="node right" style="--branch-color: var(--branch-corp)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Sustainability</div>
+        <h3>GitHub acquired by Microsoft ($7.5B)</h3>
+        <p>Microsoft acquires GitHub (2018). Open source's central commons is now owned by a corporation. The tension between open contribution and commercial control resurfaces. GitLab and Codeberg emerge as alternatives. The question of who governs the commons remains unresolved.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-ai)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Open AI Research</div>
+        <h3>TensorFlow, PyTorch &amp; open ML</h3>
+        <p>Google open-sources TensorFlow (2015); Facebook releases PyTorch (2016). These frameworks democratise deep learning research. The open publication norm at NeurIPS, ICML and arXiv means AI breakthroughs flow freely across the global research community.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2021–2023 -->
+  <div class="year-marker"><div class="yr">2021 – 2023</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-ai)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Open LLMs</div>
+        <h3>Meta releases LLaMA; Hugging Face grows</h3>
+        <p>Meta releases the LLaMA large language model weights (2023). Hugging Face becomes the "GitHub of AI" — hosting hundreds of thousands of open models and datasets. Open source AI challenges the dominance of closed frontier models, democratising access to transformative technology.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-cloud)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Sustainability</div>
+        <h3>Open Source &amp; climate tech convergence</h3>
+        <p>Open source energy modelling (PyPSA), climate data (Open Climate Fix), and sustainable agriculture tools proliferate. The Linux Foundation launches LF Energy. Open source becomes critical infrastructure for the energy transition — shared tools for shared planetary challenges.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2024–2025 -->
+  <div class="year-marker"><div class="yr">2024 – 2025</div></div>
+
+  <div class="node right" style="--branch-color: var(--branch-ai)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:60px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">OSI AI Definition</div>
+        <h3>OSI releases Open Source AI Definition</h3>
+        <p>The Open Source Initiative publishes the first formal definition of "open source AI" — requiring access to training data, model weights, and inference code. A new frontier in the decades-long debate about what "open" truly means is drawn.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="node left" style="--branch-color: var(--branch-corp)">
+    <div class="node-dot branch"></div>
+    <div class="node-connector" style="width:55px"></div>
+    <div class="node-card-wrap">
+      <div class="node-card">
+        <div class="tag">Governance</div>
+        <h3>EU Cyber Resilience Act &amp; open source</h3>
+        <p>The EU CRA (2024) introduces security obligations for software — triggering fierce debate about liability for open source maintainers. Governments increasingly treat open source as critical infrastructure, demanding accountability alongside freedom.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TODAY -->
+  <div class="spacer"></div>
+  <div class="today-marker">
+    <div class="pulse-ring"></div>
+    <div class="dot-center"></div>
+    <div class="today-label">present — 2026</div>
+  </div>
+
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--trunk)"></div> Core Trunk</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--branch-gnu)"></div> GNU / Free Software</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--branch-linux)"></div> Linux Kernel</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--branch-web)"></div> Open Web &amp; Culture</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--branch-corp)"></div> Commercial Adoption</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--branch-cloud)"></div> Cloud &amp; Infrastructure</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--branch-ai)"></div> Open Source AI</div>
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.node, .branch-head, .year-marker').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
