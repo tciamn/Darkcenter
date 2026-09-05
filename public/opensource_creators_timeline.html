@@ -7,18 +7,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #06080a;
+  --bg:       #0a0f0b;
   --surface:  #0d1117;
   --border:   #1c2a1e;
-  --trunk:    #3ddc84;
-  --glow:     rgba(61,220,132,0.18);
+  --trunk:    #3dba6e;
+  --glow:     rgba(61,186,110,0.18);
   --text:     #cdd9c4;
   --muted:    #4a6452;
   --white:    #e8f0e8;
 
   /* branch palette */
-  --c1: #3ddc84;  /* free software */
-  --c2: #f5a623;  /* linux */
+  --c1: #3dba6e;  /* free software */
+  --c2: #c9a84c;  /* linux */
   --c3: #4fc3f7;  /* open web */
   --c4: #ce93d8;  /* commercial */
   --c5: #80cbc4;  /* cloud */
@@ -121,7 +121,7 @@ h1 em {
   background: linear-gradient(to bottom,
     var(--trunk) 0%,
     var(--trunk) 75%,
-    rgba(61,220,132,0.15) 92%,
+    rgba(61,186,110,0.15) 92%,
     transparent 100%
   );
   box-shadow: 0 0 20px var(--glow);
@@ -2240,7 +2240,7 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 8000;
-  background: rgba(6,8,10,0.92);
+  background: rgba(10,15,11,0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid #1c2a1e;
   display: flex;
@@ -2266,8 +2266,8 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
   white-space: nowrap;
 }
 
-.nav-btn:hover { color: #cdd9c4; border-color: #3ddc84; }
-.nav-btn.active { background: #3ddc84; color: #06080a; border-color: #3ddc84; }
+.nav-btn:hover { color: #cdd9c4; border-color: #3dba6e; }
+.nav-btn.active { background: #3dba6e; color: #0a0f0b; border-color: #3dba6e; }
 
 /* spacer so content isn't hidden under nav */
 #timeline-page { padding-top: 54px; }
@@ -2306,7 +2306,7 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
   line-height: 1.1;
 }
 
-.rp-title em { font-style: italic; color: #3ddc84; font-weight: 400; }
+.rp-title em { font-style: italic; color: #3dba6e; font-weight: 400; }
 
 .rp-sub {
   margin-top: 12px;
@@ -2341,9 +2341,9 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
   font-weight: 700;
 }
 
-.tier-pill.good    { color: #3ddc84; border-color: rgba(61,220,132,0.3); background: rgba(61,220,132,0.07); }
+.tier-pill.good    { color: #3dba6e; border-color: rgba(61,186,110,0.3); background: rgba(61,186,110,0.07); }
 .tier-pill.better  { color: #4fc3f7; border-color: rgba(79,195,247,0.3); background: rgba(79,195,247,0.07); }
-.tier-pill.best    { color: #f5a623; border-color: rgba(245,166,35,0.3);  background: rgba(245,166,35,0.07); }
+.tier-pill.best    { color: #c9a84c; border-color: rgba(201,168,76,0.3);  background: rgba(201,168,76,0.07); }
 .tier-pill.worst   { color: #ef5350; border-color: rgba(239,83,80,0.3);   background: rgba(239,83,80,0.07); }
 
 /* ── CATEGORY FILTER ─────────────────────────────── */
@@ -2450,9 +2450,9 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
   align-self: flex-start;
 }
 
-.sol-tier.good   { color: #3ddc84; background: rgba(61,220,132,0.12);  border: 1px solid rgba(61,220,132,0.25); }
+.sol-tier.good   { color: #3dba6e; background: rgba(61,186,110,0.12);  border: 1px solid rgba(61,186,110,0.25); }
 .sol-tier.better { color: #4fc3f7; background: rgba(79,195,247,0.12);  border: 1px solid rgba(79,195,247,0.25); }
-.sol-tier.best   { color: #f5a623; background: rgba(245,166,35,0.12);  border: 1px solid rgba(245,166,35,0.25); }
+.sol-tier.best   { color: #c9a84c; background: rgba(201,168,76,0.12);  border: 1px solid rgba(201,168,76,0.25); }
 .sol-tier.worst  { color: #ef5350; background: rgba(239,83,80,0.12);   border: 1px solid rgba(239,83,80,0.25); }
 
 /* ── SCORES GRID ─────────────────────────────────── */
@@ -2530,7 +2530,7 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
   left: 0; top: 0;
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #3ddc84, #f5a623);
+  background: linear-gradient(90deg, #3dba6e, #c9a84c);
 }
 
 .skill-dot {
@@ -2539,9 +2539,9 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
   transform: translate(-50%, -50%);
   width: 14px; height: 14px;
   border-radius: 50%;
-  background: #f5a623;
-  border: 2px solid #06080a;
-  box-shadow: 0 0 8px rgba(245,166,35,0.5);
+  background: #c9a84c;
+  border: 2px solid #0a0f0b;
+  box-shadow: 0 0 8px rgba(201,168,76,0.5);
 }
 
 .skill-ends {
@@ -2609,9 +2609,9 @@ document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
 .sol-card.hidden { display: none; }
 
 /* ── SCORE COLOUR HELPERS ────────────────────────── */
-.fill-green  { background: #3ddc84; }
+.fill-green  { background: #3dba6e; }
 .fill-blue   { background: #4fc3f7; }
-.fill-amber  { background: #f5a623; }
+.fill-amber  { background: #c9a84c; }
 .fill-red    { background: #ef5350; }
 .fill-purple { background: #ce93d8; }
 .fill-pink   { background: #f06292; }
@@ -2719,7 +2719,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="mobile">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">🐧</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🐧</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Mobile OS</div>
           <div class="sol-name">LineageOS</div>
@@ -2840,7 +2840,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="mobile">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">🤖</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🤖</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Mobile OS</div>
           <div class="sol-name">Stock Android (AOSP-based)</div>
@@ -2962,7 +2962,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="browser">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(245,166,35,0.1)">🛡️</div>
+        <div class="sol-icon-wrap" style="background:rgba(201,168,76,0.1)">🛡️</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Browser</div>
           <div class="sol-name">Firefox + uBlock Origin</div>
@@ -3145,7 +3145,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="maps">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">🌍</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🌍</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Maps &amp; Navigation</div>
           <div class="sol-name">OsmAnd (Offline Maps)</div>
@@ -3328,7 +3328,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="messaging">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">🔐</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🔐</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Messaging</div>
           <div class="sol-name">Signal</div>
@@ -3510,7 +3510,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="productivity">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">📄</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">📄</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Productivity</div>
           <div class="sol-name">LibreOffice</div>
@@ -3693,7 +3693,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="media">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">🎬</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🎬</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Media &amp; Video</div>
           <div class="sol-name">VLC + PeerTube</div>
@@ -3815,7 +3815,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="knowledge">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">📖</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">📖</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Knowledge</div>
           <div class="sol-name">Wikipedia + Kiwix (Offline)</div>
@@ -3878,7 +3878,7 @@ function filterCat(btn, cat) {
 
     <div class="sol-card" data-cat="health">
       <div class="sol-card-head">
-        <div class="sol-icon-wrap" style="background:rgba(61,220,132,0.1)">🏥</div>
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🏥</div>
         <div class="sol-head-meta">
           <div class="sol-cat">Healthcare</div>
           <div class="sol-name">OpenMRS + FHIR Standard</div>
