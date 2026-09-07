@@ -2,7 +2,7 @@
 
 **Owner:** aasim@tciamn.org — Twin Cities Innovation Alliance  
 **Repo:** tciamn/Darkcenter  
-**Last updated:** 2026-09-07
+**Last updated:** 2026-09-07 (git hosting decision added)
 
 Read this file at the start of every session. It is the authoritative context for all active work.
 
@@ -184,6 +184,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Holochain: Phase 4 only | Confirmed |
 | Two-destination backup minimum | Confirmed |
 | Primary data jurisdiction: EU or Switzerland | Confirmed |
+| Git source hosting: migrate from GitHub → self-hosted Forgejo | Pending — timing tied to Phase 1 VPS decision; direct migration, skip Codeberg |
 
 ## Key Decisions Pending
 
@@ -195,6 +196,63 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Future Labs governance structure | Onboarding allied orgs |
 | First allied orgs to onboard | Phase 2 planning |
 | TCIA org membership in May First | Backup strategy |
+
+---
+
+---
+
+## Architecture Decision Log
+
+### ADR-001 — Git Source Hosting: GitHub → Self-Hosted Forgejo (Phase 1)
+**Date:** 2026-09-07  
+**Status:** Under consideration — not yet decided  
+**Decider:** aasim@tciamn.org
+
+#### Decision Under Review
+The question is whether and when to migrate git hosting away from GitHub. Two options were considered: Codeberg (EU nonprofit, immediate) and self-hosted Forgejo on the Phase 1 VPS (deferred, once VPS is live). **Current recommendation: stay on GitHub until Phase 1 VPS is live, then migrate once directly to self-hosted Forgejo — skip Codeberg as an intermediate step.**
+
+#### Why Not Codeberg Now
+The code in this repository is open source by intent — designed to be freely distributed. There is no PII, no credentials, and no sensitive data in the repo. The GitHub / US jurisdiction risk (CLOUD Act) is real but low severity for this specific use case. Migrating to Codeberg would introduce disruption mid-sprint (VPS undecided, tool unvalidated, Squarespace migration in progress) for a marginal short-term benefit. The better path is one migration, directly to infrastructure TCIA controls.
+
+#### NFR Drivers
+
+| NFR | Requirement | GitHub | Codeberg |
+|---|---|---|---|
+| Data jurisdiction | EU or CH — no US primary storage | Fails — Microsoft US servers, CLOUD Act exposure | Passes — Germany, EU jurisdiction |
+| Vendor lock-in | Must be self-hostable or portable | Fails — proprietary platform, account suspension risk | Passes — Forgejo is open source, self-hostable on Phase 1 VPS |
+| Open source | Infrastructure should use open source tooling where viable | Fails — GitHub is proprietary (Actions, Issues, API) | Passes — Forgejo is fully open source |
+| Admin bus factor | ≥ 2 named individuals with independent full access | Passes — org admins supported | Passes — org admins supported |
+| Backup / RPO | RPO < 24 hours; two-destination minimum | Passes — git is distributed; every clone is a full backup | Passes — same; two remotes maintained during transition |
+| Digital sovereignty | TCIA controls its own infrastructure path | Fails — dependent on Microsoft policy decisions | Passes — roadmap leads to self-hosted on TCIA VPS |
+
+#### Logic
+Git (the protocol) is portable by design — every clone is a full copy of the repository history. Switching the remote platform does not touch a single line of code. The decision is purely about where the canonical remote lives and who controls it. GitHub fails the primary data jurisdiction NFR (US servers, CLOUD Act) and the digital sovereignty NFR (Microsoft controls account access). Codeberg satisfies both and is a direct drop-in replacement with no code changes required.
+
+#### Risks and Mitigations
+
+| Risk | Severity | Mitigation |
+|---|---|---|
+| Codeberg has no formal SLA (nonprofit) | Medium | Keep GitHub as a live mirror during transition; every local clone is also a full backup; RTO < 4h is achievable because git is distributed |
+| Loss of GitHub MCP integration (Claude Code issue/PR tooling) | Low–Medium | Git CLI operations (push, pull, branch) are unaffected — Claude uses these natively. Issue/PR creation requires Forgejo REST API calls rather than MCP tools. Acceptable tradeoff for sovereignty. |
+| Netlify requires webhook reconfiguration | Low | One-time setup — Netlify supports any git remote via webhook. Estimated 30 minutes of work. |
+| Team unfamiliarity with Codeberg UI | Low | Interface is nearly identical to GitHub. No training required beyond one orientation session. |
+| GitHub Actions → Forgejo Actions | Low | Forgejo Actions uses the same YAML syntax as GitHub Actions. Existing workflows are compatible. |
+| Dependency on Codeberg's continued operation | Low | Self-hosted Forgejo on Phase 1 VPS eliminates this risk within 6 months. |
+
+#### Migration Steps (when ready to execute)
+
+1. **Create TCIA org on Codeberg** — codeberg.org → register → create org `tciamn`
+2. **Create repo** — `tciamn/Darkcenter` on Codeberg (empty, no README)
+3. **Mirror push** — `git push --mirror https://codeberg.org/tciamn/Darkcenter` — copies all branches, tags, and full history
+4. **Verify** — confirm all branches and history are present on Codeberg
+5. **Update local remotes** — `git remote set-url origin https://codeberg.org/tciamn/Darkcenter`
+6. **Add GitHub as mirror remote** — `git remote add github https://github.com/tciamn/Darkcenter` — keep for read-only public visibility
+7. **Update Netlify** — Site Settings → Build → change repo to Codeberg URL; add deploy webhook
+8. **Update CLAUDE.md** — change repo reference from `tciamn/Darkcenter` (GitHub) to Codeberg URL
+9. **Archive GitHub repo** — set to read-only / archived with a notice pointing to Codeberg
+10. **Phase 1 VPS (0–6 months)** — install Forgejo on VPS; migrate Codeberg → self-hosted
+
+**Prerequisite:** User must create Codeberg account and org before steps 2–9 can execute. Steps 3–9 can be done in a single Claude Code session once credentials are available.
 
 ---
 
