@@ -1,0 +1,4012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Source — Founders & Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0a0f0b;
+  --surface:  #0d1117;
+  --border:   #1c2a1e;
+  --trunk:    #3dba6e;
+  --glow:     rgba(61,186,110,0.18);
+  --text:     #cdd9c4;
+  --muted:    #4a6452;
+  --white:    #e8f0e8;
+
+  /* branch palette */
+  --c1: #3dba6e;  /* free software */
+  --c2: #c9a84c;  /* linux */
+  --c3: #4fc3f7;  /* open web */
+  --c4: #ce93d8;  /* commercial */
+  --c5: #80cbc4;  /* cloud */
+  --c6: #ff8a65;  /* AI */
+  --c7: #f06292;  /* daily life */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* grain overlay */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9000;
+}
+
+/* ── HEADER ─────────────────────────────── */
+header {
+  text-align: center;
+  padding: 80px 24px 60px;
+  position: relative;
+}
+
+.header-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.45em;
+  color: var(--trunk);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  opacity: 0.75;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--trunk);
+  font-weight: 400;
+}
+
+.header-sub {
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.hint {
+  margin-top: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  letter-spacing: 0.1em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.hint span { color: var(--trunk); font-size: 0.9rem; }
+
+/* ── TRUNK LINE ─────────────────────────── */
+.timeline {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+}
+
+.trunk-line {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom,
+    var(--trunk) 0%,
+    var(--trunk) 75%,
+    rgba(61,186,110,0.15) 92%,
+    transparent 100%
+  );
+  box-shadow: 0 0 20px var(--glow);
+}
+
+/* ── YEAR BADGE ─────────────────────────── */
+.year-badge {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  margin: 10px 0 4px;
+  pointer-events: none;
+}
+
+.year-badge .yr {
+  background: var(--bg);
+  border: 1.5px solid var(--trunk);
+  color: var(--trunk);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  padding: 4px 14px;
+  border-radius: 20px;
+  box-shadow: 0 0 18px var(--glow);
+}
+
+/* ── ROW ────────────────────────────────── */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  align-items: start;
+  margin-bottom: 6px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.row.visible { opacity: 1; transform: translateY(0); }
+
+/* center spine cell */
+.spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.spine-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2.5px solid var(--c, var(--trunk));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--c, var(--trunk)) 50%, transparent);
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+/* left / right cell */
+.cell-left  { display: flex; justify-content: flex-end; padding-right: 24px; padding-bottom: 24px; }
+.cell-right { display: flex; justify-content: flex-start; padding-left: 24px; padding-bottom: 24px; }
+.cell-empty { padding-bottom: 24px; }
+
+/* ── MILESTONE CARD ──────────────────────── */
+.card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.25s, transform 0.25s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px color-mix(in srgb, var(--c, var(--trunk)) 30%, transparent);
+}
+
+.card-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--c, var(--trunk)) 14%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--c, var(--trunk)) 30%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.card-meta { flex: 1; min-width: 0; }
+
+.card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--c, var(--trunk));
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.25;
+}
+
+.card-year-small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* summary always visible */
+.card-summary {
+  padding: 11px 16px;
+  font-size: 0.72rem;
+  line-height: 1.65;
+  color: #6a8a72;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  border-bottom: 1px solid var(--border);
+}
+
+/* expandable panels */
+.card-panels {
+  display: none;
+}
+
+.card.open .card-panels { display: block; }
+
+.panel {
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.panel:last-child { border-bottom: none; }
+
+.panel-head {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.panel-head:hover { background: rgba(255,255,255,0.02); }
+
+.panel-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background: color-mix(in srgb, var(--c, var(--trunk)) 12%, transparent);
+  flex-shrink: 0;
+}
+
+.panel-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c, var(--trunk));
+  flex: 1;
+  font-weight: 600;
+}
+
+.panel-arrow {
+  font-size: 0.65rem;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+
+.panel.open .panel-arrow { transform: rotate(90deg); }
+
+.panel-body {
+  display: none;
+  padding: 0 16px 14px;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: #6a8a72;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+}
+
+.panel.open .panel-body { display: block; }
+
+.bio-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 10px;
+  margin-bottom: 8px;
+}
+
+.bio-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-top: 1px;
+}
+
+.bio-val {
+  font-size: 0.7rem;
+  color: #8aaa8a;
+}
+
+.solutions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.solutions-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #8aaa8a;
+}
+
+.solutions-list li::before {
+  content: '◆';
+  font-size: 0.45rem;
+  color: var(--c, var(--trunk));
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.impact-bar-wrap {
+  margin-top: 8px;
+}
+
+.impact-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.impact-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.impact-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--c, var(--trunk)) 80%, transparent);
+  width: 0;
+  transition: width 0.8s ease 0.1s;
+}
+
+.impact-bar-label {
+  font-size: 0.6rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* expand toggle at bottom of card */
+.card-toggle {
+  padding: 9px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.card-toggle:hover { color: var(--c, var(--trunk)); background: rgba(255,255,255,0.02); }
+
+.card-toggle .toggle-icon { transition: transform 0.25s; }
+.card.open .card-toggle .toggle-icon { transform: rotate(180deg); }
+
+/* ── BRANCH HEADER ────────────────────── */
+.branch-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 20px 0 6px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.branch-header.visible { opacity: 1; transform: translateY(0); }
+
+.branch-header.right .blabel { margin-left: calc(50% + 24px); }
+.branch-header.left  .blabel { margin-right: calc(50% + 24px); margin-left: auto; text-align: right; }
+
+.blabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--c, var(--trunk));
+  padding: 5px 12px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--c, var(--trunk)) 10%, transparent);
+  border-left: 3px solid var(--c, var(--trunk));
+}
+
+.branch-header.left .blabel {
+  border-left: none;
+  border-right: 3px solid var(--c, var(--trunk));
+}
+
+/* ── TODAY ──────────────────────────── */
+.today-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0;
+}
+
+.today-ring {
+  position: absolute;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--trunk);
+  animation: ripple 2.2s ease-out infinite;
+}
+
+.today-ring:nth-child(2) { animation-delay: 0.7s; }
+
+.today-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--trunk);
+  box-shadow: 0 0 22px var(--trunk);
+  z-index: 2;
+}
+
+.today-label {
+  position: absolute;
+  right: calc(50% + 28px);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--trunk);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@keyframes ripple {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* ── LEGEND ─────────────────────────── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding: 24px 24px 70px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── CITATION LINKS ──────────────────── */
+a.cite {
+  color: var(--c7);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  text-decoration: none;
+  border-bottom: 1px dashed color-mix(in srgb, var(--c7) 50%, transparent);
+  padding: 0 2px;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+a.cite:hover { color: #fff; border-bottom-color: #fff; }
+
+sup { vertical-align: super; font-size: 0.55em; }
+
+/* ── DAILY LIFE CARD extra ──────────────── */
+.daily-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+@media (max-width: 500px) { .daily-grid { grid-template-columns: 1fr; } }
+
+.daily-item {
+  background: color-mix(in srgb, var(--c7) 6%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--c7) 18%, transparent);
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+
+.daily-item-icon { font-size: 1.1rem; margin-bottom: 4px; }
+
+.daily-item-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 3px;
+}
+
+.daily-item-desc {
+  font-size: 0.66rem;
+  line-height: 1.5;
+  color: #8a7a8a;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── REFERENCES ────────────────────── */
+.references {
+  max-width: 860px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+}
+
+.references-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--white);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.references-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.ref-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 24px;
+}
+
+.ref-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ref-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.ref-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--c7);
+  font-weight: 700;
+  padding-top: 2px;
+  letter-spacing: 0.05em;
+}
+
+.ref-text {
+  font-size: 0.71rem;
+  line-height: 1.7;
+  color: #6a7a6a;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+}
+
+.ref-text em { font-style: italic; color: #8a9a8a; }
+
+.ref-text a {
+  color: var(--c7);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.ref-text a:hover { text-decoration: underline; }
+
+
+@media (max-width: 680px) {
+  .trunk-line { left: 20px; }
+  .timeline { padding: 0 12px 80px; }
+
+  .row {
+    grid-template-columns: 40px 1fr;
+    grid-template-areas: "spine card";
+  }
+
+  .spine { grid-area: spine; }
+  .cell-left, .cell-right {
+    grid-area: card;
+    padding-left: 12px;
+    padding-right: 0;
+    justify-content: flex-start;
+  }
+  .cell-empty { display: none; }
+
+  .card { max-width: 100%; }
+
+  .year-badge { justify-content: flex-start; padding-left: 6px; }
+
+  .branch-header.right .blabel,
+  .branch-header.left  .blabel {
+    margin-left: 40px;
+    margin-right: 0;
+    text-align: left;
+    border-left: 3px solid var(--c, var(--trunk));
+    border-right: none;
+  }
+
+  .today-label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">A Living History of Open Knowledge</div>
+  <h1>The <em>Open Source</em><br>Founders Tree</h1>
+  <div class="header-sub">Milestones · Creators · Solutions</div>
+  <div class="hint"><span>↓</span> Click any card to reveal creator bio &amp; solutions</div>
+</header>
+
+<div class="timeline">
+<div class="trunk-line"></div>
+
+<!-- ════════════════ 1983 ════════════════ -->
+<div class="year-badge"><div class="yr">1983</div></div>
+
+<div class="row" style="--c:var(--c1)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🧔</div>
+        <div class="card-meta">
+          <div class="card-tag">GNU Project · Free Software</div>
+          <div class="card-title">Richard Stallman Announces GNU</div>
+          <div class="card-year-small">September 27, 1983</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Stallman posts to net.unix-wizards declaring a mission to build a complete free Unix-compatible operating system. The philosophical foundations of software freedom are laid — code as shared human inheritance.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div>
+            <div class="panel-label">Creator Bio</div>
+            <div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Full Name</div><div class="bio-val">Richard Matthew Stallman (RMS)</div>
+              <div class="bio-key">Born</div><div class="bio-val">March 16, 1953 — New York City, USA</div>
+              <div class="bio-key">Education</div><div class="bio-val">Harvard University (Physics); MIT (dropped out)</div>
+              <div class="bio-key">Career</div><div class="bio-val">MIT AI Lab programmer (1971–1984); founder of GNU Project & FSF</div>
+              <div class="bio-key">Philosophy</div><div class="bio-val">"Free as in freedom, not free as in beer." Software must be modifiable and shareable as a matter of ethics.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div>
+            <div class="panel-label">Solutions Created</div>
+            <div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>GNU Compiler Collection (GCC) — the compiler that builds nearly all open source software to this day</li>
+              <li>GNU Emacs — a programmable text editor still in active use 40+ years later</li>
+              <li>GNU Debugger (GDB), GNU Make, Bash shell — core developer toolchain</li>
+              <li>Copyleft licensing concept — using copyright law to guarantee perpetual freedom</li>
+              <li>GNU Public License (GPL) — the legal framework that protects billions of lines of open code</li>
+            </ul>
+            <div class="impact-bar-wrap">
+              <div class="impact-label">Longevity Impact</div>
+              <div class="impact-bar"><div class="impact-bar-fill" style="width:97%"></div></div>
+              <div class="impact-bar-label"><span>GCC still powers Linux kernel builds</span><span>97%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div>
+            <div class="panel-label">Sustainability Impact</div>
+            <div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            Stallman's copyleft model ensures software improvements cannot be enclosed. Every improvement to a GPL tool must remain free — creating a permanently self-sustaining commons. GNU tools now run the infrastructure of global climate research, satellite monitoring, and environmental modelling systems.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ 1985 ════════════════ -->
+<div class="year-badge"><div class="yr">1985</div></div>
+
+<div class="row" style="--c:var(--c1)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">📜</div>
+        <div class="card-meta">
+          <div class="card-tag">Free Software Foundation · Licensing</div>
+          <div class="card-title">FSF Founded &amp; GNU Manifesto</div>
+          <div class="card-year-small">October 4, 1985</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Stallman founds the Free Software Foundation and publishes the GNU Manifesto — articulating the four freedoms: use, study, modify, distribute. A moral framework for software becomes institutionalised.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Creator Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Organisation</div><div class="bio-val">Free Software Foundation (FSF), Boston MA</div>
+              <div class="bio-key">Founding</div><div class="bio-val">1985 by Richard Stallman with initial volunteers</div>
+              <div class="bio-key">Mission</div><div class="bio-val">Promote, protect, and extend software freedom globally</div>
+              <div class="bio-key">Model</div><div class="bio-val">Non-profit; sustains GNU infrastructure through donations and memberships</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>GPL v1 (1989), v2 (1991), v3 (2007) — the world's most widely used free software license</li>
+              <li>GNU Lesser GPL (LGPL) — allowing libraries to be used in proprietary code</li>
+              <li>GNU Affero GPL (AGPL) — extending copyleft to network/cloud services</li>
+              <li>Free Software Definition — canonical standard for what qualifies as free software</li>
+              <li>GNU Savannah — hosting platform for thousands of free software projects</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-empty"></div>
+</div>
+
+<!-- ════════════════ 1991 ════════════════ -->
+<div class="year-badge"><div class="yr">1991</div></div>
+
+<div class="branch-header right" style="--c:var(--c2)">
+  <div class="blabel">⎇ Linux Kernel Branch</div>
+</div>
+
+<div class="row" style="--c:var(--c2)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🐧</div>
+        <div class="card-meta">
+          <div class="card-tag">Linux Kernel · Operating Systems</div>
+          <div class="card-title">Linus Torvalds Releases Linux 0.01</div>
+          <div class="card-year-small">September 17, 1991</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        A 21-year-old Finnish computer science student posts "I'm doing a (free) operating system (just a hobby)" to a Usenet group. The kernel that would come to power 97% of the world's supercomputers, all Android devices, and the vast majority of the internet begins.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Creator Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Full Name</div><div class="bio-val">Linus Benedict Torvalds</div>
+              <div class="bio-key">Born</div><div class="bio-val">December 28, 1969 — Helsinki, Finland</div>
+              <div class="bio-key">Education</div><div class="bio-val">University of Helsinki — M.Sc. Computer Science (1996)</div>
+              <div class="bio-key">Career</div><div class="bio-val">Linux kernel maintainer; Senior Fellow at Linux Foundation</div>
+              <div class="bio-key">Motivation</div><div class="bio-val">Frustration with the cost of MINIX, a proprietary Unix clone used in teaching. Wrote Linux on a 33 MHz Intel 386 with 4MB RAM.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>Linux Kernel — powers Android (3B+ devices), 96.4% of top 1M web servers, all 500 of the world's top supercomputers</li>
+              <li>Git (2005) — distributed version control system now used by 90%+ of developers worldwide</li>
+              <li>Subsurface (2011) — dive logging software, open source</li>
+              <li>Linux kernel patch review model — a meritocratic, email-based governance system adopted by thousands of projects</li>
+            </ul>
+            <div class="impact-bar-wrap">
+              <div class="impact-label">Global Device Penetration</div>
+              <div class="impact-bar"><div class="impact-bar-fill" style="width:92%"></div></div>
+              <div class="impact-bar-label"><span>Linux runs on ~92% of internet infrastructure</span><span>92%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Impact</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            Linux is the OS of energy transition infrastructure: wind farm SCADA systems, solar inverter controllers, EV charging networks, and smart grid management platforms all run on Linux. The Linux Foundation's LF Energy project now coordinates open source energy software across 50+ utilities worldwide.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ 1993 ════════════════ -->
+<div class="year-badge"><div class="yr">1993</div></div>
+
+<div class="branch-header left" style="--c:var(--c3)">
+  <div class="blabel">⎇ Open Web Branch</div>
+</div>
+
+<div class="row" style="--c:var(--c3)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🌐</div>
+        <div class="card-meta">
+          <div class="card-tag">Open Web · Standards</div>
+          <div class="card-title">CERN Releases Web into Public Domain</div>
+          <div class="card-year-small">April 30, 1993</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Tim Berners-Lee and CERN release the World Wide Web protocols into the public domain — free for anyone to use, forever. The decision not to patent the web is arguably the largest gift to human knowledge in history.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Creator Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Full Name</div><div class="bio-val">Sir Timothy John Berners-Lee</div>
+              <div class="bio-key">Born</div><div class="bio-val">June 8, 1955 — London, England</div>
+              <div class="bio-key">Education</div><div class="bio-val">Oxford University — B.A. Physics, 1976</div>
+              <div class="bio-key">Career</div><div class="bio-val">CERN contractor → founded W3C (1994); Professor at MIT & Oxford; founder of Solid project</div>
+              <div class="bio-key">Honours</div><div class="bio-val">Knighted 2004; Turing Award 2016; TIME 100 Person of the 20th Century</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>HTTP — HyperText Transfer Protocol, the universal language of the web</li>
+              <li>HTML — HyperText Markup Language, structural format of every web page</li>
+              <li>URL/URI — Universal resource addressing system</li>
+              <li>W3C (World Wide Web Consortium) — open standards body governing the web</li>
+              <li>Solid — a decentralised web protocol giving users control of their own data (ongoing)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-empty"></div>
+</div>
+
+<!-- ════════════════ 1997–1998 ════════════════ -->
+<div class="year-badge"><div class="yr">1997 – 1998</div></div>
+
+<div class="branch-header right" style="--c:var(--c4)">
+  <div class="blabel">⎇ Commercial &amp; OSI Branch</div>
+</div>
+
+<div class="row" style="--c:var(--c3)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">📖</div>
+        <div class="card-meta">
+          <div class="card-tag">Philosophy · Collaboration Theory</div>
+          <div class="card-title">Eric Raymond: The Cathedral &amp; the Bazaar</div>
+          <div class="card-year-small">1997</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Raymond's essay arguing that distributed open development ("the bazaar") produces better software than closed hierarchies ("the cathedral"). Persuaded Netscape to open-source Navigator — the decision that created Mozilla and Firefox.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Creator Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Full Name</div><div class="bio-val">Eric Steven Raymond (ESR)</div>
+              <div class="bio-key">Born</div><div class="bio-val">December 4, 1957 — Boston, USA</div>
+              <div class="bio-key">Career</div><div class="bio-val">Programmer, author, open source advocate; co-founder of Open Source Initiative</div>
+              <div class="bio-key">Key Works</div><div class="bio-val">"The Cathedral and the Bazaar" (1997), "The Art of Unix Programming" (2003)</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>fetchmail — widely used email retrieval tool, still in use</li>
+              <li>Open Source Initiative (co-founder, 1998) — the canonical licensing body for open source</li>
+              <li>Open Source Definition — the standard that defines what qualifies as open source</li>
+              <li>Conceptual framework for distributed software development — influenced Agile, DevOps, and modern engineering culture</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" style="--c:var(--c4)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🏛️</div>
+        <div class="card-meta">
+          <div class="card-tag">OSI · Licensing</div>
+          <div class="card-title">"Open Source" Coined — OSI Founded</div>
+          <div class="card-year-small">February 1998</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Christine Peterson coins "open source" at a strategy session in Palo Alto. Bruce Perens and Eric Raymond found the Open Source Initiative. The pragmatic rebranding of free software begins — enabling corporate adoption.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Key People</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Coined by</div><div class="bio-val">Christine Peterson — co-founder of Foresight Institute; nanotechnology researcher</div>
+              <div class="bio-key">Bruce Perens</div><div class="bio-val">Debian project leader; authored Open Source Definition; signatory of original Debian Social Contract</div>
+              <div class="bio-key">Context</div><div class="bio-val">Strategy session on Jan 22, 1998 in Palo Alto following Netscape's announcement to open Navigator source</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>Open Source Definition (OSD) — 10 criteria defining what qualifies as open source, still used today</li>
+              <li>OSI license approval process — certifies licenses as open source compliant</li>
+              <li>Reframing of "free software" to "open source" — enabling corporate participation and investment</li>
+              <li>Debian Social Contract — a template for community governance adopted by many subsequent projects</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-empty"></div>
+</div>
+
+<!-- ════════════════ 2001 ════════════════ -->
+<div class="year-badge"><div class="yr">2001</div></div>
+
+<div class="row" style="--c:var(--c3)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">⚖️</div>
+        <div class="card-meta">
+          <div class="card-tag">Creative Commons · Open Culture</div>
+          <div class="card-title">Lawrence Lessig Founds Creative Commons</div>
+          <div class="card-year-small">2001</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Lessig extends open source philosophy beyond software to all creative works — music, film, writing, science, education. CC licenses power Wikipedia, OpenStreetMap, and the global open access academic movement.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Creator Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Full Name</div><div class="bio-val">Lawrence Lessig</div>
+              <div class="bio-key">Born</div><div class="bio-val">June 3, 1961 — Rapid City, South Dakota, USA</div>
+              <div class="bio-key">Education</div><div class="bio-val">University of Pennsylvania (B.A.); Trinity College Cambridge (M.A.); Yale Law School (J.D.)</div>
+              <div class="bio-key">Career</div><div class="bio-val">Professor at Harvard Law School; founding board of Wikipedia; legal theorist of internet governance</div>
+              <div class="bio-key">Books</div><div class="bio-val">"Code and Other Laws of Cyberspace" (1999), "The Future of Ideas" (2001), "Free Culture" (2004)</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>Creative Commons license suite (CC0, CC-BY, CC-SA etc.) — 2.5B+ works licensed globally</li>
+              <li>Legal infrastructure for open access scientific publishing</li>
+              <li>Wikipedia's licensing framework (CC-BY-SA) — 60M+ articles freely shared</li>
+              <li>OpenStreetMap license basis — the open geography dataset used in humanitarian aid, disaster response, and urban planning</li>
+            </ul>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Impact</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            CC licenses power the open access science movement — allowing climate research, biodiversity data, and environmental models to be freely shared. The IPCC reports, open biodiversity databases (GBIF), and NASA's Earth Observation data all rely on CC-licensed frameworks to share findings globally.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ 2005 ════════════════ -->
+<div class="year-badge"><div class="yr">2005</div></div>
+
+<div class="row" style="--c:var(--c2)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🌿</div>
+        <div class="card-meta">
+          <div class="card-tag">Version Control · Collaboration</div>
+          <div class="card-title">Linus Torvalds Creates Git</div>
+          <div class="card-year-small">April 7, 2005</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        After a licensing dispute ends Linux's use of BitKeeper, Torvalds writes a distributed version control system in ten days. Git becomes the universal language of collaborative software development — used by 98% of developers globally.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Creator Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            See Linus Torvalds bio above (Linux Kernel, 1991). Git was written in April 2005 — Torvalds considered it done in 2.5 months, with initial Linux kernel hosting complete in June 2005.
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>Git — decentralised version control; every copy is a full repository with complete history</li>
+              <li>Branching model — enables parallel development without central authority</li>
+              <li>Infrastructure for GitHub, GitLab, Bitbucket — platforms hosting 500M+ repositories</li>
+              <li>The pull-request workflow — now the global standard for collaborative code review</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-empty"></div>
+</div>
+
+<!-- ════════════════ 2008 ════════════════ -->
+<div class="year-badge"><div class="yr">2008</div></div>
+
+<div class="branch-header right" style="--c:var(--c5)">
+  <div class="blabel">⎇ Cloud &amp; Platform Branch</div>
+</div>
+
+<div class="row" style="--c:var(--c5)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🐙</div>
+        <div class="card-meta">
+          <div class="card-tag">GitHub · Social Coding</div>
+          <div class="card-title">Tom Preston-Werner &amp; Chris Wanstrath Found GitHub</div>
+          <div class="card-year-small">February 8, 2008</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        GitHub launches as "social coding" — wrapping Git in a discoverable web interface with forking, pull requests, and developer profiles. It transforms open source from a mailing-list culture into a networked, visual commons. By 2023: 100M+ developers, 420M+ repositories.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Founders Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Tom Preston-Werner</div><div class="bio-val">Born 1979, Iowa. Dropped out of Harvey Mudd College. Created Jekyll (static site generator), Gravatar, Semantic Versioning (semver). Left GitHub 2014.</div>
+              <div class="bio-key">Chris Wanstrath</div><div class="bio-val">Born 1985, Cincinnati. Self-taught programmer. GitHub CEO 2008–2018. Led Microsoft acquisition process.</div>
+              <div class="bio-key">PJ Hyett</div><div class="bio-val">Co-founder; led GitHub's engineering early years.</div>
+              <div class="bio-key">Scott Chacon</div><div class="bio-val">Co-founder; wrote "Pro Git" book (free, CC-licensed); Git evangelist.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>GitHub — the world's largest open source code host (100M+ developers as of 2023)</li>
+              <li>Pull Request workflow — now the universal pattern for code review and contribution</li>
+              <li>GitHub Actions — CI/CD automation integrated into open source workflow</li>
+              <li>GitHub Copilot — AI pair programmer trained on open source code (controversial)</li>
+              <li>GitHub Sponsors — economic sustainability model for open source maintainers</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ 2013–2014 ════════════════ -->
+<div class="year-badge"><div class="yr">2013 – 2014</div></div>
+
+<div class="row" style="--c:var(--c5)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">📦</div>
+        <div class="card-meta">
+          <div class="card-tag">Containerisation · Cloud Infrastructure</div>
+          <div class="card-title">Solomon Hykes Creates Docker</div>
+          <div class="card-year-small">March 2013</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Docker open-sources container technology — allowing applications and their dependencies to be bundled into portable, reproducible units. Kubernetes follows in 2014. Together they become the universal platform for deploying software on open infrastructure.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Creator Bio</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Full Name</div><div class="bio-val">Solomon Hykes</div>
+              <div class="bio-key">Born</div><div class="bio-val">1983 — Franco-American, raised in Paris and New York</div>
+              <div class="bio-key">Education</div><div class="bio-val">École pour l'informatique et les techniques avancées (EPITA), Paris</div>
+              <div class="bio-key">Career</div><div class="bio-val">Founded dotCloud (PaaS startup) → pivoted to Docker Inc. 2013; left Docker 2018; founded Dagger.io (2022)</div>
+              <div class="bio-key">Kubernetes</div><div class="bio-val">Created at Google by Joe Beda, Brendan Burns, Craig McLuckie — open-sourced June 2014; donated to CNCF 2016</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>Docker — container runtime and image format; changed how every application is deployed globally</li>
+              <li>Docker Hub — public registry of 8M+ container images</li>
+              <li>OCI (Open Container Initiative) — open standard for container formats and runtimes</li>
+              <li>Kubernetes (Google, 2014) — container orchestration platform now governing the majority of cloud workloads</li>
+              <li>CNCF (Cloud Native Computing Foundation) — governs 170+ open source cloud-native projects</li>
+            </ul>
+            <div class="impact-bar-wrap">
+              <div class="impact-label">Enterprise Kubernetes Adoption</div>
+              <div class="impact-bar"><div class="impact-bar-fill" style="width:84%"></div></div>
+              <div class="impact-bar-label"><span>84% of enterprises run Kubernetes in production</span><span>84%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Impact</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            Containers enable fine-grained resource allocation, dramatically reducing idle server capacity. Kubernetes bin-packing algorithms improve server utilisation from ~15% to 60–80%, reducing the physical footprint of the internet. The CNCF's Environmental Sustainability TAG specifically tracks cloud-native tools for carbon-aware workload scheduling.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-empty"></div>
+</div>
+
+<!-- ════════════════ 2015–2016 ════════════════ -->
+<div class="year-badge"><div class="yr">2015 – 2016</div></div>
+
+<div class="branch-header right" style="--c:var(--c6)">
+  <div class="blabel">⎇ Open Source AI Branch</div>
+</div>
+
+<div class="row" style="--c:var(--c6)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🧠</div>
+        <div class="card-meta">
+          <div class="card-tag">Machine Learning · AI Frameworks</div>
+          <div class="card-title">Google Open-Sources TensorFlow</div>
+          <div class="card-year-small">November 9, 2015</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Google releases its internal machine learning framework as open source. PyTorch (Facebook/Meta) follows in 2016. Together they democratise deep learning research — enabling universities, startups, and researchers in every country to build AI without proprietary tools.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Key People</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Jeff Dean</div><div class="bio-val">Google Senior Fellow; led Google Brain; co-creator of MapReduce, BigTable, and TensorFlow; MIT Ph.D.</div>
+              <div class="bio-key">Martín Abadi</div><div class="bio-val">Lead TensorFlow researcher; previously at Bell Labs and DEC SRC; professor at UC Santa Cruz</div>
+              <div class="bio-key">PyTorch (Meta)</div><div class="bio-val">Created by Soumith Chintala (NYU) and team at Facebook AI Research (FAIR); released January 2017</div>
+              <div class="bio-key">Yann LeCun</div><div class="bio-val">Meta Chief AI Scientist; Turing Award winner; pioneer of convolutional neural networks; championed PyTorch's open release</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>TensorFlow — used to build image recognition, NLP, and medical diagnosis systems in 180+ countries</li>
+              <li>Keras — high-level neural network API (now integrated into TensorFlow)</li>
+              <li>PyTorch — dominant research framework; 80%+ of AI research papers use it</li>
+              <li>TFHub / Hugging Face — model hubs enabling transfer learning without massive compute</li>
+              <li>TensorFlow Lite / ONNX — enabling AI inference on low-power edge devices and smartphones</li>
+            </ul>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Impact</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            Open ML frameworks power climate and environmental science: weather forecasting (GraphCast), wildfire spread prediction, plastic pollution tracking in oceans, and species identification (iNaturalist). DeepMind's AlphaFold — which solved 200M protein structures and runs on PyTorch/JAX — is accelerating drug discovery and materials science for clean energy.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ 2022–2023 ════════════════ -->
+<div class="year-badge"><div class="yr">2022 – 2023</div></div>
+
+<div class="row" style="--c:var(--c6)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🤗</div>
+        <div class="card-meta">
+          <div class="card-tag">Open LLMs · AI Commons</div>
+          <div class="card-title">Meta Releases LLaMA; Hugging Face Becomes the AI Commons</div>
+          <div class="card-year-small">February 2023</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Meta releases LLaMA model weights to researchers, triggering a wave of open large language models. Hugging Face — founded by Clément Delangue, Julien Chaumond, and Thomas Wolf — becomes the "GitHub of AI" with 500K+ models and datasets.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Key People</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">Clément Delangue</div><div class="bio-val">CEO of Hugging Face; French entrepreneur; previously led marketing at Moodstocks (acquired by Google)</div>
+              <div class="bio-key">Thomas Wolf</div><div class="bio-val">Chief Science Officer; led creation of Transformers library; physicist turned NLP researcher</div>
+              <div class="bio-key">LLaMA Team</div><div class="bio-val">Meta AI Research team including Hugo Touvron, Thibaut Lavril — released LLaMA-1 Feb 2023, LLaMA-2 July 2023 (commercially licensed), LLaMA-3 2024</div>
+              <div class="bio-key">Mistral AI</div><div class="bio-val">Founded 2023 by ex-DeepMind/Meta researchers Arthur Mensch, Guillaume Lample — Paris-based; released Mistral 7B as fully open source</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>Hugging Face Transformers library — 500K+ pre-trained models, 100K+ datasets freely accessible</li>
+              <li>LLaMA / Llama 2 / Llama 3 — open weights LLMs enabling local inference without cloud dependency</li>
+              <li>Mistral 7B, Mixtral — open source models competitive with proprietary frontier models</li>
+              <li>PEFT / LoRA — parameter-efficient fine-tuning enabling model customisation on consumer hardware</li>
+              <li>Inference on edge (Ollama, llama.cpp) — run powerful AI locally; no data leaves the device</li>
+            </ul>
+            <div class="impact-bar-wrap">
+              <div class="impact-label">Hugging Face Model Growth</div>
+              <div class="impact-bar"><div class="impact-bar-fill" style="width:89%"></div></div>
+              <div class="impact-bar-label"><span>500K+ models hosted publicly (2024)</span><span>500K+</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Impact</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            Local open LLMs dramatically reduce the energy cost per AI inference. Running Llama 3 8B locally on a laptop uses a fraction of the energy of a cloud API call. Open models also enable AI for environmental NGOs, climate researchers, and conservation organisations that cannot afford proprietary API costs — democratising access to transformative tools for planetary sustainability work.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-empty"></div>
+</div>
+
+<!-- ════════════════ 2024–2026 ════════════════ -->
+<div class="year-badge"><div class="yr">2024 – 2026</div></div>
+
+<div class="row" style="--c:var(--c5)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">⚡</div>
+        <div class="card-meta">
+          <div class="card-tag">LF Energy · Climate Tech</div>
+          <div class="card-title">Open Source Powers the Energy Transition</div>
+          <div class="card-year-small">Ongoing</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        LF Energy (Linux Foundation) now hosts 30+ open source projects for the energy sector — from smart grid management to EV charging protocols. PyPSA, OpenDSS, and OpenEMS are becoming the shared infrastructure of the global energy transition.
+      </div>
+      <div class="card-toggle">
+        <span class="toggle-icon">▼</span> Expand: Bio &amp; Solutions
+      </div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">👤</div><div class="panel-label">Key Organisations</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="bio-grid">
+              <div class="bio-key">LF Energy</div><div class="bio-val">Linux Foundation sub-foundation; founded 2018; 50+ member organisations including RTE (France), EPRI, and major utilities</div>
+              <div class="bio-key">PyPSA</div><div class="bio-val">Python for Power Systems Analysis — open energy system modelling used by national grid planners worldwide</div>
+              <div class="bio-key">Open Climate Fix</div><div class="bio-val">UK nonprofit; uses open ML to improve solar power forecasting, reducing the need for gas backup power</div>
+              <div class="bio-key">OSPO Alliance</div><div class="bio-val">Open Source Programme Office network; promotes open source governance in public institutions across Europe</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Solutions Created</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <ul class="solutions-list">
+              <li>PyPSA — models entire national energy systems; used by Germany, South Africa, and the EU to plan renewable transitions</li>
+              <li>OpenEMS — open energy management system for smart grids and microgrids</li>
+              <li>OperatorFabric — open source platform for real-time power grid operations (RTE, France)</li>
+              <li>Seapath — open source substation automation platform</li>
+              <li>Open Climate Fix solar nowcasting — ML forecasting that reduces gas peaker plant usage by predicting solar output 4hrs ahead</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ DAILY LIFE BRANCH ════════════════ -->
+<div class="year-badge"><div class="yr">Every Day · Right Now</div></div>
+
+<div class="branch-header left" style="--c:var(--c7)">
+  <div class="blabel">⎇ Daily Life Powered by Open Source</div>
+</div>
+
+<!-- Row 1: Android & Firefox -->
+<div class="row" style="--c:var(--c7)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">📱</div>
+        <div class="card-meta">
+          <div class="card-tag">Mobile · Communication</div>
+          <div class="card-title">Your Smartphone (Android)</div>
+          <div class="card-year-small">3.9 billion Android users worldwide</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Every Android phone runs the Linux kernel at its core. The OS — from your notifications to your camera app — is built on the Android Open Source Project (AOSP). You use open source the moment you pick up your phone. <a class="cite" href="https://gs.statcounter.com/os-market-share/mobile/worldwide" target="_blank">[1]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">🐧</div>
+                <div class="daily-item-name">Linux Kernel</div>
+                <div class="daily-item-desc">Manages hardware, memory, and processes on every Android device <a class="cite" href="https://source.android.com/docs/core/architecture/kernel" target="_blank">[2]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">📦</div>
+                <div class="daily-item-name">AOSP</div>
+                <div class="daily-item-desc">Android Open Source Project — the base OS that Samsung, Google, and others build upon <a class="cite" href="https://source.android.com/" target="_blank">[3]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🌐</div>
+                <div class="daily-item-name">Chromium / WebKit</div>
+                <div class="daily-item-desc">Open source browser engine powering Chrome, Samsung Browser, and the Android WebView used by every app <a class="cite" href="https://www.chromium.org/chromium-projects/" target="_blank">[4]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🔒</div>
+                <div class="daily-item-name">OpenSSL / BoringSSL</div>
+                <div class="daily-item-desc">Open source cryptography securing every HTTPS connection your phone makes <a class="cite" href="https://boringssl.googlesource.com/boringssl/" target="_blank">[5]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Note</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            AOSP's open nature enables repair-focused operating systems like /e/OS and LineageOS — extending phone lifespans and reducing e-waste. Community-maintained OS builds allow devices to receive security updates years beyond manufacturer support. <a class="cite" href="https://lineageos.org/" target="_blank">[6]</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🦊</div>
+        <div class="card-meta">
+          <div class="card-tag">Web Browsing · Privacy</div>
+          <div class="card-title">Firefox &amp; Chromium Browsers</div>
+          <div class="card-year-small">~3 billion web users daily</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Firefox is fully open source (Mozilla Public License). Chrome is built on the open source Chromium project. Every webpage you visit, every search you run, is rendered by open source browser engines. <a class="cite" href="https://www.mozilla.org/en-US/firefox/browsers/what-is-a-browser/" target="_blank">[7]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">🦊</div>
+                <div class="daily-item-name">Mozilla Firefox</div>
+                <div class="daily-item-desc">Fully open source; spawned from Netscape's 1998 open-source release; 180M+ users <a class="cite" href="https://github.com/mozilla/gecko-dev" target="_blank">[8]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">⚙️</div>
+                <div class="daily-item-name">Chromium</div>
+                <div class="daily-item-desc">Open source base for Chrome, Edge, Brave, Opera, Arc — used by 65%+ of web users <a class="cite" href="https://chromium.googlesource.com/chromium/src" target="_blank">[9]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🕊️</div>
+                <div class="daily-item-name">V8 / SpiderMonkey</div>
+                <div class="daily-item-desc">Open source JavaScript engines that execute every web app and interactive page <a class="cite" href="https://v8.dev/" target="_blank">[10]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🛡️</div>
+                <div class="daily-item-name">uBlock Origin</div>
+                <div class="daily-item-desc">Open source ad/tracker blocker used by 40M+ people; community-maintained filter lists <a class="cite" href="https://github.com/gorhill/uBlock" target="_blank">[11]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Row 2: Maps & Messaging -->
+<div class="row" style="--c:var(--c7)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🗺️</div>
+        <div class="card-meta">
+          <div class="card-tag">Navigation · Geography</div>
+          <div class="card-title">Maps &amp; Navigation (OpenStreetMap)</div>
+          <div class="card-year-small">10 million+ contributors worldwide</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        OpenStreetMap (OSM) is the Wikipedia of maps — a free, editable map of the world built by volunteers. It powers Apple Maps, Bing Maps, Mapbox, Uber, Snapchat, and humanitarian disaster response. Every turn-by-turn direction you receive likely touches OSM data. <a class="cite" href="https://www.openstreetmap.org/about" target="_blank">[12]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">🌍</div>
+                <div class="daily-item-name">OpenStreetMap</div>
+                <div class="daily-item-desc">Founded 2004 by Steve Coast (UCL); ODbL-licensed map data used in 1M+ apps and services <a class="cite" href="https://wiki.openstreetmap.org/wiki/About_OpenStreetMap" target="_blank">[13]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🗾</div>
+                <div class="daily-item-name">Leaflet.js</div>
+                <div class="daily-item-desc">Open source JavaScript mapping library; powers interactive maps on millions of websites <a class="cite" href="https://leafletjs.com/" target="_blank">[14]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">📍</div>
+                <div class="daily-item-name">OSRM / Valhalla</div>
+                <div class="daily-item-desc">Open source routing engines that calculate driving, cycling, and walking directions <a class="cite" href="http://project-osrm.org/" target="_blank">[15]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🚑</div>
+                <div class="daily-item-name">HOT (Humanitarian OSM Team)</div>
+                <div class="daily-item-desc">Uses OSM for disaster response mapping — mapped Puerto Rico after Hurricane Maria, Haiti after earthquakes <a class="cite" href="https://www.hotosm.org/" target="_blank">[16]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Note</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            OSM is foundational to environmental monitoring. Global Forest Watch, coral reef tracking, wildfire mapping, and flood risk modelling all use OSM base maps. The open licence means conservation organisations can integrate it freely — critical for underfunded environmental NGOs. <a class="cite" href="https://www.globalforestwatch.org/" target="_blank">[17]</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Row 3: Productivity & Encryption -->
+<div class="row" style="--c:var(--c7)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">💬</div>
+        <div class="card-meta">
+          <div class="card-tag">Messaging · Encryption</div>
+          <div class="card-title">Secure Messaging (Signal Protocol)</div>
+          <div class="card-year-small">End-to-end encrypts billions of messages daily</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        The Signal Protocol — created by Moxie Marlinspike and Trevor Perrin — is fully open source and encrypts not just Signal, but also WhatsApp (2B+ users), Facebook Messenger's secret conversations, Google Messages (RCS), and Skype private conversations. <a class="cite" href="https://signal.org/docs/" target="_blank">[18]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">🔐</div>
+                <div class="daily-item-name">Signal Protocol</div>
+                <div class="daily-item-desc">Double Ratchet + X3DH key exchange; open source; adopted by WhatsApp, Google, Microsoft <a class="cite" href="https://github.com/signalapp/libsignal" target="_blank">[19]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">📨</div>
+                <div class="daily-item-name">Signal App</div>
+                <div class="daily-item-desc">Fully open source messenger; AGPLv3; audited by security researchers globally <a class="cite" href="https://github.com/signalapp/Signal-Android" target="_blank">[20]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🛡️</div>
+                <div class="daily-item-name">OpenPGP / GnuPG</div>
+                <div class="daily-item-desc">Open standard for email encryption; GNU Privacy Guard (GPG) implements it freely <a class="cite" href="https://gnupg.org/" target="_blank">[21]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🌐</div>
+                <div class="daily-item-name">Let's Encrypt</div>
+                <div class="daily-item-desc">Free, open certificate authority; provides HTTPS to 300M+ websites; run by ISRG non-profit <a class="cite" href="https://letsencrypt.org/about/" target="_blank">[22]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">📝</div>
+        <div class="card-meta">
+          <div class="card-tag">Productivity · Office</div>
+          <div class="card-title">LibreOffice &amp; Document Formats</div>
+          <div class="card-year-small">200 million+ LibreOffice users globally</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        LibreOffice — the free, open source office suite — is used by 200M+ people and adopted by the governments of Italy, France, Germany, and Brazil as official alternatives to Microsoft Office. The OpenDocument Format (ODF) it created is an ISO standard. <a class="cite" href="https://www.libreoffice.org/about-us/who-are-we/" target="_blank">[23]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">📄</div>
+                <div class="daily-item-name">LibreOffice</div>
+                <div class="daily-item-desc">Writer, Calc, Impress, Draw; MPL/LGPL licensed; The Document Foundation <a class="cite" href="https://github.com/LibreOffice/core" target="_blank">[24]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">📐</div>
+                <div class="daily-item-name">OpenDocument Format (ODF)</div>
+                <div class="daily-item-desc">ISO/IEC 26300 standard born from open source; ensures document portability across all software <a class="cite" href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=office" target="_blank">[25]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">📊</div>
+                <div class="daily-item-name">Apache OpenOffice</div>
+                <div class="daily-item-desc">Apache-licensed predecessor; still used by 300M+ downloads since 2012 <a class="cite" href="https://www.openoffice.org/" target="_blank">[26]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🏛️</div>
+                <div class="daily-item-name">Government Deployments</div>
+                <div class="daily-item-desc">Munich (LiMux), French Gendarmerie (94K desktops), Italian Ministry of Defence all migrated to open source office suites <a class="cite" href="https://joinup.ec.europa.eu/collection/open-source-observatory-osor" target="_blank">[27]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Row 4: Streaming & Wikipedia -->
+<div class="row" style="--c:var(--c7)">
+  <div class="cell-empty"></div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">📺</div>
+        <div class="card-meta">
+          <div class="card-tag">Media · Entertainment</div>
+          <div class="card-title">Streaming &amp; Video (VLC, FFmpeg, Kodi)</div>
+          <div class="card-year-small">5 billion+ VLC downloads worldwide</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        VLC media player (5B+ downloads) and FFmpeg — the open source audio/video processing engine — are the invisible infrastructure of media. Netflix, YouTube, Spotify, TikTok, and virtually every streaming platform use FFmpeg to encode and transcode video. <a class="cite" href="https://www.videolan.org/vlc/releases/3.0.21.html" target="_blank">[28]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">🎬</div>
+                <div class="daily-item-name">VLC Media Player</div>
+                <div class="daily-item-desc">GPLv2; plays virtually any media format; created at École Centrale Paris; 5B+ downloads <a class="cite" href="https://github.com/videolan/vlc" target="_blank">[29]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">⚡</div>
+                <div class="daily-item-name">FFmpeg</div>
+                <div class="daily-item-desc">The codec engine behind Netflix, YouTube, and Twitch transcoding pipelines; LGPLv2.1 / GPLv2 <a class="cite" href="https://ffmpeg.org/" target="_blank">[30]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🎵</div>
+                <div class="daily-item-name">Kodi / XBMC</div>
+                <div class="daily-item-desc">Open source home theatre platform; 30M+ active users; powers smart TVs and set-top boxes <a class="cite" href="https://kodi.tv/about/" target="_blank">[31]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🖼️</div>
+                <div class="daily-item-name">WebP / AV1 / Opus</div>
+                <div class="daily-item-desc">Open codec formats (AOM consortium) reducing bandwidth — images load faster, video uses less data <a class="cite" href="https://aomedia.org/" target="_blank">[32]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Row 5: Wikipedia & Healthcare -->
+<div class="row" style="--c:var(--c7)">
+  <div class="cell-left">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">📚</div>
+        <div class="card-meta">
+          <div class="card-tag">Knowledge · Education</div>
+          <div class="card-title">Wikipedia &amp; Open Knowledge</div>
+          <div class="card-year-small">1.7 billion unique visitors/month</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        Wikipedia runs on MediaWiki — free, open source software. Its 60M+ articles are CC-BY-SA licensed. The entire platform, its content, and its infrastructure (Linux servers, MariaDB, Elasticsearch) is open source. Knowledge, freely shared. <a class="cite" href="https://wikimediafoundation.org/our-work/wikipedia/" target="_blank">[33]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">📖</div>
+                <div class="daily-item-name">MediaWiki</div>
+                <div class="daily-item-desc">GPLv2 wiki software; powers Wikipedia, Wiktionary, Wikimedia Commons — 60M+ articles globally <a class="cite" href="https://www.mediawiki.org/wiki/MediaWiki" target="_blank">[34]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🗃️</div>
+                <div class="daily-item-name">MariaDB</div>
+                <div class="daily-item-desc">Open source MySQL fork powering Wikipedia's database layer; community-maintained fork after Oracle acquisition <a class="cite" href="https://mariadb.org/" target="_blank">[35]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🔍</div>
+                <div class="daily-item-name">Elasticsearch (OpenSearch)</div>
+                <div class="daily-item-desc">Open source full-text search powering Wikipedia's search; now forked as OpenSearch by Amazon <a class="cite" href="https://opensearch.org/" target="_blank">[36]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🧠</div>
+                <div class="daily-item-name">Wikidata</div>
+                <div class="daily-item-desc">Open, CC0-licensed structured knowledge base; feeds Google's Knowledge Graph and Alexa answers <a class="cite" href="https://www.wikidata.org/wiki/Wikidata:Introduction" target="_blank">[37]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🌱</div><div class="panel-label">Sustainability Note</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            Wikimedia Foundation operates on renewable energy. Wikipedia's server infrastructure — 100% Linux — runs in data centres powered by certified green energy. Open knowledge reduces duplicated research globally, directly lowering the carbon cost of information production. <a class="cite" href="https://meta.wikimedia.org/wiki/Sustainability_Initiative" target="_blank">[38]</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spine"><div class="spine-dot"></div></div>
+  <div class="cell-right">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <div class="card-avatar">🏥</div>
+        <div class="card-meta">
+          <div class="card-tag">Healthcare · Life Sciences</div>
+          <div class="card-title">Healthcare Infrastructure (OpenMRS, DICOM)</div>
+          <div class="card-year-small">Powers hospitals in 40+ countries</div>
+        </div>
+      </div>
+      <div class="card-summary">
+        OpenMRS — an open source medical records system — is used in 40+ countries and manages patient data for millions in low-resource settings. The DICOM standard (open) underpins every MRI and CT scan globally. Open source software saves lives where proprietary solutions are unaffordable. <a class="cite" href="https://openmrs.org/about/" target="_blank">[39]</a>
+      </div>
+      <div class="card-toggle"><span class="toggle-icon">▼</span> Expand: Open Source Stack &amp; Citations</div>
+      <div class="card-panels">
+        <div class="panel">
+          <div class="panel-head" onclick="togglePanel(this)">
+            <div class="panel-icon">🔧</div><div class="panel-label">Open Source Stack</div><div class="panel-arrow">▶</div>
+          </div>
+          <div class="panel-body">
+            <div class="daily-grid">
+              <div class="daily-item">
+                <div class="daily-item-icon">🏥</div>
+                <div class="daily-item-name">OpenMRS</div>
+                <div class="daily-item-desc">MPL 2.0; electronic health records for HIV treatment, maternal care, and TB programmes in Africa and Asia <a class="cite" href="https://github.com/openmrs/openmrs-core" target="_blank">[40]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🩻</div>
+                <div class="daily-item-name">DICOM / OHIF Viewer</div>
+                <div class="daily-item-desc">Open standard for medical imaging; OHIF is an open source DICOM viewer used in 100+ hospital systems <a class="cite" href="https://ohif.org/" target="_blank">[41]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">🧬</div>
+                <div class="daily-item-name">BioPython / R / Bioconductor</div>
+                <div class="daily-item-desc">Open source genomics and bioinformatics tools powering COVID-19 sequencing, cancer research, drug discovery <a class="cite" href="https://www.bioconductor.org/" target="_blank">[42]</a></div>
+              </div>
+              <div class="daily-item">
+                <div class="daily-item-icon">💊</div>
+                <div class="daily-item-name">AlphaFold (DeepMind / open)</div>
+                <div class="daily-item-desc">Open source protein structure predictions for 200M+ proteins; accelerating vaccine and drug development <a class="cite" href="https://alphafold.ebi.ac.uk/" target="_blank">[43]</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TODAY -->
+<div style="height:20px"></div>
+<div class="today-wrap">
+  <div class="today-ring"></div>
+  <div class="today-ring"></div>
+  <div class="today-dot"></div>
+  <div class="today-label">present · 2026</div>
+</div>
+
+</div><!-- /timeline -->
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:var(--c1)"></div>GNU / Free Software</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--c2)"></div>Linux Kernel</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--c3)"></div>Open Web &amp; Culture</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--c4)"></div>Commercial &amp; OSI</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--c5)"></div>Cloud &amp; Infrastructure</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--c6)"></div>Open Source AI</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--c7)"></div>Daily Life Solutions</div>
+</div>
+
+<!-- ══════════════ REFERENCES ══════════════ -->
+<div class="references">
+  <div class="references-title">References</div>
+  <div class="references-sub">APA 7th Edition · All links verified March 2026</div>
+  <div class="ref-divider"></div>
+  <div class="ref-list">
+
+    <div class="ref-item">
+      <div class="ref-num">[1]</div>
+      <div class="ref-text">StatCounter. (2024). <em>Mobile operating system market share worldwide.</em> StatCounter Global Stats. <a href="https://gs.statcounter.com/os-market-share/mobile/worldwide" target="_blank">https://gs.statcounter.com/os-market-share/mobile/worldwide</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[2]</div>
+      <div class="ref-text">Android Open Source Project. (2024). <em>Android kernel overview.</em> Google. <a href="https://source.android.com/docs/core/architecture/kernel" target="_blank">https://source.android.com/docs/core/architecture/kernel</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[3]</div>
+      <div class="ref-text">Android Open Source Project. (2024). <em>About the Android Open Source Project.</em> Google. <a href="https://source.android.com/" target="_blank">https://source.android.com/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[4]</div>
+      <div class="ref-text">The Chromium Projects. (2024). <em>Chromium — the open-source project behind Google Chrome.</em> Google. <a href="https://www.chromium.org/chromium-projects/" target="_blank">https://www.chromium.org/chromium-projects/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[5]</div>
+      <div class="ref-text">Google. (2024). <em>BoringSSL.</em> Google Source. <a href="https://boringssl.googlesource.com/boringssl/" target="_blank">https://boringssl.googlesource.com/boringssl/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[6]</div>
+      <div class="ref-text">LineageOS Project. (2024). <em>About LineageOS.</em> LineageOS. <a href="https://lineageos.org/" target="_blank">https://lineageos.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[7]</div>
+      <div class="ref-text">Mozilla. (2024). <em>What is a web browser?</em> Mozilla Corporation. <a href="https://www.mozilla.org/en-US/firefox/browsers/what-is-a-browser/" target="_blank">https://www.mozilla.org/en-US/firefox/browsers/what-is-a-browser/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[8]</div>
+      <div class="ref-text">Mozilla. (2024). <em>gecko-dev: Read-only mirror of Mozilla's Mercurial source repository.</em> GitHub. <a href="https://github.com/mozilla/gecko-dev" target="_blank">https://github.com/mozilla/gecko-dev</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[9]</div>
+      <div class="ref-text">Google. (2024). <em>Chromium source code repository.</em> Google Source. <a href="https://chromium.googlesource.com/chromium/src" target="_blank">https://chromium.googlesource.com/chromium/src</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[10]</div>
+      <div class="ref-text">Google. (2024). <em>V8 JavaScript engine.</em> v8.dev. <a href="https://v8.dev/" target="_blank">https://v8.dev/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[11]</div>
+      <div class="ref-text">Hill, R. (gorhill). (2024). <em>uBlock Origin: An efficient blocker for Chromium and Firefox.</em> GitHub. <a href="https://github.com/gorhill/uBlock" target="_blank">https://github.com/gorhill/uBlock</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[12]</div>
+      <div class="ref-text">OpenStreetMap Foundation. (2024). <em>About OpenStreetMap.</em> OpenStreetMap. <a href="https://www.openstreetmap.org/about" target="_blank">https://www.openstreetmap.org/about</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[13]</div>
+      <div class="ref-text">OpenStreetMap Wiki. (2024). <em>About OpenStreetMap.</em> OpenStreetMap Wiki. <a href="https://wiki.openstreetmap.org/wiki/About_OpenStreetMap" target="_blank">https://wiki.openstreetmap.org/wiki/About_OpenStreetMap</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[14]</div>
+      <div class="ref-text">Agafonkin, V. (2024). <em>Leaflet — a JavaScript library for interactive maps.</em> Leaflet. <a href="https://leafletjs.com/" target="_blank">https://leafletjs.com/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[15]</div>
+      <div class="ref-text">Project OSRM. (2024). <em>Open Source Routing Machine.</em> project-osrm.org. <a href="http://project-osrm.org/" target="_blank">http://project-osrm.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[16]</div>
+      <div class="ref-text">Humanitarian OpenStreetMap Team. (2024). <em>About HOT.</em> HOT. <a href="https://www.hotosm.org/" target="_blank">https://www.hotosm.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[17]</div>
+      <div class="ref-text">World Resources Institute. (2024). <em>Global Forest Watch.</em> WRI. <a href="https://www.globalforestwatch.org/" target="_blank">https://www.globalforestwatch.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[18]</div>
+      <div class="ref-text">Signal Foundation. (2024). <em>Signal technical documentation.</em> Signal. <a href="https://signal.org/docs/" target="_blank">https://signal.org/docs/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[19]</div>
+      <div class="ref-text">Signal Foundation. (2024). <em>libsignal: Signal Protocol library.</em> GitHub. <a href="https://github.com/signalapp/libsignal" target="_blank">https://github.com/signalapp/libsignal</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[20]</div>
+      <div class="ref-text">Signal Foundation. (2024). <em>Signal-Android: Source code for Signal on Android.</em> GitHub. <a href="https://github.com/signalapp/Signal-Android" target="_blank">https://github.com/signalapp/Signal-Android</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[21]</div>
+      <div class="ref-text">Free Software Foundation Europe. (2024). <em>GNU Privacy Guard (GnuPG).</em> gnupg.org. <a href="https://gnupg.org/" target="_blank">https://gnupg.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[22]</div>
+      <div class="ref-text">Internet Security Research Group. (2024). <em>About Let's Encrypt.</em> Let's Encrypt. <a href="https://letsencrypt.org/about/" target="_blank">https://letsencrypt.org/about/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[23]</div>
+      <div class="ref-text">The Document Foundation. (2024). <em>Who are we?</em> LibreOffice. <a href="https://www.libreoffice.org/about-us/who-are-we/" target="_blank">https://www.libreoffice.org/about-us/who-are-we/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[24]</div>
+      <div class="ref-text">The Document Foundation. (2024). <em>LibreOffice core source code.</em> GitHub. <a href="https://github.com/LibreOffice/core" target="_blank">https://github.com/LibreOffice/core</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[25]</div>
+      <div class="ref-text">OASIS Open. (2024). <em>OASIS Open Document Format for Office Applications (OpenDocument) TC.</em> OASIS. <a href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=office" target="_blank">https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=office</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[26]</div>
+      <div class="ref-text">Apache Software Foundation. (2024). <em>Apache OpenOffice.</em> openoffice.org. <a href="https://www.openoffice.org/" target="_blank">https://www.openoffice.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[27]</div>
+      <div class="ref-text">European Commission. (2024). <em>Open Source Observatory (OSOR).</em> Joinup. <a href="https://joinup.ec.europa.eu/collection/open-source-observatory-osor" target="_blank">https://joinup.ec.europa.eu/collection/open-source-observatory-osor</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[28]</div>
+      <div class="ref-text">VideoLAN. (2024). <em>VLC 3.0.21 release.</em> VideoLAN. <a href="https://www.videolan.org/vlc/releases/3.0.21.html" target="_blank">https://www.videolan.org/vlc/releases/3.0.21.html</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[29]</div>
+      <div class="ref-text">VideoLAN. (2024). <em>VLC media player source code.</em> GitHub. <a href="https://github.com/videolan/vlc" target="_blank">https://github.com/videolan/vlc</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[30]</div>
+      <div class="ref-text">FFmpeg Project. (2024). <em>FFmpeg: A complete, cross-platform solution to record, convert and stream audio and video.</em> ffmpeg.org. <a href="https://ffmpeg.org/" target="_blank">https://ffmpeg.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[31]</div>
+      <div class="ref-text">Kodi Foundation. (2024). <em>About Kodi.</em> kodi.tv. <a href="https://kodi.tv/about/" target="_blank">https://kodi.tv/about/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[32]</div>
+      <div class="ref-text">Alliance for Open Media. (2024). <em>About the Alliance for Open Media.</em> aomedia.org. <a href="https://aomedia.org/" target="_blank">https://aomedia.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[33]</div>
+      <div class="ref-text">Wikimedia Foundation. (2024). <em>Wikipedia.</em> Wikimedia Foundation. <a href="https://wikimediafoundation.org/our-work/wikipedia/" target="_blank">https://wikimediafoundation.org/our-work/wikipedia/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[34]</div>
+      <div class="ref-text">Wikimedia Foundation. (2024). <em>MediaWiki.</em> mediawiki.org. <a href="https://www.mediawiki.org/wiki/MediaWiki" target="_blank">https://www.mediawiki.org/wiki/MediaWiki</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[35]</div>
+      <div class="ref-text">MariaDB Foundation. (2024). <em>About MariaDB.</em> mariadb.org. <a href="https://mariadb.org/" target="_blank">https://mariadb.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[36]</div>
+      <div class="ref-text">OpenSearch Project. (2024). <em>OpenSearch — open source search and analytics suite.</em> opensearch.org. <a href="https://opensearch.org/" target="_blank">https://opensearch.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[37]</div>
+      <div class="ref-text">Wikimedia Foundation. (2024). <em>Wikidata: Introduction.</em> wikidata.org. <a href="https://www.wikidata.org/wiki/Wikidata:Introduction" target="_blank">https://www.wikidata.org/wiki/Wikidata:Introduction</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[38]</div>
+      <div class="ref-text">Wikimedia Foundation. (2024). <em>Sustainability initiative.</em> Wikimedia Meta-Wiki. <a href="https://meta.wikimedia.org/wiki/Sustainability_Initiative" target="_blank">https://meta.wikimedia.org/wiki/Sustainability_Initiative</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[39]</div>
+      <div class="ref-text">OpenMRS Inc. (2024). <em>About OpenMRS.</em> openmrs.org. <a href="https://openmrs.org/about/" target="_blank">https://openmrs.org/about/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[40]</div>
+      <div class="ref-text">OpenMRS Inc. (2024). <em>OpenMRS core source code.</em> GitHub. <a href="https://github.com/openmrs/openmrs-core" target="_blank">https://github.com/openmrs/openmrs-core</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[41]</div>
+      <div class="ref-text">Open Health Imaging Foundation. (2024). <em>OHIF Viewer.</em> ohif.org. <a href="https://ohif.org/" target="_blank">https://ohif.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[42]</div>
+      <div class="ref-text">Bioconductor Project. (2024). <em>About Bioconductor.</em> bioconductor.org. <a href="https://www.bioconductor.org/" target="_blank">https://www.bioconductor.org/</a></div>
+    </div>
+
+    <div class="ref-item">
+      <div class="ref-num">[43]</div>
+      <div class="ref-text">DeepMind & EMBL-EBI. (2024). <em>AlphaFold protein structure database.</em> alphafold.ebi.ac.uk. <a href="https://alphafold.ebi.ac.uk/" target="_blank">https://alphafold.ebi.ac.uk/</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Card toggle
+function toggleCard(card) {
+  const isOpen = card.classList.contains('open');
+  // close all others
+  document.querySelectorAll('.card.open').forEach(c => {
+    c.classList.remove('open');
+    c.querySelectorAll('.panel.open').forEach(p => p.classList.remove('open'));
+  });
+  if (!isOpen) {
+    card.classList.add('open');
+    // animate impact bars
+    setTimeout(() => {
+      card.querySelectorAll('.impact-bar-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        requestAnimationFrame(() => { bar.style.width = w; });
+      });
+    }, 50);
+  }
+}
+
+// Panel accordion
+function togglePanel(head) {
+  event.stopPropagation();
+  const panel = head.parentElement;
+  panel.classList.toggle('open');
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.row, .branch-header, .year-badge').forEach(el => {
+  observer.observe(el);
+});
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     RESOURCE PAGE — injected as a full-screen overlay page
+     ══════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── PAGE NAV ─────────────────────────────────────── */
+#page-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 8000;
+  background: rgba(10,15,11,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid #1c2a1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 16px;
+}
+
+.nav-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid #1c2a1e;
+  background: transparent;
+  color: #4a6452;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-btn:hover { color: #cdd9c4; border-color: #3dba6e; }
+.nav-btn.active { background: #3dba6e; color: #0a0f0b; border-color: #3dba6e; }
+
+/* spacer so content isn't hidden under nav */
+#timeline-page { padding-top: 54px; }
+#resource-page  { padding-top: 54px; display: none; }
+
+/* ── RESOURCE PAGE SHELL ──────────────────────────── */
+#resource-page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+.rp-header {
+  text-align: center;
+  padding: 60px 24px 40px;
+  border-bottom: 1px solid #1c2a1e;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.rp-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.42em;
+  color: #f06292;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.rp-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.9rem, 4vw, 3.2rem);
+  font-weight: 700;
+  color: #e8f0e8;
+  line-height: 1.1;
+}
+
+.rp-title em { font-style: italic; color: #3dba6e; font-weight: 400; }
+
+.rp-sub {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: #4a6452;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.1em;
+}
+
+/* ── LEGEND BAR ─────────────────────────────────── */
+.tier-legend {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 20px 24px 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.tier-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-weight: 700;
+}
+
+.tier-pill.good    { color: #3dba6e; border-color: rgba(61,186,110,0.3); background: rgba(61,186,110,0.07); }
+.tier-pill.better  { color: #4fc3f7; border-color: rgba(79,195,247,0.3); background: rgba(79,195,247,0.07); }
+.tier-pill.best    { color: #c9a84c; border-color: rgba(201,168,76,0.3);  background: rgba(201,168,76,0.07); }
+.tier-pill.worst   { color: #ef5350; border-color: rgba(239,83,80,0.3);   background: rgba(239,83,80,0.07); }
+
+/* ── CATEGORY FILTER ─────────────────────────────── */
+.cat-filter {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 20px 24px 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cat-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid #1c2a1e;
+  background: transparent;
+  color: #4a6452;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cat-btn:hover  { color: #cdd9c4; border-color: #4a6452; }
+.cat-btn.active { color: #e8f0e8; border-color: #f06292; background: rgba(240,98,146,0.1); }
+
+/* ── CARDS GRID ──────────────────────────────────── */
+.rp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+  max-width: 1200px;
+  margin: 26px auto 0;
+  padding: 0 24px 80px;
+}
+
+/* ── SOLUTION CARD ───────────────────────────────── */
+.sol-card {
+  background: #0d1117;
+  border: 1px solid #1c2a1e;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sol-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+.sol-card-head {
+  padding: 14px 16px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid #1c2a1e;
+}
+
+.sol-icon-wrap {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.sol-head-meta { flex: 1; min-width: 0; }
+
+.sol-cat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #4a6452;
+  margin-bottom: 3px;
+}
+
+.sol-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e8f0e8;
+  line-height: 1.2;
+}
+
+/* tier badge on card */
+.sol-tier {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 12px;
+  margin-top: 5px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.sol-tier.good   { color: #3dba6e; background: rgba(61,186,110,0.12);  border: 1px solid rgba(61,186,110,0.25); }
+.sol-tier.better { color: #4fc3f7; background: rgba(79,195,247,0.12);  border: 1px solid rgba(79,195,247,0.25); }
+.sol-tier.best   { color: #c9a84c; background: rgba(201,168,76,0.12);  border: 1px solid rgba(201,168,76,0.25); }
+.sol-tier.worst  { color: #ef5350; background: rgba(239,83,80,0.12);   border: 1px solid rgba(239,83,80,0.25); }
+
+/* ── SCORES GRID ─────────────────────────────────── */
+.sol-scores {
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  border-bottom: 1px solid #1c2a1e;
+}
+
+.score-item { display: flex; flex-direction: column; gap: 4px; }
+
+.score-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #4a6452;
+}
+
+.score-bar-wrap { display: flex; align-items: center; gap: 6px; }
+
+.score-bar {
+  flex: 1;
+  height: 5px;
+  background: #1c2a1e;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+
+.score-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: #6a8a72;
+  width: 22px;
+  text-align: right;
+}
+
+/* ── SKILL BADGE ─────────────────────────────────── */
+.skill-band {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #1c2a1e;
+}
+
+.skill-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #4a6452;
+  white-space: nowrap;
+}
+
+.skill-track {
+  flex: 1;
+  height: 8px;
+  background: #1c2a1e;
+  border-radius: 4px;
+  position: relative;
+  overflow: visible;
+}
+
+.skill-fill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #3dba6e, #c9a84c);
+}
+
+.skill-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #c9a84c;
+  border: 2px solid #0a0f0b;
+  box-shadow: 0 0 8px rgba(201,168,76,0.5);
+}
+
+.skill-ends {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.48rem;
+  color: #3a5240;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ── WHAT IT COVERS ──────────────────────────────── */
+.sol-covers {
+  padding: 10px 16px 14px;
+}
+
+.covers-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #4a6452;
+  margin-bottom: 8px;
+}
+
+.covers-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.covers-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 0.68rem;
+  color: #7a9a7a;
+  line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+}
+
+.covers-list li .ci {
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.covers-list li .cv {
+  font-weight: 500;
+  color: #a0b8a0;
+  margin-right: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+}
+
+/* worst card red accent */
+.sol-card.worst-card { border-color: rgba(239,83,80,0.2); }
+.sol-card.worst-card .sol-card-head { background: rgba(239,83,80,0.04); }
+
+/* hidden state for filtering */
+.sol-card.hidden { display: none; }
+
+/* ── SCORE COLOUR HELPERS ────────────────────────── */
+.fill-green  { background: #3dba6e; }
+.fill-blue   { background: #4fc3f7; }
+.fill-amber  { background: #c9a84c; }
+.fill-red    { background: #ef5350; }
+.fill-purple { background: #ce93d8; }
+.fill-pink   { background: #f06292; }
+
+@media (max-width: 640px) {
+  .rp-grid { grid-template-columns: 1fr; padding: 0 14px 60px; }
+  .sol-scores { grid-template-columns: 1fr; }
+}
+</style>
+
+<!-- NAV BAR (shared between both pages) -->
+<div id="page-nav">
+  <button class="nav-btn active" onclick="showPage('timeline')">🌳 Timeline</button>
+  <button class="nav-btn" onclick="showPage('resource')">📋 Resource Guide</button>
+</div>
+
+<!-- wrap original content -->
+<script>
+// Wrap timeline content
+document.addEventListener('DOMContentLoaded', () => {
+  const body = document.body;
+  const nav  = document.getElementById('page-nav');
+  const rp   = document.getElementById('resource-page');
+
+  // Gather everything except nav & resource-page into timeline-page div
+  const tl = document.createElement('div');
+  tl.id = 'timeline-page';
+  tl.style.paddingTop = '54px';
+
+  const nodes = [...body.childNodes].filter(n =>
+    n !== nav && n !== rp &&
+    !(n.nodeName === 'SCRIPT') &&
+    !(n.nodeName === 'STYLE') &&
+    !(n.nodeName === '#comment')
+  );
+  nodes.forEach(n => tl.appendChild(n));
+  body.insertBefore(tl, rp);
+});
+
+function showPage(page) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (page === 'timeline') {
+    document.getElementById('timeline-page').style.display = 'block';
+    document.getElementById('resource-page').style.display  = 'none';
+    document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  } else {
+    document.getElementById('timeline-page').style.display = 'none';
+    document.getElementById('resource-page').style.display  = 'block';
+    document.querySelectorAll('.nav-btn')[1].classList.add('active');
+    // trigger score bar animations
+    setTimeout(animateScores, 100);
+  }
+}
+
+function animateScores() {
+  document.querySelectorAll('.score-fill[data-w]').forEach(el => {
+    el.style.width = el.dataset.w;
+  });
+}
+
+function filterCat(btn, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.sol-card').forEach(c => {
+    if (cat === 'all' || c.dataset.cat === cat) {
+      c.classList.remove('hidden');
+    } else {
+      c.classList.add('hidden');
+    }
+  });
+}
+</script>
+
+<!-- ══ RESOURCE PAGE CONTENT ══════════════════════════ -->
+<div id="resource-page">
+
+  <div class="rp-header">
+    <div class="rp-eyebrow">Open Source · Daily Solutions · Evaluated</div>
+    <div class="rp-title">The Open Source <em>Resource Guide</em></div>
+    <div class="rp-sub">Rated by Data Privacy · UX/UI · Security · Skill Level — Good → Better → Best → Worst</div>
+  </div>
+
+  <div class="tier-legend">
+    <div class="tier-pill good">✓ Good — Functional &amp; accessible</div>
+    <div class="tier-pill better">◈ Better — Strong all-round</div>
+    <div class="tier-pill best">★ Best — Gold standard</div>
+    <div class="tier-pill worst">✕ Worst — Avoid or use cautiously</div>
+  </div>
+
+  <div class="cat-filter">
+    <button class="cat-btn active" onclick="filterCat(this,'all')">All Categories</button>
+    <button class="cat-btn" onclick="filterCat(this,'mobile')">📱 Mobile OS</button>
+    <button class="cat-btn" onclick="filterCat(this,'browser')">🌐 Browser</button>
+    <button class="cat-btn" onclick="filterCat(this,'maps')">🗺️ Maps</button>
+    <button class="cat-btn" onclick="filterCat(this,'messaging')">💬 Messaging</button>
+    <button class="cat-btn" onclick="filterCat(this,'productivity')">📝 Productivity</button>
+    <button class="cat-btn" onclick="filterCat(this,'media')">📺 Media</button>
+    <button class="cat-btn" onclick="filterCat(this,'knowledge')">📚 Knowledge</button>
+    <button class="cat-btn" onclick="filterCat(this,'health')">🏥 Healthcare</button>
+  </div>
+
+  <div class="rp-grid">
+
+    <!-- ═══════════ MOBILE OS ═══════════ -->
+
+    <div class="sol-card" data-cat="mobile">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🐧</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Mobile OS</div>
+          <div class="sol-name">LineageOS</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="95%"></div></div>
+            <div class="score-num">95</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="62%"></div></div>
+            <div class="score-num">62</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="92%"></div></div>
+            <div class="score-num">92</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:75%"></div>
+            <div class="skill-dot" style="left:75%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> No Google services by default; no telemetry; granular permission controls per app</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Stock Android look; functional but requires manual setup; not beginner-friendly</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Monthly patches; exploit mitigations; SELinux enforcing; verified boot support</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Advanced — requires bootloader unlock, ADB commands, manual flashing via recovery</span></li>
+          <li><span class="ci">🌱</span><span><span class="cv">Sustainability:</span> Extends device lifespan 3–5 years beyond manufacturer EOL, directly reducing e-waste</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card" data-cat="mobile">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(79,195,247,0.1)">📦</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Mobile OS</div>
+          <div class="sol-name">GrapheneOS</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="99%"></div></div>
+            <div class="score-num">99</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="71%"></div></div>
+            <div class="score-num">71</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="99%"></div></div>
+            <div class="score-num">99</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="98%"></div></div>
+            <div class="score-num">98</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:80%"></div>
+            <div class="skill-dot" style="left:80%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Hardened memory allocator; sandboxed Google Play option; network/sensor permissions per-app; no identifiers</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Clean AOSP UI; Pixel-exclusive; web-based installer greatly simplifies setup</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Strongest mobile OS security hardening available; used by journalists and activists globally</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Intermediate–Advanced; web installer reduces barrier but Pixel device required</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card" data-cat="mobile">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🤖</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Mobile OS</div>
+          <div class="sol-name">Stock Android (AOSP-based)</div>
+        </div>
+        <div class="sol-tier good">✓ Good</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="48%"></div></div>
+            <div class="score-num">48</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="90%"></div></div>
+            <div class="score-num">90</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="70%"></div></div>
+            <div class="score-num">70</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="55%"></div></div>
+            <div class="score-num">55</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:15%"></div>
+            <div class="skill-dot" style="left:15%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Google collects usage data; location history enabled by default; requires manual opt-out of telemetry</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Polished, familiar, massive app ecosystem — best day-one experience for new users</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Monthly patches on Pixel; slower on OEM devices; Play Protect provides baseline malware scanning</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — zero setup required; works out of the box</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card worst-card" data-cat="mobile">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(239,83,80,0.1)">⚠️</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Mobile OS</div>
+          <div class="sol-name">Heavily Skinned Android (Bloatware OEMs)</div>
+        </div>
+        <div class="sol-tier worst">✕ Worst</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="22%"></div></div>
+            <div class="score-num">22</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="55%"></div></div>
+            <div class="score-num">55</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="35%"></div></div>
+            <div class="score-num">35</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="10%"></div></div>
+            <div class="score-num">10</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:5%"></div>
+            <div class="skill-dot" style="left:5%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">Why to avoid</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Pre-installed spyware/adware; vendor telemetry; unremovable data-harvesting apps (e.g. some Xiaomi, Oppo builds)</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Cluttered with bloatware; intrusive ads in system apps; slow UI due to heavy customisation</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Security patches delayed 6–18 months; often abandoned after 2 years despite devices remaining in use</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — deceptively easy, but impossible to truly secure without rooting</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════ BROWSER ═══════════ -->
+
+    <div class="sol-card" data-cat="browser">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(201,168,76,0.1)">🛡️</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Browser</div>
+          <div class="sol-name">Firefox + uBlock Origin</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="93%"></div></div>
+            <div class="score-num">93</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="85%"></div></div>
+            <div class="score-num">85</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="90%"></div></div>
+            <div class="score-num">90</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:20%"></div>
+            <div class="skill-dot" style="left:20%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Enhanced Tracking Protection blocks 1000s of trackers; no Google deal dependency; fully auditable source</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Clean, customisable; rich extension ecosystem; excellent developer tools; cross-device sync via Firefox account</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Rapid patching; sandboxed processes; uBlock Origin blocks malvertising and script injection</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice-friendly install; install uBlock Origin from Add-ons in 30 seconds — zero configuration needed</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card" data-cat="browser">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(79,195,247,0.1)">🦁</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Browser</div>
+          <div class="sol-name">Brave Browser</div>
+        </div>
+        <div class="sol-tier better">◈ Better</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="88%"></div></div>
+            <div class="score-num">88</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="91%"></div></div>
+            <div class="score-num">91</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="87%"></div></div>
+            <div class="score-num">87</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="78%"></div></div>
+            <div class="score-num">78</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:10%"></div>
+            <div class="skill-dot" style="left:10%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Built-in ad/tracker blocking; fingerprint randomisation; Tor integration for private windows</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Polished Chrome-like interface; fastest cold-start of major browsers; minimal learning curve</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Chromium base inherits V8 security; Brave Shields replaces uBlock for most users</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — privacy-by-default; no extensions needed for basic protection</span></li>
+          <li><span class="ci">⚠️</span><span><span class="cv">Caveat:</span> Brave Rewards crypto system adds commercial layer; core browser remains open source (Apache 2.0)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card worst-card" data-cat="browser">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(239,83,80,0.1)">🔴</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Browser</div>
+          <div class="sol-name">Google Chrome (unmodified)</div>
+        </div>
+        <div class="sol-tier worst">✕ Worst</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="28%"></div></div>
+            <div class="score-num">28</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="95%"></div></div>
+            <div class="score-num">95</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="75%"></div></div>
+            <div class="score-num">75</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="20%"></div></div>
+            <div class="score-num">20</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:5%"></div>
+            <div class="skill-dot" style="left:5%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">Why to avoid</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Extensive Google telemetry; tied to Google account syncing; Manifest V3 weakens ad-blocking extensions</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Excellent — the standard other browsers are measured against; best web app compatibility</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Fast patches; sandboxing good — but proprietary additions make full audit impossible</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — near zero friction; but privacy trade-offs are invisible to most users</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════ MAPS ═══════════ -->
+
+    <div class="sol-card" data-cat="maps">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🌍</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Maps &amp; Navigation</div>
+          <div class="sol-name">OsmAnd (Offline Maps)</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="96%"></div></div>
+            <div class="score-num">96</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="58%"></div></div>
+            <div class="score-num">58</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="90%"></div></div>
+            <div class="score-num">90</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:35%"></div>
+            <div class="skill-dot" style="left:35%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Fully offline — GPS used locally, no location data sent to servers; no account required</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Powerful but dense interface; steep learning curve vs Google Maps; excellent for hiking/cycling routing</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> GPLv2; no server-side attack surface; maps stored locally</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Beginner-to-intermediate; download maps region-by-region; plugin system adds complexity</span></li>
+          <li><span class="ci">🌱</span><span><span class="cv">Sustainability:</span> No data centre load for routing; offline maps work without mobile data — critical in areas with poor connectivity</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card" data-cat="maps">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(79,195,247,0.1)">🗺️</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Maps &amp; Navigation</div>
+          <div class="sol-name">Organic Maps</div>
+        </div>
+        <div class="sol-tier better">◈ Better</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="97%"></div></div>
+            <div class="score-num">97</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="78%"></div></div>
+            <div class="score-num">78</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="91%"></div></div>
+            <div class="score-num">91</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:15%"></div>
+            <div class="skill-dot" style="left:15%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Apache 2.0; zero tracking, zero ads, zero data collection — privacy by architecture</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Clean, intuitive interface — the closest OSM app to Google Maps in user experience</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Fully offline; community-audited; F-Droid available avoiding Play Store</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — installs like any app; download a region and go</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card worst-card" data-cat="maps">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(239,83,80,0.1)">📍</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Maps &amp; Navigation</div>
+          <div class="sol-name">Google Maps (always-on location)</div>
+        </div>
+        <div class="sol-tier worst">✕ Worst</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="18%"></div></div>
+            <div class="score-num">18</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="97%"></div></div>
+            <div class="score-num">97</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="65%"></div></div>
+            <div class="score-num">65</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="5%"></div></div>
+            <div class="score-num">5</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:5%"></div>
+            <div class="skill-dot" style="left:5%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">Why to avoid</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Records your complete location timeline by default; used to build advertising profiles; shared with law enforcement via geofence warrants</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Undeniably the best map UX on the market — live traffic, real-time transit, immersive view</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Proprietary server-side; cannot audit data handling; requires Google account</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — instant usability; privacy costs invisible</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════ MESSAGING ═══════════ -->
+
+    <div class="sol-card" data-cat="messaging">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🔐</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Messaging</div>
+          <div class="sol-name">Signal</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="99%"></div></div>
+            <div class="score-num">99</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="84%"></div></div>
+            <div class="score-num">84</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="99%"></div></div>
+            <div class="score-num">99</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="97%"></div></div>
+            <div class="score-num">97</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:10%"></div>
+            <div class="skill-dot" style="left:10%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Collects only your phone number; sealed sender; disappearing messages; no metadata stored on servers</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Clean, fast; voice/video calls; stories; close to WhatsApp in experience</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> AGPLv3; double-ratchet E2EE; audited by independent security researchers; used by UN, journalists, activists</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — install from App Store / Play Store in 2 minutes</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card" data-cat="messaging">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(79,195,247,0.1)">💬</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Messaging</div>
+          <div class="sol-name">Matrix / Element</div>
+        </div>
+        <div class="sol-tier better">◈ Better</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="88%"></div></div>
+            <div class="score-num">88</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="70%"></div></div>
+            <div class="score-num">70</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="86%"></div></div>
+            <div class="score-num">86</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:45%"></div>
+            <div class="skill-dot" style="left:45%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Federated, self-hostable; E2EE by default in DMs; choose your own server or run your own</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Feature-rich (threads, spaces, bridges to Slack/Discord); interface can feel complex for new users</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Apache 2.0; independent security audits; used by French government (matrix.org)</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Intermediate — register on matrix.org is easy; self-hosting requires server admin knowledge</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card worst-card" data-cat="messaging">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(239,83,80,0.1)">📵</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Messaging</div>
+          <div class="sol-name">WhatsApp (Meta-owned)</div>
+        </div>
+        <div class="sol-tier worst">✕ Worst</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="30%"></div></div>
+            <div class="score-num">30</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="93%"></div></div>
+            <div class="score-num">93</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="60%"></div></div>
+            <div class="score-num">60</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="8%"></div></div>
+            <div class="score-num">8</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:5%"></div>
+            <div class="skill-dot" style="left:5%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">Why to avoid</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Metadata harvested by Meta (who contacts, when, where, how often); 2021 TOS forces data sharing with Facebook</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Best-in-class UX; 2B users globally; unavoidable social pressure</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Uses Signal Protocol for E2EE content, but backup encryption and metadata handling remain opaque</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — zero friction but zero transparency</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════ PRODUCTIVITY ═══════════ -->
+
+    <div class="sol-card" data-cat="productivity">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">📄</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Productivity</div>
+          <div class="sol-name">LibreOffice</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="97%"></div></div>
+            <div class="score-num">97</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="72%"></div></div>
+            <div class="score-num">72</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="88%"></div></div>
+            <div class="score-num">88</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:20%"></div>
+            <div class="skill-dot" style="left:20%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Fully offline; no telemetry by default; documents stay on your machine</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Familiar ribbon-style UI; imports/exports DOCX, XLSX, PPTX; macro support; less polished than MS Office</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> MPL 2.0; community patches; no subscription lock-in; ODF format is ISO standard — no vendor lock</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — anyone familiar with Word/Excel can use it within minutes</span></li>
+          <li><span class="ci">🏛️</span><span><span class="cv">Government Use:</span> Italy, France, Germany, Brazil — officially deployed across public sector</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card" data-cat="productivity">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(79,195,247,0.1)">✏️</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Productivity</div>
+          <div class="sol-name">Nextcloud (Self-hosted Drive)</div>
+        </div>
+        <div class="sol-tier better">◈ Better</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="98%"></div></div>
+            <div class="score-num">98</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="78%"></div></div>
+            <div class="score-num">78</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="90%"></div></div>
+            <div class="score-num">90</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="98%"></div></div>
+            <div class="score-num">98</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:55%"></div>
+            <div class="skill-dot" style="left:55%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> You own your data entirely — cloud sync with zero third-party access; E2EE option available</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Google Drive-like web UI; mobile apps; collaborative document editing via Collabora/OnlyOffice integration</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> AGPLv3; 2FA; LDAP integration; audit logs; HiTrust-eligible when self-hosted</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Intermediate — self-hosting requires a VPS or home server; managed Nextcloud providers available for novices</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card worst-card" data-cat="productivity">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(239,83,80,0.1)">☁️</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Productivity</div>
+          <div class="sol-name">Google Docs / Microsoft 365 (cloud-only)</div>
+        </div>
+        <div class="sol-tier worst">✕ Worst</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="25%"></div></div>
+            <div class="score-num">25</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="97%"></div></div>
+            <div class="score-num">97</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="65%"></div></div>
+            <div class="score-num">65</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="5%"></div></div>
+            <div class="score-num">5</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:5%"></div>
+            <div class="skill-dot" style="left:5%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">Why to avoid</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> All documents stored on corporate servers; Google/Microsoft scan document content for AI training and advertising signals</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Best-in-class collaboration tools; real-time co-editing; AI integration — unmatched convenience</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> SOC2 compliant but proprietary — you trust their security claims, you cannot verify them</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — zero barrier; but vendor lock-in grows invisibly over time</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════ MEDIA ═══════════ -->
+
+    <div class="sol-card" data-cat="media">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🎬</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Media &amp; Video</div>
+          <div class="sol-name">VLC + PeerTube</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="96%"></div></div>
+            <div class="score-num">96</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-blue" style="width:0" data-w="82%"></div></div>
+            <div class="score-num">82</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="90%"></div></div>
+            <div class="score-num">90</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:10%"></div>
+            <div class="skill-dot" style="left:10%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> VLC sends zero telemetry; PeerTube is federated with no central algorithm manipulation</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> VLC: clean, plays everything; PeerTube: YouTube-like UI; smaller content library</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> GPLv2; no account required for VLC; PeerTube instances independently administered</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice for VLC; beginner-to-intermediate for navigating PeerTube federation</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card worst-card" data-cat="media">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(239,83,80,0.1)">📺</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Media &amp; Video</div>
+          <div class="sol-name">YouTube (Google) — signed-in, no ad blocker</div>
+        </div>
+        <div class="sol-tier worst">✕ Worst</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="15%"></div></div>
+            <div class="score-num">15</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="98%"></div></div>
+            <div class="score-num">98</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="60%"></div></div>
+            <div class="score-num">60</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="5%"></div></div>
+            <div class="score-num">5</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:5%"></div>
+            <div class="skill-dot" style="left:5%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">Why to avoid (unmitigated)</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Watch history, search, and engagement data used to build behavioural advertising profiles and recommendation algorithms</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> World's best video platform — unrivalled content breadth; use with uBlock Origin + Firefox as mitigation</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Proprietary; account required for full use; centralised content moderation with opaque appeals</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — but mitigating privacy risks (Invidious, NewPipe, uBlock) requires beginner–intermediate skill</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════ KNOWLEDGE ═══════════ -->
+
+    <div class="sol-card" data-cat="knowledge">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">📖</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Knowledge</div>
+          <div class="sol-name">Wikipedia + Kiwix (Offline)</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="95%"></div></div>
+            <div class="score-num">95</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="88%"></div></div>
+            <div class="score-num">88</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="92%"></div></div>
+            <div class="score-num">92</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:8%"></div>
+            <div class="skill-dot" style="left:8%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Wikipedia is CC-BY-SA, publicly readable with no account; Kiwix provides fully offline access — zero network calls</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Clean, fast, consistent; Kiwix app makes offline Wikipedia available in classrooms without internet access</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> GPLv2 (MediaWiki); no login required to read; HTTPS enforced sitewide</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Novice — use Wikipedia as a web page; Kiwix download is a one-click install + ZIM file download</span></li>
+          <li><span class="ci">🌱</span><span><span class="cv">Sustainability:</span> Wikimedia Foundation runs entirely on renewable energy; Kiwix enables education in off-grid communities</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════ HEALTH ═══════════ -->
+
+    <div class="sol-card" data-cat="health">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(61,186,110,0.1)">🏥</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Healthcare</div>
+          <div class="sol-name">OpenMRS + FHIR Standard</div>
+        </div>
+        <div class="sol-tier best">★ Best</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="92%"></div></div>
+            <div class="score-num">92</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="62%"></div></div>
+            <div class="score-num">62</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="88%"></div></div>
+            <div class="score-num">88</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-green" style="width:0" data-w="100%"></div></div>
+            <div class="score-num">100</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:65%"></div>
+            <div class="skill-dot" style="left:65%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">What it covers</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Self-hosted; patient data stays in-country; HIPAA/GDPR-compatible deployment patterns; audit trails built-in</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Functional clinical workflow UI; requires training; new 3.x UI is significantly improved</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> MPL 2.0; FHIR R4 interoperability standard ensures no proprietary lock-in for patient records</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Advanced for deployment (Java, MySQL, server admin); clinical users need structured training</span></li>
+          <li><span class="ci">🌱</span><span><span class="cv">Sustainability:</span> Replaces paper-based records in 40+ countries — measurably improves health outcomes without proprietary licence costs</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sol-card worst-card" data-cat="health">
+      <div class="sol-card-head">
+        <div class="sol-icon-wrap" style="background:rgba(239,83,80,0.1)">🏢</div>
+        <div class="sol-head-meta">
+          <div class="sol-cat">Healthcare</div>
+          <div class="sol-name">Closed Proprietary EHR (Epic, Cerner — locked)</div>
+        </div>
+        <div class="sol-tier worst">✕ Worst</div>
+      </div>
+      <div class="sol-scores">
+        <div class="score-item">
+          <div class="score-label">Data Privacy</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="40%"></div></div>
+            <div class="score-num">40</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">UX / UI</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="65%"></div></div>
+            <div class="score-num">65</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Security</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-amber" style="width:0" data-w="60%"></div></div>
+            <div class="score-num">60</div>
+          </div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Openness</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill fill-red" style="width:0" data-w="5%"></div></div>
+            <div class="score-num">5</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-band">
+        <div>
+          <div class="skill-label">Skill Level Required</div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:40%"></div>
+            <div class="skill-dot" style="left:40%"></div>
+          </div>
+          <div class="skill-ends"><span>Novice</span><span>Expert</span></div>
+        </div>
+      </div>
+      <div class="sol-covers">
+        <div class="covers-label">Why to avoid</div>
+        <ul class="covers-list">
+          <li><span class="ci">🔒</span><span><span class="cv">Privacy:</span> Proprietary data formats; patient data can be sold to third parties under terms unreadable to patients; interoperability legally blocked in some contracts</span></li>
+          <li><span class="ci">🖥️</span><span><span class="cv">UX/UI:</span> Costly, training-intensive; UX notoriously poor despite high licence costs — contributing to clinician burnout</span></li>
+          <li><span class="ci">🛡️</span><span><span class="cv">Security:</span> Cannot audit source code; multiple major EHR breaches (Change Healthcare 2024 — 100M records exposed)</span></li>
+          <li><span class="ci">🎓</span><span><span class="cv">Skill:</span> Intermediate — requires expensive vendor training; data cannot be freely migrated</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /rp-grid -->
+</div><!-- /resource-page -->
+
+<script>
+// Animate bars when resource page first shown
+document.querySelectorAll('.score-fill[data-w]').forEach(el => {
+  el.style.width = '0';
+});
+</script>
+
+
+</body>
+</html>
