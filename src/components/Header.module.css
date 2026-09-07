@@ -1,0 +1,34 @@
+.header {
+  background: linear-gradient(160deg, #1a0800 0%, #0d0d0d 60%);
+  border-bottom: 1px solid #2a1a10;
+  padding: 3rem 1.5rem 2.5rem;
+}
+
+.inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: #aaa;
+  max-width: 640px;
+  line-height: 1.65;
+}
