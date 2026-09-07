@@ -36,6 +36,50 @@ A self-sustaining cooperative tech infrastructure that:
 
 ---
 
+## Failover & Resilience Strategy
+
+Self-hosted infrastructure requires planning for what happens when things fail. TCIA's May First org membership is one lever here — not as a primary host, but as a fallback layer.
+
+### Failure modes to plan for
+
+| Scenario | Risk | Mitigation |
+|---|---|---|
+| Primary VPS goes down | Supernote sync unavailable, comms down | Secondary VPS in different datacenter/provider |
+| Provider outage (e.g. Hetzner incident) | All services on that provider fail together | Cross-provider redundancy — don't put everything on one host |
+| DNS misconfiguration | Domain unreachable | DNS failover (low TTL, secondary DNS provider) |
+| Data loss (disk failure, ransomware) | Permanent data loss | Offsite backups — separate provider, separate geography |
+| Operator unavailable | No one can respond to failures | At least 2 people with admin access; documented runbook |
+
+### Failover architecture (Phase 1 → Phase 2)
+
+**Phase 1 (single VPS):**
+- Automated backups to a separate location (e.g. Backblaze B2, Hetzner Storage Box, or May First Nextcloud)
+- Low TTL on DNS records so cutover is fast if the server moves
+- Document recovery steps — assume you'll need them at 2am
+
+**Phase 2 (redundant):**
+- Second VPS at a different provider (e.g. primary Hetzner + secondary Greenhost or IO Coop)
+- Services tiered by criticality: Supernote sync and Matrix on primary; static/low-criticality on secondary
+- Backup DNS provider (e.g. Cloudflare free tier for DNS-only, no proxying)
+
+### May First as a failover layer
+
+TCIA already has May First org membership. May First provides:
+- Nextcloud (usable for offsite backup storage)
+- Email (fallback comms if self-hosted Matrix is down)
+- XMPP (secondary comms channel)
+
+**Role:** May First is a continuity resource, not primary infrastructure. Use their Nextcloud as one of the backup destinations. Use their comms tools as a fallback if Future Labs services are down.
+
+### Backup strategy (minimum viable)
+
+- **What to back up:** Supernote Private Cloud data (MariaDB + uploaded files), Matrix database, any config files / Docker Compose state
+- **Where:** At minimum two destinations — local (same server) is not a backup
+- **Schedule:** Daily automated backups; weekly verification that restores work
+- **Retention:** 30-day rolling (keeps storage costs manageable)
+
+---
+
 ## Realistic Roadmap
 
 ### Phase 1 — Start small (now → 6 months)

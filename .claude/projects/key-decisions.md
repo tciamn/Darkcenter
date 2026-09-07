@@ -64,7 +64,7 @@ Holochain cannot run standard Docker apps (Supernote, WordPress, etc.). Web Cond
 
 - **TCIA** holds an org membership (separate from any personal steward membership).
 - May First is **not** the chosen path for Supernote Private Cloud or Future Labs hosting. TCIA will build its own infrastructure via Future Labs rather than rely on May First for VPS/hosting.
-- The relationship with May First is valued for other reasons (comms, solidarity, etc.) but is not part of the infrastructure decision.
+- **May First's role in the stack: failover and backup layer.** Their Nextcloud is a backup destination for Future Labs data. Their email/XMPP are fallback comms if self-hosted services go down. This is the right framing — a resilience resource, not a hosting dependency.
 
 ---
 
