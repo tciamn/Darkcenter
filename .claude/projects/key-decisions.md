@@ -1,7 +1,7 @@
 # Key Decisions — TCIA / Future Labs
 
 **Owner:** aasim@tciamn.org  
-**Last updated:** 2026-09-07
+**Last updated:** 2026-09-07 (rev: TCIA is a May First org member)
 
 ---
 
@@ -18,7 +18,7 @@ Ratta's official Docker-based private cloud requires Linux + Docker. SiteGround 
 | Hetzner (raw VPS) | ~€4–6/mo | Corporate (Germany) | ✅ |
 | Greenhost | ~€5.75+/mo | Activist/EU | ✅ |
 | Infomaniak | ~$28+/mo | Employee-owned (CH) | ✅ |
-| May First (upgrade) | ~$45–70/mo | Coop/movement (US) | ✅ (requires hosting plan) |
+| May First | ~$45–70/mo (hosting plan) | Coop/movement (US) — TCIA is an org member but **not using for hosting** | ✅ |
 | IO Cooperative | $86.25/yr/slice | Coop (US) | ✅ |
 
 **Decisions needed:**
@@ -58,15 +58,13 @@ Holochain cannot run standard Docker apps (Supernote, WordPress, etc.). Web Cond
 
 ---
 
-## 4. May First — Steward Membership vs. TCIA Org Membership
+## 4. May First — TCIA Org Membership
 
-**Status: Open**
+**Status: Confirmed — TCIA is already a May First org member**
 
-- Steward currently has **basic personal membership** ($50/yr): email, Nextcloud, XMPP, video, 10GB. No VPS.
-- TCIA joining May First as an **org member** is a separate question.
-
-**Decision needed:**
-- [ ] Should TCIA join May First as an org while building its own infra in parallel?
+- **TCIA** holds an org membership (separate from any personal steward membership).
+- May First is **not** the chosen path for Supernote Private Cloud or Future Labs hosting. TCIA will build its own infrastructure via Future Labs rather than rely on May First for VPS/hosting.
+- The relationship with May First is valued for other reasons (comms, solidarity, etc.) but is not part of the infrastructure decision.
 
 ---
 
