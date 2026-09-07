@@ -2,7 +2,7 @@
 
 **Owner:** aasim@tciamn.org (TCIA)  
 **Status:** Concept / Early Planning  
-**Last updated:** 2026-08-30
+**Last updated:** 2026-09-07
 
 ---
 
@@ -38,45 +38,119 @@ A self-sustaining cooperative tech infrastructure that:
 
 ## Failover & Resilience Strategy
 
-Self-hosted infrastructure requires planning for what happens when things fail. TCIA's May First org membership is one lever here — not as a primary host, but as a fallback layer.
-
 ### Failure modes to plan for
 
 | Scenario | Risk | Mitigation |
 |---|---|---|
-| Primary VPS goes down | Supernote sync unavailable, comms down | Secondary VPS in different datacenter/provider |
-| Provider outage (e.g. Hetzner incident) | All services on that provider fail together | Cross-provider redundancy — don't put everything on one host |
-| DNS misconfiguration | Domain unreachable | DNS failover (low TTL, secondary DNS provider) |
+| Primary VPS goes down | Supernote sync unavailable, comms down | Secondary VPS at different provider |
+| Provider-wide outage | All services on that provider fail together | Cross-provider redundancy |
+| DNS misconfiguration | Domain unreachable | Low TTL + secondary DNS (Cloudflare free tier, DNS-only) |
 | Data loss (disk failure, ransomware) | Permanent data loss | Offsite backups — separate provider, separate geography |
-| Operator unavailable | No one can respond to failures | At least 2 people with admin access; documented runbook |
+| Operator unavailable | No one can respond | At least 2 admins with access; documented runbook |
 
-### Failover architecture (Phase 1 → Phase 2)
+---
 
-**Phase 1 (single VPS):**
-- Automated backups to a separate location (e.g. Backblaze B2, Hetzner Storage Box, or May First Nextcloud)
-- Low TTL on DNS records so cutover is fast if the server moves
-- Document recovery steps — assume you'll need them at 2am
+### Provider Assessment (with failover lens)
 
-**Phase 2 (redundant):**
-- Second VPS at a different provider (e.g. primary Hetzner + secondary Greenhost or IO Coop)
-- Services tiered by criticality: Supernote sync and Matrix on primary; static/low-criticality on secondary
-- Backup DNS provider (e.g. Cloudflare free tier for DNS-only, no proxying)
+Research date: 2026-09-07
 
-### May First as a failover layer
+#### Hetzner Cloud
+- **Regions:** Nuremberg, Falkenstein (DE), Helsinki (FI), Ashburn + Hillsboro (US), Singapore
+- **SLA:** 99.9% (cloud credits for missed targets)
+- **HA tools:** Floating IPs (per-datacenter failover in seconds via Keepalived), managed Load Balancers from €6.49/mo, private VXLAN networking
+- **Snapshots/backups:** Automated daily backups (opt-in, 20% of instance cost); manual snapshots ~€0.01/GB/mo; persistent block Volumes
+- **Cross-region failover:** DIY only — Floating IPs don't cross datacenters; requires DNS-level failover
+- **Pricing:** CX22 (2 vCPU / 4 GB / 40 GB) €3.79/mo; CX32 (4 vCPU / 8 GB) €6.80/mo
+- **Role: Primary or technical secondary.** Best tooling, lowest cost, widest region choice. Cross-DC failover requires DNS or load balancer; not turnkey but well-documented.
 
-TCIA already has May First org membership. May First provides:
-- Nextcloud (usable for offsite backup storage)
-- Email (fallback comms if self-hosted Matrix is down)
-- XMPP (secondary comms channel)
+#### Infomaniak
+- **Regions:** Geneva (CH) + Zurich (CH) — two cities, owned infrastructure
+- **SLA:** 99.99% contractual on VPS Cloud; **99.999% on HA Cloud Server** product
+- **HA tools:** Dedicated HA Cloud Server cluster product; 99.999% SLA implies hardware-level redundancy. No Floating IP equivalent — failover via HA product tier or DNS.
+- **Snapshots/backups:** One free snapshot on VPS Cloud; Swiss Backup add-on (paid) for automated offsite; not automatic by default — must enable
+- **Jurisdiction:** Swiss law — strong privacy, not subject to EU enforcement complications or US Cloud Act
+- **Pricing:** VPS Cloud from ~€5/mo; HA Cloud Server priced higher (quoted on request)
+- **Role: Values-aligned primary or strong secondary.** Best contractual SLA of any listed provider. Swiss jurisdiction is an asset for sensitive data. Geographic diversity from Hetzner (DE/FI vs. CH) makes Hetzner + Infomaniak a solid cross-provider pair.
 
-**Role:** May First is a continuity resource, not primary infrastructure. Use their Nextcloud as one of the backup destinations. Use their comms tools as a fallback if Future Labs services are down.
+#### Greenhost
+- **Regions:** Amsterdam only (IronMountain DC, 100% Dutch wind energy)
+- **SLA:** Negotiated per contract (no public uptime figure)
+- **HA tools:** Ceph-based VM storage (storage-level redundancy); no documented HA or Floating IP product; **Rapid Response Team** for activist clients under attack (DDoS, political targeting)
+- **Snapshots/backups:** Unclear for bare VPS tier; managed tiers include backups
+- **Jurisdiction:** Netherlands / EU
+- **Pricing:** ~€5–22/mo estimated (custom pricing, no public tier table)
+- **Role: Mission-aligned NL secondary for activist-critical services.** Single location limits technical redundancy. The Rapid Response Team is unique value for orgs facing political threat. Not suitable as sole production provider but meaningful for services where NL jurisdiction and activist support matter.
 
-### Backup strategy (minimum viable)
+#### IO Cooperative
+- **Regions:** Fremont, CA (US) only — single datacenter (Hurricane Electric FMT2)
+- **SLA:** None published
+- **HA tools:** None documented. Uses Ganeti VM management. No Floating IP, no load balancer product.
+- **Snapshots/backups:** Not publicly documented; likely self-managed
+- **Model:** California consumer cooperative — member voting rights, transparent finances
+- **Pricing:** 1-slice (1 GB RAM / 25 GB / 10 Mbps) $86.25/yr (~$7.19/mo); max 8 slices ~$57.50/mo
+- **Role: Community/values anchor, not production infrastructure.** IO Coop is the most structurally similar entity to Future Labs — genuinely member-owned. However: single US location, no SLA, no failover tools, small scale. Use for non-critical community services or as a cooperative governance reference. Consider membership for solidarity, not for uptime.
 
-- **What to back up:** Supernote Private Cloud data (MariaDB + uploaded files), Matrix database, any config files / Docker Compose state
-- **Where:** At minimum two destinations — local (same server) is not a backup
-- **Schedule:** Daily automated backups; weekly verification that restores work
-- **Retention:** 30-day rolling (keeps storage costs manageable)
+#### Servers.coop
+- **Type:** NOT a provider — a governance + technical framework for communities to run their own hosting
+- **Status:** Active but early-stage. Built on Capsul (AGPL VMaaS platform); affiliated with UK CoTech cooperative network
+- **Current availability:** No public VPS signup. Must connect with a CoTech member running a live Capsul instance
+- **Role: Future community node.** Monitor for when live instances are available through allied cooperatives. Not deployable today as a production provider.
+
+---
+
+### Recommended Provider Stack
+
+| Role | Provider | Why |
+|---|---|---|
+| **Primary VPS** | Hetzner | Cost, tooling, multiple EU regions, Floating IPs |
+| **Secondary / failover** | Infomaniak | Swiss jurisdiction, 99.99% SLA, no geographic overlap with Hetzner |
+| **Activist-tier services** | Greenhost | NL jurisdiction, Rapid Response Team |
+| **Backup storage (fast restore)** | Hetzner Storage Box (BX21 5TB €10.90/mo) | Same-account, native BorgBackup/rsync, unlimited traffic |
+| **Backup storage (offsite archival)** | Backblaze B2 EU ($6.95/TB/mo) | S3-compatible, EU region, provider-diverse from Hetzner, free egress up to 3× monthly storage |
+| **Community values node** | IO Cooperative | Membership for governance solidarity; non-critical services only |
+
+**Hetzner + Infomaniak as the primary pair** gives EU geographic diversity (DE/FI vs. CH), provider diversity, and strong-but-different SLAs, at a combined cost that's still reasonable. Both support Docker. Cross-provider failover uses DNS cutover (low TTL, Cloudflare DNS-only as secondary resolver).
+
+---
+
+### Failover Architecture by Phase
+
+**Phase 1 (single primary VPS):**
+- Primary: Hetzner CX32 (~€6.80/mo)
+- Backups: Hetzner Storage Box BX11 (1TB, €3.20/mo) + Backblaze B2 EU for provider-diverse copy
+- DNS: Low TTL (300s or less) on `cloud.tciamn.org` so failover cutover is fast
+- Secondary DNS resolver: Cloudflare free tier (DNS-only, no proxying)
+- Manual failover runbook: document restore-from-backup steps; assume 2am scenario
+- Comms fallback: May First email/XMPP if Matrix is down
+
+**Phase 2 (active secondary):**
+- Add Infomaniak VPS as secondary; mirror critical services (Supernote sync, Matrix)
+- Services tiered by criticality — sync/comms on primary; static/low-criticality on secondary
+- Floating IP on Hetzner for fast intra-DC failover; DNS-level for cross-provider
+- Automated health checks (e.g. UptimeRobot free tier) trigger alert on primary failure
+
+**Phase 3+ (owned hardware):**
+- Colocation with geographic split; Hetzner or Infomaniak as warm standby
+- Evaluate whether Greenhost fits as a third node for activist-sensitive services
+
+---
+
+### Backup Strategy (minimum viable)
+
+- **What:** Supernote Private Cloud (MariaDB dump + uploaded files), Matrix database, Docker Compose configs + `.env` files
+- **Where:** Two destinations — Hetzner Storage Box (fast restore) + Backblaze B2 EU (cold archival)
+- **Tool:** Restic or BorgBackup (both well-documented with Hetzner Storage Box; Restic supports B2 natively)
+- **Schedule:** Daily automated; weekly test restore of a random backup
+- **Retention:** 30-day rolling
+
+### May First as continuity layer
+
+TCIA holds a May First org membership. May First's role in this stack is resilience, not hosting:
+- **Nextcloud:** Offsite backup destination (third copy, US-based)
+- **Email:** Fallback if self-hosted Matrix is down
+- **XMPP:** Secondary comms channel
+
+May First is not part of the primary or secondary VPS decisions.
 
 ---
 
