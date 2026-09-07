@@ -22,6 +22,97 @@ A self-sustaining cooperative tech infrastructure that:
 
 ---
 
+## Non-Functional Requirements
+
+These are the conditions the infrastructure must meet beyond just "running the apps." They shape every provider and architecture decision.
+
+### Availability — How much downtime can we tolerate?
+
+**Requirement:** Critical services (Supernote sync, internal comms) should be available at least 99.5% of the time — roughly 44 hours of downtime per year, or less than 4 hours per month.
+
+Why this number: 99.9% (the Hetzner standard) is about 9 hours/year — acceptable for a small coop. We set 99.5% as our floor because we are managing our own failover, not relying on a managed HA product.
+
+Related terms:
+- **Uptime / SLA** — a provider's contractual promise about availability. "99.9% SLA" means they guarantee the server is reachable 99.9% of the time. If they miss it, you typically get billing credits, not cash.
+- **RTO (Recovery Time Objective)** — how fast we must be back online after a failure. Our target: **under 4 hours** for critical services (Supernote sync, Matrix); **under 24 hours** for everything else.
+- **RPO (Recovery Point Objective)** — how much data we can afford to lose. If the server dies at 11pm and our last backup ran at midnight the night before, we lose up to 23 hours of data. Our target: **under 24 hours** (daily backups); ideally under 4 hours for the Supernote database.
+
+---
+
+### Data Sovereignty — Where does the data live?
+
+**Requirement:** All member data must be stored on servers in the EU or Switzerland. US-based storage is acceptable only for backup copies, not primary storage.
+
+Why it matters: US cloud providers (AWS, Google, Azure) are subject to the US Cloud Act, which allows the US government to compel disclosure of data stored anywhere in the world, even if the data belongs to a foreign organization. EU and Swiss law provides stronger protections for activist and community organizations.
+
+Preferred jurisdictions in order:
+1. Switzerland (strongest privacy law; not EU but stricter than EU in practice)
+2. Netherlands, Germany, Finland (EU, GDPR-protected)
+3. United States (acceptable for backup/archival only; not primary storage)
+
+---
+
+### Data Privacy — Who can see member data?
+
+**Requirement:** No member data should be readable by the hosting provider or any third party without explicit consent. Encryption at rest and in transit is required.
+
+In plain terms:
+- **Encryption in transit** — data is scrambled while moving between devices and servers (HTTPS/TLS). This is table stakes — any modern server does this.
+- **Encryption at rest** — data is scrambled while sitting on disk, so a provider employee or attacker who gets physical access to the drive can't read it. This requires intentional setup.
+- Backup files must also be encrypted before they leave the primary server (client-side encryption). Restic and BorgBackup both do this by default.
+
+---
+
+### Operability — Who can run this, and how much effort does it take?
+
+**Requirement:** The infrastructure must be manageable by 1–2 people with intermediate Linux comfort, without requiring full-time sysadmin work. Routine maintenance should take no more than a few hours per month.
+
+This shapes tool choices significantly. It is why we use:
+- **Docker Compose** rather than bare installation — services are defined in a single file, easy to restart, upgrade, or move
+- **Coop Cloud** rather than hand-crafting everything — pre-built recipes for common FOSS apps
+- **Automated backups** rather than manual — humans forget; cron jobs don't
+- **Monitoring alerts** (e.g. UptimeRobot free tier) — so failures are caught without someone checking manually
+
+**Bus factor requirement:** At least 2 people must have full admin access (SSH keys, provider account access, backup decryption keys). If one person is unreachable, the other can respond.
+
+---
+
+### Cost — What can we spend?
+
+**Requirement:** Phase 1 infrastructure should cost no more than $30–40/month total, including VPS, backups, and any monitoring tools. Phase 2 (secondary provider) may add $15–30/month.
+
+Cost breakdown target (Phase 1):
+| Item | Estimated cost |
+|---|---|
+| Primary VPS (Hetzner CX32 or equivalent) | ~€7/mo |
+| Backup storage — Hetzner Storage Box BX11 | ~€3.20/mo |
+| Backup storage — Backblaze B2 EU (archival) | ~$1–3/mo (depends on volume) |
+| DNS / monitoring (Cloudflare free + UptimeRobot free) | $0 |
+| **Total Phase 1** | **~$15–20/mo** |
+
+---
+
+### Scalability — Can it grow?
+
+**Requirement:** The infrastructure must be able to serve 3–5 member organizations by Phase 2 without a full rebuild. Adding a new org's services should be a configuration change, not a new project.
+
+This is why Coop Cloud (recipe-based deployment) and Docker Compose matter — adding a new Matrix homeserver or Nextcloud instance for a new member org is adding a new service definition, not reinstalling a server.
+
+---
+
+### Movement Values — The non-technical requirement
+
+**Requirement:** Provider choices must reflect TCIA's values. This means prioritizing cooperative, employee-owned, or mission-aligned providers over corporate cloud, even at a small cost premium.
+
+This is not just symbolic. It means:
+- Vendor lock-in is a political risk, not just a technical one — data held by a corporate provider can be leveraged against the community
+- Transparency in governance and costs is required — member orgs should be able to see what they're paying for and why
+- Exit rights — the cooperative must always be able to move to a different provider without losing data or paying extraction fees (egress costs)
+
+**Egress** — in plain language, this is the fee a provider charges you to *take your own data back*. When you upload files to a cloud provider, storing them is cheap. But if you want to download them — to restore a backup, or to move to a different provider — many corporate providers charge per gigabyte of data that leaves their servers. This is called egress. It creates lock-in: leaving becomes expensive. Providers like Backblaze B2 have moved to free or near-free egress as a deliberate choice. AWS and Google charge $0.08–0.09/GB, which adds up to hundreds of dollars for a large dataset. When evaluating providers, always check egress costs — they reveal whether the provider is designed to let you leave freely.
+
+---
+
 ## Stack (Layer by Layer)
 
 | Layer | Tool / Option | Notes |
