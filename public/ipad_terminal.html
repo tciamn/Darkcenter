@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Darkcenter">
 <meta name="theme-color" content="#0a0e0f">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; manifest-src blob: data:; worker-src blob:">
 <link id="manifest-placeholder" rel="manifest">
 <title>Darkcenter Terminal</title>
 <style>
@@ -21,7 +23,7 @@
     --red: #e74c3c;
     --blue: #3498db;
     --text: #c8dcc8;
-    --text-dim: #4a6a4a;
+    --text-dim: #688868;
     --text-mid: #7a9a7a;
     --border: #1a2e1a;
     --cursor: #2ecc71;
@@ -34,6 +36,12 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 
   html, body {
     width: 100%; height: 100%;
@@ -188,11 +196,12 @@
   .state-item {
     display: flex;
     align-items: center;
-    padding: 8px 14px;
+    padding: 11px 14px;
     cursor: pointer;
     gap: 10px;
     border-left: 2px solid transparent;
     transition: background 0.1s, border-color 0.1s;
+    min-height: 44px;
   }
 
   .state-item:hover, .state-item.active {
@@ -240,13 +249,13 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 0;
+    padding: 9px 0 9px 6px;
     cursor: pointer;
     font-size: 0.65rem;
     color: var(--text-dim);
     border-left: 2px solid transparent;
-    padding-left: 6px;
     transition: color 0.1s, border-color 0.1s;
+    min-height: 44px;
   }
 
   .sf-item:hover, .sf-item.active {
@@ -585,6 +594,13 @@
   @media (min-width: 1200px) {
     :root { --sidebar-w: 260px; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blink { animation: none; opacity: 1; }
+    .t-bar-fill { transition: none; }
+    #sidebar { transition: none; }
+    * { transition-duration: 0.01ms !important; }
+  }
 </style>
 </head>
 <body>
@@ -596,7 +612,7 @@
   <!-- Top bar -->
   <div id="topbar">
     <div id="topbar-left">
-      <button id="menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+      <button id="menu-btn" onclick="toggleSidebar()" aria-label="Open state selector" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
       <div id="topbar-title">DARK<span>CENTER</span> / terminal</div>
     </div>
     <div id="topbar-meta">2,820 US data centers &bull; 30 states</div>
@@ -609,29 +625,29 @@
   <div id="panels">
 
     <!-- Sidebar -->
-    <div id="sidebar">
+    <nav id="sidebar" aria-label="State selector">
       <div id="sidebar-header">
-        <div class="sh-label">// filter states</div>
-        <input type="search" id="search-input" placeholder="search..." oninput="filterStates(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="sh-label" aria-hidden="true">// filter states</div>
+        <input type="search" id="search-input" aria-label="Search states" placeholder="search..." oninput="filterStates(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
       </div>
-      <div id="state-list"></div>
-      <div id="sidebar-footer">
-        <div class="sf-item" id="sf-national" onclick="showNational()">&#9679; NATIONAL TOTALS</div>
-        <div class="sf-item" id="sf-table" onclick="showTable()">&#9632; ALL STATES TABLE</div>
-        <div class="sf-item" id="sf-sources" onclick="showSources()">&#9650; DATA SOURCES</div>
-        <div class="sf-item" id="sf-about" onclick="showAbout()">&#9670; ABOUT</div>
+      <div id="state-list" role="list"></div>
+      <div id="sidebar-footer" role="list">
+        <div class="sf-item" id="sf-national" role="listitem" tabindex="0" onclick="showNational()" onkeydown="if(event.key==='Enter'||event.key===' ')showNational()">&#9679; NATIONAL TOTALS</div>
+        <div class="sf-item" id="sf-table" role="listitem" tabindex="0" onclick="showTable()" onkeydown="if(event.key==='Enter'||event.key===' ')showTable()">&#9632; ALL STATES TABLE</div>
+        <div class="sf-item" id="sf-sources" role="listitem" tabindex="0" onclick="showSources()" onkeydown="if(event.key==='Enter'||event.key===' ')showSources()">&#9650; DATA SOURCES</div>
+        <div class="sf-item" id="sf-about" role="listitem" tabindex="0" onclick="showAbout()" onkeydown="if(event.key==='Enter'||event.key===' ')showAbout()">&#9670; ABOUT</div>
       </div>
-    </div>
+    </nav>
 
     <!-- Terminal -->
-    <div id="terminal">
-      <div id="term-output"></div>
+    <main id="terminal">
+      <div id="term-output" role="log" aria-live="polite" aria-label="Terminal output" aria-relevant="additions"></div>
       <div id="term-input-row">
-        <div id="term-prompt">darkcenter&nbsp;$</div>
-        <input type="text" id="term-input" placeholder="type a state abbr or command (help)..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" onkeydown="handleInput(event)">
-        <button id="run-btn" onclick="runCommand()">RUN</button>
+        <div id="term-prompt" aria-hidden="true">darkcenter&nbsp;$</div>
+        <input type="text" id="term-input" aria-label="Command input" placeholder="type a state abbr or command (help)..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" onkeydown="handleInput(event)">
+        <button id="run-btn" aria-label="Run command" onclick="runCommand()">RUN</button>
       </div>
-    </div>
+    </main>
 
   </div>
 </div>
@@ -1052,10 +1068,13 @@ function showHelp() {
 function buildSidebar() {
   const list = document.getElementById('state-list');
   list.innerHTML = DATA.states.map(s => `
-    <div class="state-item" id="si-${s.state}" onclick="showState(${JSON.stringify(s).replace(/"/g,'&quot;')})">
-      <span class="si-abbr">${s.state}</span>
+    <div class="state-item" id="si-${s.state}" role="listitem" tabindex="0"
+      onclick="showState(${JSON.stringify(s).replace(/"/g,'&quot;')})"
+      onkeydown="if(event.key==='Enter'||event.key===' ')showState(${JSON.stringify(s).replace(/"/g,'&quot;')})"
+      aria-label="${s.name} — ${s.count} facilities">
+      <span class="si-abbr" aria-hidden="true">${s.state}</span>
       <span class="si-name">${s.name}</span>
-      <span class="si-count">${s.count}</span>
+      <span class="si-count" aria-hidden="true">${s.count}</span>
     </div>`).join('');
 }
 
@@ -1088,13 +1107,17 @@ function setActiveFooter(id) {
 function toggleSidebar() {
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('sidebar-overlay');
-  sb.classList.toggle('open');
-  ov.classList.toggle('show');
+  const btn = document.getElementById('menu-btn');
+  const open = sb.classList.toggle('open');
+  ov.classList.toggle('show', open);
+  if (btn) { btn.setAttribute('aria-expanded', open); btn.setAttribute('aria-label', open ? 'Close state selector' : 'Open state selector'); }
 }
 
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('show');
+  const btn = document.getElementById('menu-btn');
+  if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-label', 'Open state selector'); }
 }
 
 // ── COMMAND INPUT ──
