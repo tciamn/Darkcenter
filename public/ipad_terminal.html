@@ -6,8 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Darkcenter">
+<meta name="theme-color" content="#0a0e0f">
+<link id="manifest-placeholder" rel="manifest">
 <title>Darkcenter Terminal</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0e0f;
@@ -38,7 +39,7 @@
     width: 100%; height: 100%;
     background: var(--bg);
     color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, 'Courier New', monospace;
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
@@ -597,7 +598,10 @@
       <div id="topbar-title">DARK<span>CENTER</span> / terminal</div>
     </div>
     <div id="topbar-meta">2,820 US data centers &bull; 30 states</div>
-    <div id="clock"></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="offline-pill" hidden style="font-size:0.55rem;letter-spacing:0.1em;padding:2px 7px;border-radius:10px;background:rgba(243,156,18,0.15);color:#f39c12;border:1px solid rgba(243,156,18,0.4)">OFFLINE</div>
+      <div id="clock"></div>
+    </div>
   </div>
 
   <div id="panels">
@@ -1126,6 +1130,37 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+// ── OFFLINE STATUS ──
+function setOnlineStatus() {
+  const pill = document.getElementById('offline-pill');
+  if (pill) pill.hidden = navigator.onLine;
+}
+window.addEventListener('online', setOnlineStatus);
+window.addEventListener('offline', setOnlineStatus);
+setOnlineStatus();
+
+// ── MANIFEST (inline, dynamic — required for iOS home screen) ──
+(function() {
+  const manifest = {
+    name: 'Darkcenter Terminal',
+    short_name: 'Darkcenter',
+    description: 'U.S. data center energy, emissions & health impact tool',
+    start_url: location.href,
+    display: 'standalone',
+    background_color: '#0a0e0f',
+    theme_color: '#0a0e0f',
+    orientation: 'any',
+    icons: [
+      { src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0e0f"/><text y="72" font-size="72" text-anchor="middle" x="50">🖥️</text></svg>', sizes: '512x512', type: 'image/svg+xml' }
+    ]
+  };
+  try {
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    const el = document.getElementById('manifest-placeholder');
+    if (el) el.href = URL.createObjectURL(blob);
+  } catch(e) {}
+})();
 
 // ── INIT ──
 buildSidebar();
