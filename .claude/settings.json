@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '\\n── DARKCENTER WORKFLOW CHECK ──\\nDefine /define → Build /build → Test /qa\\nHave all three phases run for this change?\\n────────────────────────────────────\\n'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "last_cmd=\"$CLAUDE_TOOL_INPUT_command\"; case \"$last_cmd\" in *'git push'*) printf '\\n[workflow] pushed — confirm /qa ran before this push\\n';; esac"
+          }
+        ]
+      }
+    ]
+  }
+}
