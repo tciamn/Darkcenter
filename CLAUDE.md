@@ -169,10 +169,10 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 | Branch | Contents | Status |
 |---|---|---|
-| `main` | iPad terminal + workflow skills; behind on React app | Active — Friday branch not yet merged |
-| `claude/what-broke-this-should-be-uh7vcn` | Complete React app + all HTML pages | Not merged |
-| `claude/squarespace-page-config-yydjup` | Fixed creators timeline HTML | Active working branch |
-| `claude/ios-27-ipad-terminal-app-pcpdua` | iPad terminal app + Define/Build/QA skills | Merged to main 2026-09-14 |
+| `main` | All branches merged — fully up to date as of 2026-09-14 | Active |
+| `claude/what-broke-this-should-be-uh7vcn` | Complete React app + all HTML pages | Already in main (confirmed 2026-09-14) |
+| `claude/squarespace-page-config-yydjup` | React components, doc generators, docs/*.docx | Merged to main 2026-09-14 (PR #7) |
+| `claude/ios-27-ipad-terminal-app-pcpdua` | iPad terminal app + Define/Build/QA skills | Merged to main 2026-09-14 (PR #5) |
 | `claude/siteground-wordpress-setup-al3hdi` | Future Labs project docs in `.claude/projects/` | Reference only |
 
 ---
