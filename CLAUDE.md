@@ -2,7 +2,7 @@
 
 **Owner:** aasim@tciamn.org — Twin Cities Innovation Alliance  
 **Repo:** tciamn/Darkcenter  
-**Last updated:** 2026-09-07
+**Last updated:** 2026-09-14
 
 Read this file at the start of every session. It is the authoritative context for all active work.
 
@@ -37,18 +37,21 @@ Do not deploy. Do not create a subdomain. Validation must happen before any of t
 **What exists:**
 - Complete React app on branch `claude/what-broke-this-should-be-uh7vcn` (Friday branch, Sept 4–5)
 - `public/embed.html` — fully self-contained standalone tool (30 states inline, no build step)
+- `public/ipad_terminal.html` — self-contained terminal iPad app (offline, home-screen capable, WCAG 2.1 AA) — merged to main 2026-09-14
 - `public/opensource_creators_timeline.html` — Open Source Founders Tree + Resource Guide (4,012 lines, QA'd)
 - `public/opensource_timeline.html` — The Open Source Tree (dark terminal aesthetic)
 - `public/futurelabs_opensource_v1.2.html` — Future Labs LSW brand variant
 - `data/fallback.json` — 30 states of impact data
 - Two-layer data strategy: Google Sheets (live) → fallback.json
+- `.claude/skills/` — `/define`, `/build`, `/qa` slash commands (BDD workflow) — merged to main 2026-09-14
 
 **Data sources:** FracTracker Alliance · Oil & Gas Watch · IM3 · EPA eGRID · EIA · EDGAR · COBRA
 
 **Branch status:**
 - `claude/what-broke-this-should-be-uh7vcn` — complete app, not merged to main
 - `claude/squarespace-page-config-yydjup` — current working branch; has fixed creators timeline HTML
-- `main` — behind; Friday branch work not yet merged
+- `claude/ios-27-ipad-terminal-app-pcpdua` — iPad terminal app + Define/Build/QA workflow skills — **merged to main 2026-09-14**
+- `main` — behind on React app (Friday branch); iPad terminal + workflow skills now included
 
 **When validation is done:**
 - Deploy to Netlify (supports React + env vars)
@@ -166,9 +169,10 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 | Branch | Contents | Status |
 |---|---|---|
-| `main` | Base repo — behind on React app | Needs Friday branch merged |
+| `main` | iPad terminal + workflow skills; behind on React app | Active — Friday branch not yet merged |
 | `claude/what-broke-this-should-be-uh7vcn` | Complete React app + all HTML pages | Not merged |
 | `claude/squarespace-page-config-yydjup` | Fixed creators timeline HTML | Active working branch |
+| `claude/ios-27-ipad-terminal-app-pcpdua` | iPad terminal app + Define/Build/QA skills | Merged to main 2026-09-14 |
 | `claude/siteground-wordpress-setup-al3hdi` | Future Labs project docs in `.claude/projects/` | Reference only |
 
 ---
@@ -207,3 +211,4 @@ Squarespace stays in place during transition; pages migrate one by one.
 - Review first, reduce tech debt later
 - Do not act before direction is confirmed — wait for guidance
 - Subdomains: created at GoDaddy, not SiteGround
+- Workflow: `/define` → `/build` → `/qa` (skills enforced via `.claude/skills/` + `.claude/settings.json`)
