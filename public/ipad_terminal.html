@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Darkcenter">
+<title>Darkcenter Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0f;
+    --bg2: #0d1214;
+    --sidebar-bg: #080c0d;
+    --green: #2ecc71;
+    --green-dim: rgba(46,204,113,0.18);
+    --green-glow: rgba(46,204,113,0.08);
+    --amber: #f39c12;
+    --red: #e74c3c;
+    --blue: #3498db;
+    --text: #c8dcc8;
+    --text-dim: #4a6a4a;
+    --text-mid: #7a9a7a;
+    --border: #1a2e1a;
+    --cursor: #2ecc71;
+    --sel: rgba(46,204,113,0.15);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --sidebar-w: 220px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── LAYOUT ── */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+  }
+
+  /* Top bar */
+  #topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 44px;
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  #topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--green);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+  }
+
+  #topbar-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    text-transform: uppercase;
+  }
+
+  #topbar-title span {
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  #topbar-meta {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  #clock {
+    font-size: 0.65rem;
+    color: var(--text-mid);
+    letter-spacing: 0.08em;
+  }
+
+  /* Main panel area */
+  #panels {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: transform 0.25s ease;
+  }
+
+  #sidebar-header {
+    padding: 12px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  #sidebar-header .sh-label {
+    font-size: 0.55rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  #search-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.7rem;
+    padding: 5px 8px;
+    outline: none;
+    border-radius: 2px;
+  }
+
+  #search-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 1px var(--green-dim);
+  }
+
+  #search-input::placeholder { color: var(--text-dim); }
+
+  #state-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+
+  #state-list::-webkit-scrollbar { width: 3px; }
+  #state-list::-webkit-scrollbar-track { background: transparent; }
+  #state-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .state-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 14px;
+    cursor: pointer;
+    gap: 10px;
+    border-left: 2px solid transparent;
+    transition: background 0.1s, border-color 0.1s;
+  }
+
+  .state-item:hover, .state-item.active {
+    background: var(--green-glow);
+    border-left-color: var(--green);
+  }
+
+  .state-item.active .si-abbr { color: var(--green); }
+  .state-item.active .si-name { color: var(--text); }
+
+  .si-abbr {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-mid);
+    width: 24px;
+    flex-shrink: 0;
+  }
+
+  .si-name {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .si-count {
+    font-size: 0.55rem;
+    color: var(--text-dim);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 1px 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  #sidebar-footer {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .sf-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    cursor: pointer;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    border-left: 2px solid transparent;
+    padding-left: 6px;
+    transition: color 0.1s, border-color 0.1s;
+  }
+
+  .sf-item:hover, .sf-item.active {
+    color: var(--amber);
+    border-left-color: var(--amber);
+  }
+
+  .sf-item.active { color: var(--amber); }
+
+  /* ── TERMINAL MAIN ── */
+  #terminal {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  #term-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 22px;
+    line-height: 1.6;
+  }
+
+  #term-output::-webkit-scrollbar { width: 4px; }
+  #term-output::-webkit-scrollbar-track { background: transparent; }
+  #term-output::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Terminal command line */
+  #term-input-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--bg2);
+  }
+
+  #term-prompt {
+    color: var(--green);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+
+  #term-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.75rem;
+    outline: none;
+    caret-color: var(--cursor);
+  }
+
+  #term-input::placeholder { color: var(--text-dim); }
+
+  #run-btn {
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: inherit;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    border-radius: 2px;
+    transition: background 0.15s;
+  }
+
+  #run-btn:hover { background: rgba(46,204,113,0.28); }
+  #run-btn:active { background: rgba(46,204,113,0.4); }
+
+  /* ── TERMINAL CONTENT ELEMENTS ── */
+  .t-prompt { color: var(--green); font-size: 0.72rem; }
+  .t-cmd { color: var(--text); font-size: 0.72rem; }
+  .t-comment { color: var(--text-dim); font-size: 0.7rem; }
+
+  .t-section {
+    margin: 18px 0 6px;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+  }
+
+  .t-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.06em;
+    margin: 8px 0 2px;
+  }
+
+  .t-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+  }
+
+  .t-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .t-block.amber { border-left-color: var(--amber); }
+  .t-block.red { border-left-color: var(--red); }
+  .t-block.blue { border-left-color: var(--blue); }
+
+  .t-block-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .t-val {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1.1;
+  }
+
+  .t-val.amber { color: var(--amber); }
+  .t-val.red { color: var(--red); }
+  .t-val.blue { color: var(--blue); }
+
+  .t-val-sub {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  .t-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0;
+  }
+
+  .t-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0;
+  }
+
+  .t-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.7rem;
+  }
+
+  .t-row:last-child { border-bottom: none; }
+  .t-row-label { color: var(--text-dim); }
+  .t-row-val { color: var(--text); font-weight: 600; }
+  .t-row-val.green { color: var(--green); }
+  .t-row-val.amber { color: var(--amber); }
+  .t-row-val.red { color: var(--red); }
+
+  .t-bar-wrap {
+    margin: 4px 0 12px;
+  }
+
+  .t-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+
+  .t-bar-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .t-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  .t-bar-fill.amber { background: var(--amber); }
+  .t-bar-fill.red { background: var(--red); }
+
+  .t-note {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    border-left: 2px solid var(--border);
+    padding-left: 10px;
+    margin: 10px 0;
+    line-height: 1.5;
+  }
+
+  .t-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.65rem;
+  }
+
+  .t-table th {
+    text-align: left;
+    color: var(--text-dim);
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  .t-table td {
+    padding: 5px 10px 5px 0;
+    border-bottom: 1px solid rgba(26,46,26,0.5);
+    color: var(--text);
+  }
+
+  .t-table tr:last-child td { border-bottom: none; }
+  .t-table td.dim { color: var(--text-dim); }
+  .t-table td.grn { color: var(--green); }
+  .t-table td.amb { color: var(--amber); }
+  .t-table td.red { color: var(--red); }
+
+  .blink {
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0 } }
+
+  .t-error {
+    color: var(--red);
+    font-size: 0.7rem;
+    padding: 6px 0;
+  }
+
+  .t-success {
+    color: var(--green);
+    font-size: 0.7rem;
+    padding: 6px 0;
+  }
+
+  /* ── SPLASH / BOOT SCREEN ── */
+  #boot {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.68rem;
+  }
+
+  .boot-line { color: var(--text-dim); }
+  .boot-line.grn { color: var(--green); }
+  .boot-line.amb { color: var(--amber); }
+
+  /* ── NATIONAL TOTALS HERO ── */
+  .hero-ascii {
+    font-size: 0.52rem;
+    color: var(--green);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+    opacity: 0.7;
+  }
+
+  /* ── PORTRAIT / MOBILE sidebar overlay ── */
+  #sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+  }
+
+  /* ── RESPONSIVE ── */
+
+  /* iPad portrait (768px) */
+  @media (max-width: 900px) {
+    :root { --sidebar-w: 190px; }
+
+    #menu-btn { display: block; }
+
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      z-index: 200;
+      transform: translateX(-100%);
+      padding-top: var(--safe-top);
+    }
+
+    #sidebar.open {
+      transform: translateX(0);
+    }
+
+    #sidebar-overlay.show { display: block; }
+
+    .t-grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Small phone fallback */
+  @media (max-width: 480px) {
+    :root { --sidebar-w: 240px; }
+    .t-grid { grid-template-columns: 1fr; }
+    .t-grid-3 { grid-template-columns: 1fr; }
+    #topbar-meta { display: none; }
+  }
+
+  /* iPad landscape optimization */
+  @media (min-width: 1024px) {
+    :root { --sidebar-w: 240px; }
+    .t-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    #term-output { padding: 22px 28px; }
+  }
+
+  @media (min-width: 1200px) {
+    :root { --sidebar-w: 260px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div id="app">
+
+  <!-- Top bar -->
+  <div id="topbar">
+    <div id="topbar-left">
+      <button id="menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+      <div id="topbar-title">DARK<span>CENTER</span> / terminal</div>
+    </div>
+    <div id="topbar-meta">2,820 US data centers &bull; 30 states</div>
+    <div id="clock"></div>
+  </div>
+
+  <div id="panels">
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <div class="sh-label">// filter states</div>
+        <input type="search" id="search-input" placeholder="search..." oninput="filterStates(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+      <div id="state-list"></div>
+      <div id="sidebar-footer">
+        <div class="sf-item" id="sf-national" onclick="showNational()">&#9679; NATIONAL TOTALS</div>
+        <div class="sf-item" id="sf-table" onclick="showTable()">&#9632; ALL STATES TABLE</div>
+        <div class="sf-item" id="sf-sources" onclick="showSources()">&#9650; DATA SOURCES</div>
+        <div class="sf-item" id="sf-about" onclick="showAbout()">&#9670; ABOUT</div>
+      </div>
+    </div>
+
+    <!-- Terminal -->
+    <div id="terminal">
+      <div id="term-output"></div>
+      <div id="term-input-row">
+        <div id="term-prompt">darkcenter&nbsp;$</div>
+        <input type="text" id="term-input" placeholder="type a state abbr or command (help)..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" onkeydown="handleInput(event)">
+        <button id="run-btn" onclick="runCommand()">RUN</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DATA = {
+  meta: {
+    last_updated: "2026-05-15",
+    version: "2026-05",
+    sources: ["FracTracker Alliance","Oil & Gas Watch","IM3","U.S. EPA eGRID","U.S. EIA","EDGAR","U.S. EPA COBRA Health Impact Model"]
+  },
+  totals: {
+    facilities: 2820, capacity_gw_low: 578.8, capacity_gw_high: 606.0,
+    co2_gt_low: 1.431, co2_gt_high: 1.910,
+    deaths_low: 4520, deaths_high: 13372,
+    health_cost_b_low: 71.2, health_cost_b_high: 203.6,
+    grid_count: 2741, btm_count: 79,
+    comparable_country: "Indonesia",
+    homes_equivalent_low: 269916500, homes_equivalent_high: 323913797
+  },
+  states: [
+    { state:"TX", name:"Texas", count:286, capacity_mw_low:84633, capacity_mw_high:92000, co2_mt_low:230361413, co2_mt_high:307148551, deaths_low:484, deaths_high:1452, health_cost_m_low:7600, health_cost_m_high:22800, asthma_low:338624, asthma_high:1015872 },
+    { state:"VA", name:"Virginia", count:686, capacity_mw_low:83000, capacity_mw_high:95000, co2_mt_low:227657800, co2_mt_high:303543734, deaths_low:804, deaths_high:2412, health_cost_m_low:9800, health_cost_m_high:29400, asthma_low:532860, asthma_high:1598580 },
+    { state:"OH", name:"Ohio", count:133, capacity_mw_low:27421, capacity_mw_high:30000, co2_mt_low:111732444, co2_mt_high:148976592, deaths_low:284, deaths_high:852, health_cost_m_low:4400, health_cost_m_high:13200, asthma_low:191319, asthma_high:573957 },
+    { state:"PA", name:"Pennsylvania", count:107, capacity_mw_low:24196, capacity_mw_high:26000, co2_mt_low:77856270, co2_mt_high:103808360, deaths_low:201, deaths_high:603, health_cost_m_low:3200, health_cost_m_high:9600, asthma_low:134060, asthma_high:402180 },
+    { state:"UT", name:"Utah", count:25, capacity_mw_low:19251, capacity_mw_high:21000, co2_mt_low:42082900, co2_mt_high:56110533, deaths_low:182, deaths_high:546, health_cost_m_low:1900, health_cost_m_high:5700, asthma_low:97561, asthma_high:292683 },
+    { state:"WY", name:"Wyoming", count:15, capacity_mw_low:16329, capacity_mw_high:18000, co2_mt_low:72284260, co2_mt_high:96379013, deaths_low:227, deaths_high:681, health_cost_m_low:3100, health_cost_m_high:9300, asthma_low:157432, asthma_high:472296 },
+    { state:"NM", name:"New Mexico", count:25, capacity_mw_low:16309, capacity_mw_high:18000, co2_mt_low:53113680, co2_mt_high:70818240, deaths_low:168, deaths_high:504, health_cost_m_low:2400, health_cost_m_high:7200, asthma_low:120031, asthma_high:360093 },
+    { state:"GA", name:"Georgia", count:192, capacity_mw_low:16174, capacity_mw_high:18000, co2_mt_low:136932800, co2_mt_high:182577067, deaths_low:399, deaths_high:1197, health_cost_m_low:5100, health_cost_m_high:15300, asthma_low:293442, asthma_high:880326 },
+    { state:"IN", name:"Indiana", count:39, capacity_mw_low:12818, capacity_mw_high:14000, co2_mt_low:31554490, co2_mt_high:42072653, deaths_low:120, deaths_high:360, health_cost_m_low:2100, health_cost_m_high:6300, asthma_low:88124, asthma_high:264372 },
+    { state:"WV", name:"West Virginia", count:10, capacity_mw_low:10116, capacity_mw_high:11000, co2_mt_low:30473810, co2_mt_high:40631747, deaths_low:29, deaths_high:87, health_cost_m_low:800, health_cost_m_high:2400, asthma_low:30820, asthma_high:92460 },
+    { state:"IL", name:"Illinois", count:66, capacity_mw_low:7368, capacity_mw_high:8000, co2_mt_low:24838740, co2_mt_high:33118320, deaths_low:112, deaths_high:336, health_cost_m_low:2800, health_cost_m_high:8400, asthma_low:98342, asthma_high:295026 },
+    { state:"AZ", name:"Arizona", count:79, capacity_mw_low:6848, capacity_mw_high:7198, co2_mt_low:29697724, co2_mt_high:44102172, deaths_low:68, deaths_high:179, health_cost_m_low:1076, health_cost_m_high:2280, asthma_low:51053, asthma_high:79927 },
+    { state:"AL", name:"Alabama", count:13, capacity_mw_low:3158, capacity_mw_high:3258, co2_mt_low:19437403, co2_mt_high:25916538, deaths_low:40, deaths_high:92, health_cost_m_low:638, health_cost_m_high:1111, asthma_low:30276, asthma_high:42445 },
+    { state:"NC", name:"North Carolina", count:55, capacity_mw_low:5200, capacity_mw_high:6000, co2_mt_low:18000000, co2_mt_high:24000000, deaths_low:75, deaths_high:225, health_cost_m_low:1800, health_cost_m_high:5400, asthma_low:62000, asthma_high:186000 },
+    { state:"FL", name:"Florida", count:45, capacity_mw_low:3600, capacity_mw_high:4000, co2_mt_low:11000000, co2_mt_high:14666667, deaths_low:55, deaths_high:165, health_cost_m_low:1200, health_cost_m_high:3600, asthma_low:42000, asthma_high:126000 },
+    { state:"TN", name:"Tennessee", count:30, capacity_mw_low:3500, capacity_mw_high:4000, co2_mt_low:12000000, co2_mt_high:16000000, deaths_low:50, deaths_high:150, health_cost_m_low:1100, health_cost_m_high:3300, asthma_low:38000, asthma_high:114000 },
+    { state:"CO", name:"Colorado", count:42, capacity_mw_low:3800, capacity_mw_high:4200, co2_mt_low:8500000, co2_mt_high:11333333, deaths_low:35, deaths_high:105, health_cost_m_low:850, health_cost_m_high:2550, asthma_low:28000, asthma_high:84000 },
+    { state:"NY", name:"New York", count:50, capacity_mw_low:6117, capacity_mw_high:7000, co2_mt_low:4555870, co2_mt_high:6074493, deaths_low:13, deaths_high:39, health_cost_m_low:400, health_cost_m_high:1200, asthma_low:12870, asthma_high:38610 },
+    { state:"NV", name:"Nevada", count:37, capacity_mw_low:4699, capacity_mw_high:5200, co2_mt_low:9499755, co2_mt_high:12666340, deaths_low:48, deaths_high:144, health_cost_m_low:1000, health_cost_m_high:3000, asthma_low:44120, asthma_high:132360 },
+    { state:"MI", name:"Michigan", count:25, capacity_mw_low:4078, capacity_mw_high:4500, co2_mt_low:10103010, co2_mt_high:13470680, deaths_low:44, deaths_high:132, health_cost_m_low:900, health_cost_m_high:2700, asthma_low:40230, asthma_high:120690 },
+    { state:"MO", name:"Missouri", count:22, capacity_mw_low:2900, capacity_mw_high:3200, co2_mt_low:7200000, co2_mt_high:9600000, deaths_low:30, deaths_high:90, health_cost_m_low:720, health_cost_m_high:2160, asthma_low:24000, asthma_high:72000 },
+    { state:"OR", name:"Oregon", count:28, capacity_mw_low:3200, capacity_mw_high:3600, co2_mt_low:3800000, co2_mt_high:5066667, deaths_low:18, deaths_high:54, health_cost_m_low:500, health_cost_m_high:1500, asthma_low:14000, asthma_high:42000 },
+    { state:"WA", name:"Washington", count:35, capacity_mw_low:4100, capacity_mw_high:4600, co2_mt_low:2900000, co2_mt_high:3866667, deaths_low:15, deaths_high:45, health_cost_m_low:450, health_cost_m_high:1350, asthma_low:11000, asthma_high:33000 },
+    { state:"MD", name:"Maryland", count:32, capacity_mw_low:2800, capacity_mw_high:3100, co2_mt_low:5500000, co2_mt_high:7333333, deaths_low:28, deaths_high:84, health_cost_m_low:620, health_cost_m_high:1860, asthma_low:20000, asthma_high:60000 },
+    { state:"MA", name:"Massachusetts", count:24, capacity_mw_low:1600, capacity_mw_high:1800, co2_mt_low:2200000, co2_mt_high:2933333, deaths_low:12, deaths_high:36, health_cost_m_low:380, health_cost_m_high:1140, asthma_low:9800, asthma_high:29400 },
+    { state:"NJ", name:"New Jersey", count:29, capacity_mw_low:2100, capacity_mw_high:2400, co2_mt_low:3100000, co2_mt_high:4133333, deaths_low:18, deaths_high:54, health_cost_m_low:480, health_cost_m_high:1440, asthma_low:14000, asthma_high:42000 },
+    { state:"SC", name:"South Carolina", count:18, capacity_mw_low:2400, capacity_mw_high:2700, co2_mt_low:4900000, co2_mt_high:6533333, deaths_low:20, deaths_high:60, health_cost_m_low:490, health_cost_m_high:1470, asthma_low:15000, asthma_high:45000 },
+    { state:"IA", name:"Iowa", count:20, capacity_mw_low:2200, capacity_mw_high:2500, co2_mt_low:5200000, co2_mt_high:6933333, deaths_low:18, deaths_high:54, health_cost_m_low:520, health_cost_m_high:1560, asthma_low:16000, asthma_high:48000 },
+    { state:"MN", name:"Minnesota", count:18, capacity_mw_low:1900, capacity_mw_high:2100, co2_mt_low:4100000, co2_mt_high:5466667, deaths_low:16, deaths_high:48, health_cost_m_low:410, health_cost_m_high:1230, asthma_low:13000, asthma_high:39000 },
+    { state:"KY", name:"Kentucky", count:12, capacity_mw_low:2100, capacity_mw_high:2400, co2_mt_low:5800000, co2_mt_high:7733333, deaths_low:22, deaths_high:66, health_cost_m_low:580, health_cost_m_high:1740, asthma_low:18000, asthma_high:54000 }
+  ]
+};
+
+// Helpers
+const fmt = (n, dec=0) => n == null ? 'N/A' : Number(n).toLocaleString('en-US', {minimumFractionDigits: dec, maximumFractionDigits: dec});
+const fmtMW = mw => mw >= 1000 ? `${(mw/1000).toFixed(1)} GW` : `${fmt(mw)} MW`;
+const fmtCO2 = mt => mt >= 1e9 ? `${(mt/1e9).toFixed(2)} GT` : `${(mt/1e6).toFixed(1)} MT`;
+const pct = (v, max) => Math.min(100, Math.round((v/max)*100));
+
+const out = document.getElementById('term-output');
+const maxCap = Math.max(...DATA.states.map(s => s.capacity_mw_low));
+const maxDeaths = Math.max(...DATA.states.map(s => s.deaths_low));
+
+function write(html) {
+  out.innerHTML = html;
+  out.scrollTop = 0;
+}
+
+function bar(val, max, cls='') {
+  const p = pct(val, max);
+  return `<div class="t-bar-track"><div class="t-bar-fill ${cls}" style="width:${p}%"></div></div>`;
+}
+
+function stateRank(s, field) {
+  const sorted = [...DATA.states].sort((a,b) => b[field] - a[field]);
+  return sorted.findIndex(x => x.state === s.state) + 1;
+}
+
+// ── BOOT SCREEN ──
+function showBoot() {
+  const lines = [
+    ['grn', `DARKCENTER v2026.05 — U.S. Data Center Impact Terminal`],
+    ['', `loading impact model...`],
+    ['', `cross-referencing EPA eGRID .......... ok`],
+    ['', `loading IM3 capacity data ........... ok`],
+    ['', `applying COBRA health model .......... ok`],
+    ['grn', `ready. ${DATA.states.length} states loaded. ${fmt(DATA.totals.facilities)} facilities indexed.`],
+    ['', ``],
+    ['amb', `select a state from the sidebar or type a command below`],
+    ['', `type  help  for available commands`],
+  ];
+  const html = `<div id="boot">` +
+    lines.map(([cls, txt]) =>
+      `<div class="boot-line ${cls}">${txt ? `> ${txt}` : '&nbsp;'}</div>`
+    ).join('') +
+    `<div class="boot-line">&nbsp;</div>
+     <div class="boot-line dim">&#9646;<span class="blink">&#9646;</span></div>
+    </div>`;
+  write(html);
+}
+
+// ── STATE VIEW ──
+function showState(s) {
+  setActiveState(s.state);
+  closeSidebar();
+
+  const capRank = stateRank(s, 'capacity_mw_low');
+  const deathRank = stateRank(s, 'deaths_low');
+  const countRank = stateRank(s, 'count');
+
+  const html = `
+<div class="t-prompt">&gt; darkcenter --state ${s.state}</div>
+<div style="margin-top:14px"></div>
+
+<div class="t-title">${s.name} (${s.state})</div>
+<div class="t-subtitle">#${countRank} by facility count &bull; data: FracTracker / IM3 / EPA eGRID / COBRA</div>
+
+<div class="t-section">// infrastructure</div>
+<div class="t-grid-3">
+  <div class="t-block">
+    <div class="t-block-label">facilities</div>
+    <div class="t-val">${fmt(s.count)}</div>
+    <div class="t-val-sub">rank #${countRank} nationally</div>
+  </div>
+  <div class="t-block">
+    <div class="t-block-label">capacity (low)</div>
+    <div class="t-val">${fmtMW(s.capacity_mw_low)}</div>
+    <div class="t-val-sub">rank #${capRank} nationally</div>
+  </div>
+  <div class="t-block">
+    <div class="t-block-label">capacity (high est.)</div>
+    <div class="t-val">${fmtMW(s.capacity_mw_high)}</div>
+    <div class="t-val-sub">&nbsp;</div>
+  </div>
+</div>
+
+<div class="t-bar-wrap">
+  <div class="t-bar-label"><span>capacity vs. national leader</span><span>${pct(s.capacity_mw_low, maxCap)}%</span></div>
+  ${bar(s.capacity_mw_low, maxCap)}
+</div>
+
+<div class="t-section">// emissions</div>
+<div class="t-grid">
+  <div class="t-block amber">
+    <div class="t-block-label">CO₂ low estimate</div>
+    <div class="t-val amber">${fmtCO2(s.co2_mt_low)}</div>
+    <div class="t-val-sub">metric tonnes / yr</div>
+  </div>
+  <div class="t-block amber">
+    <div class="t-block-label">CO₂ high estimate</div>
+    <div class="t-val amber">${fmtCO2(s.co2_mt_high)}</div>
+    <div class="t-val-sub">metric tonnes / yr</div>
+  </div>
+</div>
+
+<div class="t-section">// health impacts (via EPA COBRA)</div>
+<div class="t-grid-3">
+  <div class="t-block red">
+    <div class="t-block-label">est. deaths / yr</div>
+    <div class="t-val red">${fmt(s.deaths_low)}–${fmt(s.deaths_high)}</div>
+    <div class="t-val-sub">rank #${deathRank} (low est.)</div>
+  </div>
+  <div class="t-block red">
+    <div class="t-block-label">health cost</div>
+    <div class="t-val red">$${fmt(s.health_cost_m_low)}M–$${fmt(s.health_cost_m_high)}M</div>
+    <div class="t-val-sub">USD / year</div>
+  </div>
+  <div class="t-block">
+    <div class="t-block-label">asthma cases / yr</div>
+    <div class="t-val">${fmt(s.asthma_low)}–${fmt(s.asthma_high)}</div>
+    <div class="t-val-sub">estimated range</div>
+  </div>
+</div>
+
+<div class="t-bar-wrap">
+  <div class="t-bar-label"><span>deaths vs. national leader</span><span>${pct(s.deaths_low, maxDeaths)}%</span></div>
+  ${bar(s.deaths_low, maxDeaths, 'red')}
+</div>
+
+<div class="t-note">
+  All figures use low-scenario capacity factors unless noted. Health impacts represent national model averages via U.S. EPA COBRA. Ranges reflect low/high capacity factor scenarios from source data. Data as of ${DATA.meta.last_updated}.
+</div>
+
+<div class="t-prompt" style="margin-top:16px">&gt; <span class="blink">&#9646;</span></div>
+`;
+  write(html);
+}
+
+// ── NATIONAL TOTALS ──
+function showNational() {
+  setActiveFooter('sf-national');
+  setActiveState(null);
+  closeSidebar();
+  const t = DATA.totals;
+  const html = `
+<div class="t-prompt">&gt; darkcenter --national</div>
+<div style="margin-top:14px"></div>
+
+<div class="hero-ascii">
+█▀▄ ▄▀█ █▀█ █▄▀ █▀▀ █▀▀ █▄░█ ▀█▀ █▀▀ █▀█
+█▄▀ █▀█ █▀▄ █░█ █▄▄ ██▄ █░▀█ ░█░ ██▄ █▀▄</div>
+<div class="t-subtitle">U.S. data center impact — national aggregate</div>
+
+<div class="t-section">// scale</div>
+<div class="t-grid-3">
+  <div class="t-block">
+    <div class="t-block-label">total facilities</div>
+    <div class="t-val">${fmt(t.facilities)}</div>
+    <div class="t-val-sub">${t.grid_count} grid-tied &bull; ${t.btm_count} behind-meter</div>
+  </div>
+  <div class="t-block">
+    <div class="t-block-label">capacity (low)</div>
+    <div class="t-val">${t.capacity_gw_low} GW</div>
+    <div class="t-val-sub">≈ ${fmt(t.homes_equivalent_low)} homes</div>
+  </div>
+  <div class="t-block">
+    <div class="t-block-label">capacity (high)</div>
+    <div class="t-val">${t.capacity_gw_high} GW</div>
+    <div class="t-val-sub">≈ ${fmt(t.homes_equivalent_high)} homes</div>
+  </div>
+</div>
+
+<div class="t-section">// emissions</div>
+<div class="t-grid">
+  <div class="t-block amber">
+    <div class="t-block-label">CO₂ — low scenario</div>
+    <div class="t-val amber">${t.co2_gt_low} GT / yr</div>
+    <div class="t-val-sub">gigatonnes CO₂-equivalent</div>
+  </div>
+  <div class="t-block amber">
+    <div class="t-block-label">CO₂ — high scenario</div>
+    <div class="t-val amber">${t.co2_gt_high} GT / yr</div>
+    <div class="t-val-sub">comparable to ${t.comparable_country}</div>
+  </div>
+</div>
+
+<div class="t-section">// health burden (EPA COBRA)</div>
+<div class="t-grid-3">
+  <div class="t-block red">
+    <div class="t-block-label">est. deaths / yr</div>
+    <div class="t-val red">${fmt(t.deaths_low)}–${fmt(t.deaths_high)}</div>
+    <div class="t-val-sub">national range</div>
+  </div>
+  <div class="t-block red">
+    <div class="t-block-label">health cost</div>
+    <div class="t-val red">$${t.health_cost_b_low}B–$${t.health_cost_b_high}B</div>
+    <div class="t-val-sub">USD / year</div>
+  </div>
+  <div class="t-block">
+    <div class="t-block-label">states in dataset</div>
+    <div class="t-val">${DATA.states.length}</div>
+    <div class="t-val-sub">of 50 states</div>
+  </div>
+</div>
+
+<div class="t-note">
+  Data sources: FracTracker Alliance, Oil &amp; Gas Watch, IM3, U.S. EPA eGRID, U.S. EIA, EDGAR, U.S. EPA COBRA Health Impact Model. All figures use low-scenario capacity factors unless noted. High estimates reflect upper scenario from source data. Last updated: ${DATA.meta.last_updated}.
+</div>
+
+<div class="t-prompt" style="margin-top:16px">&gt; <span class="blink">&#9646;</span></div>
+`;
+  write(html);
+}
+
+// ── ALL STATES TABLE ──
+function showTable() {
+  setActiveFooter('sf-table');
+  setActiveState(null);
+  closeSidebar();
+  const sorted = [...DATA.states].sort((a,b) => b.capacity_mw_low - a.capacity_mw_low);
+  const rows = sorted.map((s, i) => `
+    <tr onclick="showState(DATA.states.find(x=>x.state==='${s.state}'))" style="cursor:pointer">
+      <td class="dim">${i+1}</td>
+      <td class="grn">${s.state}</td>
+      <td>${s.name}</td>
+      <td>${fmt(s.count)}</td>
+      <td>${fmtMW(s.capacity_mw_low)}</td>
+      <td class="amb">${fmtCO2(s.co2_mt_low)}</td>
+      <td class="red">${fmt(s.deaths_low)}–${fmt(s.deaths_high)}</td>
+    </tr>`).join('');
+
+  const html = `
+<div class="t-prompt">&gt; darkcenter --list --sort capacity</div>
+<div style="margin-top:14px"></div>
+<div class="t-subtitle">all states — sorted by capacity (low estimate) — tap a row for details</div>
+
+<table class="t-table">
+  <thead>
+    <tr>
+      <th>#</th><th>ST</th><th>State</th><th>Facilities</th><th>Capacity</th><th>CO₂ / yr</th><th>Deaths / yr</th>
+    </tr>
+  </thead>
+  <tbody>${rows}</tbody>
+</table>
+
+<div class="t-note">
+  Capacity = low-scenario estimate. CO₂ = low-scenario metric tonnes/yr. Deaths = EPA COBRA low–high range.
+</div>
+`;
+  write(html);
+}
+
+// ── SOURCES ──
+function showSources() {
+  setActiveFooter('sf-sources');
+  setActiveState(null);
+  closeSidebar();
+  const html = `
+<div class="t-prompt">&gt; darkcenter --sources</div>
+<div style="margin-top:14px"></div>
+<div class="t-title" style="font-size:0.9rem">DATA SOURCES</div>
+<div style="margin-top:16px"></div>
+
+${DATA.meta.sources.map(s => `
+<div class="t-block">
+  <div class="t-block-label">source</div>
+  <div style="font-size:0.75rem;color:var(--text)">${s}</div>
+</div>`).join('')}
+
+<div class="t-note" style="margin-top:16px">
+  All figures use low-scenario capacity factors unless otherwise noted. Health impacts represent national model averages via COBRA. High estimates are included where available from the source spreadsheet. Dataset version: ${DATA.meta.version}. Last updated: ${DATA.meta.last_updated}.
+</div>
+
+<div class="t-section">// methodology</div>
+<div class="t-block blue">
+  <div class="t-block-label">capacity & facility count</div>
+  <div style="font-size:0.7rem;color:var(--text);line-height:1.6">FracTracker Alliance and Oil &amp; Gas Watch provided facility-level data. IM3 supplied capacity modeling. Grid-tied facilities (${fmt(DATA.totals.grid_count)}) vs. behind-meter (${DATA.totals.btm_count}) classification follows EIA definitions.</div>
+</div>
+<div class="t-block amber">
+  <div class="t-block-label">emissions</div>
+  <div style="font-size:0.7rem;color:var(--text);line-height:1.6">CO₂ estimates use EPA eGRID regional emission factors applied to low and high capacity scenarios. EDGAR cross-referenced for national totals validation.</div>
+</div>
+<div class="t-block red">
+  <div class="t-block-label">health impacts</div>
+  <div style="font-size:0.7rem;color:var(--text);line-height:1.6">U.S. EPA COBRA (Co-Benefits Risk Assessment) Health Impact Model. Estimates represent modeled outcomes from particulate matter and other pollutants associated with power generation for data center loads. Ranges reflect low/high capacity factor scenarios.</div>
+</div>
+`;
+  write(html);
+}
+
+// ── ABOUT ──
+function showAbout() {
+  setActiveFooter('sf-about');
+  setActiveState(null);
+  closeSidebar();
+  const html = `
+<div class="t-prompt">&gt; darkcenter --about</div>
+<div style="margin-top:14px"></div>
+
+<div class="t-title" style="font-size:0.9rem">DARKCENTER</div>
+<div class="t-subtitle">U.S. Data Center Impact Assessment Tool — v${DATA.meta.version}</div>
+
+<div class="t-block">
+  <div class="t-block-label">project</div>
+  <div style="font-size:0.72rem;color:var(--text);line-height:1.7">
+    Darkcenter maps the energy demand, greenhouse gas emissions, and public health impacts of the 2,820 data centers operating across the United States. It draws on federal environmental and energy datasets to show what the AI and cloud infrastructure build-out costs in carbon and human health.
+  </div>
+</div>
+
+<div class="t-block blue">
+  <div class="t-block-label">organization</div>
+  <div style="font-size:0.72rem;color:var(--text);line-height:1.7">
+    Twin Cities Innovation Alliance (TCIA)<br>
+    Future Labs — Open Source &amp; Digital Sovereignty Initiative<br>
+    tciamn.org
+  </div>
+</div>
+
+<div class="t-block">
+  <div class="t-block-label">status</div>
+  <div style="font-size:0.72rem;color:var(--amber)">Development complete — pending validation before public deployment</div>
+</div>
+
+<div class="t-note" style="margin-top:16px">
+  This tool is part of TCIA's commitment to digital sovereignty and environmental accountability. Data sovereignty: no tracking, no analytics, no external data calls. All data is bundled inline. Open source.
+</div>
+`;
+  write(html);
+}
+
+// ── HELP ──
+function showHelp() {
+  setActiveState(null);
+  closeSidebar();
+  const html = `
+<div class="t-prompt">&gt; help</div>
+<div style="margin-top:14px"></div>
+<div class="t-subtitle">available commands</div>
+
+<div class="t-block">
+  <div class="t-block-label">state commands</div>
+  <div class="t-row"><span class="t-row-label">[state abbr]</span><span class="t-row-val green">e.g. TX, VA, OH, CA</span></div>
+  <div class="t-row"><span class="t-row-label">--state [abbr]</span><span class="t-row-val green">same as above</span></div>
+</div>
+
+<div class="t-block">
+  <div class="t-block-label">views</div>
+  <div class="t-row"><span class="t-row-label">national</span><span class="t-row-val">national aggregates</span></div>
+  <div class="t-row"><span class="t-row-label">table</span><span class="t-row-val">all states ranked table</span></div>
+  <div class="t-row"><span class="t-row-label">sources</span><span class="t-row-val">data source documentation</span></div>
+  <div class="t-row"><span class="t-row-label">about</span><span class="t-row-val">project information</span></div>
+  <div class="t-row"><span class="t-row-label">help</span><span class="t-row-val">this screen</span></div>
+  <div class="t-row"><span class="t-row-label">clear</span><span class="t-row-val">reset to boot screen</span></div>
+</div>
+
+<div class="t-note">
+  State abbreviations: ${DATA.states.map(s=>s.state).join(' · ')}
+</div>
+`;
+  write(html);
+}
+
+// ── SIDEBAR POPULATION ──
+function buildSidebar() {
+  const list = document.getElementById('state-list');
+  list.innerHTML = DATA.states.map(s => `
+    <div class="state-item" id="si-${s.state}" onclick="showState(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+      <span class="si-abbr">${s.state}</span>
+      <span class="si-name">${s.name}</span>
+      <span class="si-count">${s.count}</span>
+    </div>`).join('');
+}
+
+function filterStates(q) {
+  const term = q.toLowerCase();
+  document.querySelectorAll('.state-item').forEach(el => {
+    const abbr = el.querySelector('.si-abbr').textContent.toLowerCase();
+    const name = el.querySelector('.si-name').textContent.toLowerCase();
+    el.style.display = (!term || abbr.includes(term) || name.includes(term)) ? '' : 'none';
+  });
+}
+
+function setActiveState(abbr) {
+  document.querySelectorAll('.state-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sf-item').forEach(el => el.classList.remove('active'));
+  if (abbr) {
+    const el = document.getElementById(`si-${abbr}`);
+    if (el) { el.classList.add('active'); el.scrollIntoView({block:'nearest'}); }
+  }
+}
+
+function setActiveFooter(id) {
+  document.querySelectorAll('.sf-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.state-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+// ── SIDEBAR TOGGLE (portrait) ──
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
+
+// ── COMMAND INPUT ──
+function handleInput(e) {
+  if (e.key === 'Enter') runCommand();
+}
+
+function runCommand() {
+  const input = document.getElementById('term-input');
+  const raw = input.value.trim();
+  input.value = '';
+  if (!raw) return;
+
+  const cmd = raw.toUpperCase().replace(/^--STATE\s+/, '');
+
+  if (['HELP','H','?'].includes(cmd)) { showHelp(); return; }
+  if (['NATIONAL','NAT','N','TOTALS'].includes(cmd)) { showNational(); return; }
+  if (['TABLE','LIST','ALL'].includes(cmd)) { showTable(); return; }
+  if (['SOURCES','SOURCE','DATA'].includes(cmd)) { showSources(); return; }
+  if (['ABOUT','INFO'].includes(cmd)) { showAbout(); return; }
+  if (['CLEAR','RESET','BOOT'].includes(cmd)) { showBoot(); setActiveState(null); document.querySelectorAll('.sf-item').forEach(e=>e.classList.remove('active')); return; }
+
+  const s = DATA.states.find(x => x.state === cmd || x.name.toUpperCase() === cmd);
+  if (s) { showState(s); return; }
+
+  write(`<div class="t-prompt">&gt; ${raw}</div>
+         <div class="t-error">command not found: ${raw.toLowerCase()}</div>
+         <div class="t-comment">type  help  to see available commands</div>
+         <div class="t-comment">state codes: ${DATA.states.map(s=>s.state).join(' ')}</div>
+         <div class="t-prompt" style="margin-top:10px">&gt; <span class="blink">&#9646;</span></div>`);
+}
+
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── INIT ──
+buildSidebar();
+showBoot();
+</script>
+</body>
+</html>
