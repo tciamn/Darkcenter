@@ -2,7 +2,7 @@
 
 **Owner:** aasim@tciamn.org — Twin Cities Innovation Alliance  
 **Repo:** tciamn/Darkcenter  
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-15
 
 Read this file at the start of every session. It is the authoritative context for all active work.
 
@@ -17,7 +17,8 @@ Read this file at the start of every session. It is the authoritative context fo
 | Open source pages | Squarespace code blocks | www.tciamn.org/open-source | GoDaddy |
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
-| Supernote Private Cloud | Not yet deployed — pending VPS decision | cloud.tciamn.org (proposed) | GoDaddy |
+| Supernote Private Cloud | Not yet deployed — pending VPS provision | cloud.tciamn.org (proposed) | GoDaddy |
+| Future Labs Mastodon | Not yet deployed — domain confirmed, VPS pending | futurelabs.social | GoDaddy |
 
 **DNS is managed at GoDaddy — not SiteGround.** Subdomains are created there as CNAME or A records.
 
@@ -91,7 +92,7 @@ MariaDB + Redis (Docker containers)
 | IO Cooperative | ~$7.19/mo | CA coop, solidarity value, single US location, no SLA — non-critical only. |
 
 **Pending decisions:**
-- [ ] Which VPS provider?
+- [x] VPS provider: **Hetzner CX32, Falkenstein (EU)** — decided 2026-09-15
 - [ ] Confirm subdomain: `cloud.tciamn.org`?
 
 **Once decided:** Docker Compose + `.env` + Nginx config template is documented in `.claude/projects/hdl-technical-reference.md`
@@ -108,7 +109,31 @@ Full backup architecture in `.claude/projects/hdl-technical-reference.md`.
 
 ---
 
-### 3. Future Labs Infrastructure
+### 3. Future Labs Mastodon
+
+Fediverse presence for Future Labs at `futurelabs.social`.
+
+**Status: Ready to deploy — domain confirmed, VPS pending**
+
+**Decisions made:**
+- Domain: `futurelabs.social` (confirmed available 2026-09-15, register at GoDaddy)
+- VPS: Hetzner CX32, Falkenstein — same server as Supernote Private Cloud
+- Stack: Docker Compose, Mastodon v4.3.x, PostgreSQL 17, Redis 7, Nginx, Let's Encrypt
+- Object storage: Hetzner Object Storage (Falkenstein, S3-compatible)
+- Email: Mailgun EU
+- Scope: Invite-only at launch; expand to allied orgs in Phase 2
+
+**Pending:**
+- [ ] Register `futurelabs.social` at GoDaddy
+- [ ] Provision Hetzner CX32
+- [ ] Run `deploy/mastodon/setup.sh` on VPS
+- [ ] Name second admin (bus factor requirement)
+
+**Deployment config:** `deploy/mastodon/` — docker-compose.yml, .env.production.template, nginx.conf, setup.sh, backup.sh, README.md
+
+---
+
+### 4. Future Labs Infrastructure
 
 Cooperatively governed digital infrastructure for TCIA and allied organizations.  
 The Supernote Private Cloud is Phase 1's anchor service.
@@ -184,7 +209,8 @@ Squarespace stays in place during transition; pages migrate one by one.
 | DNS managed at GoDaddy | Confirmed |
 | WordPress on SiteGround stays for WordPress hosting | Confirmed |
 | Data Center Tool: not deployed until validated | Confirmed |
-| Future Labs Phase 1: Hetzner/Infomaniak VPS + Coop Cloud | Confirmed |
+| Future Labs Phase 1: Hetzner CX32 (Falkenstein, EU) + Docker Compose | Confirmed 2026-09-15 |
+| Future Labs Mastodon domain: futurelabs.social | Confirmed 2026-09-15 |
 | Holochain: Phase 4 only | Confirmed |
 | Two-destination backup minimum | Confirmed |
 | Primary data jurisdiction: EU or Switzerland | Confirmed |
@@ -193,7 +219,8 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 | Decision | Where it blocks |
 |---|---|
-| VPS provider for Supernote/Future Labs | Supernote Private Cloud setup |
+| Register futurelabs.social at GoDaddy | Mastodon deployment |
+| Provision Hetzner CX32 (Falkenstein, Ubuntu 24.04) | Mastodon + Supernote deployment |
 | Subdomain for Supernote Private Cloud | DNS config + SSL |
 | Subdomain for Data Center Tool | Deployment (after validation) |
 | Future Labs governance structure | Onboarding allied orgs |
