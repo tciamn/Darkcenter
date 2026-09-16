@@ -208,6 +208,23 @@ docker compose run --rm web bin/tootctl search deploy --concurrency 2
 
 ---
 
+## Admin Accounts
+
+| Role | Username | Contact |
+|---|---|---|
+| Primary admin | See ops credentials doc | See ops credentials doc |
+| Second admin | See ops credentials doc | See ops credentials doc |
+
+Admin email addresses and credentials are not stored in this repository. See the encrypted ops credentials document held by both admins.
+
+**Requirements (bus factor):**
+- ≥ 2 admins with independent full access
+- Each admin holds their own SSH key (generated on their own hardware)
+- Each admin independently holds the ops credentials document
+- Neither admin's access should depend on the other
+
+---
+
 ## Second Admin Setup
 
 Per Future Labs bus factor requirement (≥ 2 admins):
