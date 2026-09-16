@@ -2,7 +2,7 @@
 
 **Owner:** aasim@tciamn.org — Twin Cities Innovation Alliance  
 **Repo:** tciamn/Darkcenter  
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-15
 
 Read this file at the start of every session. It is the authoritative context for all active work.
 
@@ -16,8 +16,10 @@ Read this file at the start of every session. It is the authoritative context fo
 | App / D4PG content | WordPress on SiteGround | app.tciamn.org | GoDaddy |
 | Open source pages | Squarespace code blocks | www.tciamn.org/open-source | GoDaddy |
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
+| Git hosting (Future Labs) | Codeberg (Phase 1) → self-hosted Gitea (Phase 2) | codeberg.org/futurelabs | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
-| Supernote Private Cloud | Not yet deployed — pending VPS decision | cloud.tciamn.org (proposed) | GoDaddy |
+| Supernote Private Cloud | Not yet deployed — pending VPS provision | cloud.tciamn.org (proposed) | GoDaddy |
+| Future Labs Mastodon | Not yet deployed — domain confirmed, VPS pending | futurelabs.social | GoDaddy |
 
 **DNS is managed at GoDaddy — not SiteGround.** Subdomains are created there as CNAME or A records.
 
@@ -91,7 +93,7 @@ MariaDB + Redis (Docker containers)
 | IO Cooperative | ~$7.19/mo | CA coop, solidarity value, single US location, no SLA — non-critical only. |
 
 **Pending decisions:**
-- [ ] Which VPS provider?
+- [x] VPS provider: **Hetzner CX32, Falkenstein (EU)** — decided 2026-09-15
 - [ ] Confirm subdomain: `cloud.tciamn.org`?
 
 **Once decided:** Docker Compose + `.env` + Nginx config template is documented in `.claude/projects/hdl-technical-reference.md`
@@ -103,12 +105,36 @@ MariaDB + Redis (Docker containers)
 - Admin bus factor: 2 (two people with independent full access)
 - Primary data jurisdiction: EU or Switzerland — no US primary storage
 
-**Backup strategy:** Two-destination minimum — Backblaze B2 EU (Restic) + May First Nextcloud (Rclone).  
+**Backup strategy:** Two-destination minimum — Backblaze B2 EU (Restic, primary) + Hetzner Storage Box EU (Restic secondary, SFTP).  
 Full backup architecture in `.claude/projects/hdl-technical-reference.md`.
 
 ---
 
-### 3. Future Labs Infrastructure
+### 3. Future Labs Mastodon
+
+Fediverse presence for Future Labs at `futurelabs.social`.
+
+**Status: Ready to deploy — domain confirmed, VPS pending**
+
+**Decisions made:**
+- Domain: `futurelabs.social` (confirmed available 2026-09-15, register at GoDaddy)
+- VPS: Hetzner CPX22, Helsinki (EU) — same server as Supernote Private Cloud; resize to CPX32 when needed
+- Stack: Docker Compose, Mastodon v4.3.x, PostgreSQL 17, Redis 7, Nginx, Let's Encrypt
+- Object storage: Hetzner Object Storage (Falkenstein, S3-compatible)
+- Email: Mailgun EU
+- Scope: Invite-only at launch; expand to allied orgs in Phase 2
+
+**Pending:**
+- [ ] Register `futurelabs.social` at GoDaddy
+- [ ] Provision Hetzner CX32
+- [ ] Run `deploy/mastodon/setup.sh` on VPS
+- [ ] Name second admin (bus factor requirement)
+
+**Deployment config:** `deploy/mastodon/` — docker-compose.yml, .env.production.template, nginx.conf, setup.sh, backup.sh, README.md
+
+---
+
+### 4. Future Labs Infrastructure
 
 Cooperatively governed digital infrastructure for TCIA and allied organizations.  
 The Supernote Private Cloud is Phase 1's anchor service.
@@ -127,12 +153,12 @@ The Supernote Private Cloud is Phase 1's anchor service.
 **Decided:**
 - Phase 1 stack: Hetzner (or values-aligned VPS) + Coop Cloud
 - Holochain is Phase 4 only — cannot run standard Docker apps, not near-term
-- May First is a backup/fallback layer, not the hosting solution
+- Hetzner Storage Box (EU) is the secondary backup destination — no Nextcloud dependency
 
 **Open questions:**
 - Legal/governance structure for Future Labs within TCIA
 - First 2–3 allied orgs to onboard
-- Should TCIA join May First as an org while building own infra?
+- Should TCIA join May First as an org? (solidarity value, but not infrastructure dependency)
 - Who holds admin credentials (must be ≥ 2 named individuals)
 
 **Detailed docs:**
@@ -140,6 +166,36 @@ The Supernote Private Cloud is Phase 1's anchor service.
 - Technical reference: `.claude/projects/hdl-technical-reference.md`
 - Key decisions log: `.claude/projects/key-decisions.md`
 - Shareable briefing: https://claude.ai/code/artifact/89beb9f3-c4b0-4a50-a5e9-42d8b674baaa
+
+---
+
+### 5. Git Hosting — GitHub → Codeberg Migration
+
+**Status: Decided — not yet started**
+
+**Decision:** Codeberg (EU, nonprofit, Forgejo-based) as primary git host for Future Labs. GitHub kept as public mirror for discoverability during transition.
+
+**Phase 1: Codeberg**
+- Create organization at codeberg.org/futurelabs
+- Mirror `tciamn/Darkcenter` and other active repos
+- New Future Labs repos start on Codeberg
+- GitHub remains as read-only public mirror
+
+**Phase 2: Self-hosted Gitea on Hetzner VPS**
+- After Mastodon has been stable for 30 days and VPS headroom confirmed
+- `git.futurelabs.social` — DNS A record at GoDaddy
+- Migrate from Codeberg → self-hosted (same Forgejo/Gitea data format)
+
+**Migration steps (Phase 1):**
+```
+1. Create Codeberg account + futurelabs org
+2. Mirror Darkcenter: Codeberg → New repo → Migration → from GitHub URL
+3. Set default branch to main on Codeberg
+4. Update CLAUDE.md repo reference
+5. Keep GitHub repo — set description to "Mirror — primary at codeberg.org/futurelabs"
+```
+
+**Jurisdiction:** Codeberg e.V. — registered nonprofit, Germany (EU). Data stored in EU. No US primary storage.
 
 ---
 
@@ -184,21 +240,25 @@ Squarespace stays in place during transition; pages migrate one by one.
 | DNS managed at GoDaddy | Confirmed |
 | WordPress on SiteGround stays for WordPress hosting | Confirmed |
 | Data Center Tool: not deployed until validated | Confirmed |
-| Future Labs Phase 1: Hetzner/Infomaniak VPS + Coop Cloud | Confirmed |
+| Future Labs Phase 1: Hetzner CPX22 (Helsinki, EU) + Docker Compose | Confirmed 2026-09-16 |
+| Future Labs Mastodon domain: futurelabs.social | Confirmed 2026-09-15 |
 | Holochain: Phase 4 only | Confirmed |
 | Two-destination backup minimum | Confirmed |
 | Primary data jurisdiction: EU or Switzerland | Confirmed |
+| Git hosting Phase 1: Codeberg (EU nonprofit, Forgejo-based) | Confirmed 2026-09-16 |
+| Git hosting Phase 2: self-hosted Gitea on Hetzner VPS | Planned — after Mastodon stable |
 
 ## Key Decisions Pending
 
 | Decision | Where it blocks |
 |---|---|
-| VPS provider for Supernote/Future Labs | Supernote Private Cloud setup |
+| Register futurelabs.social at GoDaddy | Mastodon deployment |
+| Provision Hetzner CPX22 (Helsinki, Ubuntu 24.04) | Mastodon + Supernote deployment |
 | Subdomain for Supernote Private Cloud | DNS config + SSL |
 | Subdomain for Data Center Tool | Deployment (after validation) |
 | Future Labs governance structure | Onboarding allied orgs |
 | First allied orgs to onboard | Phase 2 planning |
-| TCIA org membership in May First | Backup strategy |
+| TCIA org membership in May First | Solidarity decision — separate from backup strategy |
 
 ---
 
@@ -212,3 +272,39 @@ Squarespace stays in place during transition; pages migrate one by one.
 - Do not act before direction is confirmed — wait for guidance
 - Subdomains: created at GoDaddy, not SiteGround
 - Workflow: `/define` → `/build` → `/qa` (skills enforced via `.claude/skills/` + `.claude/settings.json`)
+
+---
+
+## Digital Sovereignty — Full Stack Principle
+
+Sovereignty is not only about where data is stored. It applies to every layer of the stack.
+
+| Layer | Sovereign practice |
+|---|---|
+| DNS | Owner controls the registrar directly |
+| Server jurisdiction | EU or CH — no US primary |
+| SSH keys | Generated on owner's hardware only — never in a cloud session |
+| Secrets and credentials | Generated and stored on owner's hardware — never in a cloud AI session |
+| Setup execution | Infrastructure operations run from owner's machine, not a third-party cloud session |
+| Config templates | Safe to create in any environment; filled values stay with the owner |
+| Backups | Two destinations, owner-controlled encryption keys |
+
+### When the steward must flag an environment shift
+
+A cloud Claude Code session (remote) is the right place for: planning, writing config files, documentation, git commits, research.
+
+It is the **wrong place** for: SSH key generation, running secrets commands, SSHing into servers, handling `.env` values, or any operation where the output must persist beyond the session or must not pass through a third party.
+
+**The steward must proactively flag a shift to the owner's local machine when:**
+- The next step involves generating a cryptographic key or secret
+- The next step requires a direct network connection (SSH, database, VPN)
+- The next step produces output that must outlive the session
+- The next step touches infrastructure the owner must retain sole access to
+
+Do not wait for the owner to ask. Surface the boundary before reaching it.
+
+### Co-powering principle
+
+The owner does not know all technical patterns. The steward's role is to recognize when a decision or workflow is approaching a sovereignty compromise — even when the owner cannot see it — and name it clearly before proceeding. This is not gatekeeping. It is the steward actively closing the gap between intent (sovereignty) and execution (the actual path taken).
+
+When a pattern conflict is spotted: name it, explain why it conflicts, and state the correct path. This applies to infrastructure decisions, tool choices, data flows, and execution environments alike.
