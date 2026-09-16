@@ -117,7 +117,7 @@ Fediverse presence for Future Labs at `futurelabs.social`.
 
 **Decisions made:**
 - Domain: `futurelabs.social` (confirmed available 2026-09-15, register at GoDaddy)
-- VPS: Hetzner CX32, Falkenstein — same server as Supernote Private Cloud
+- VPS: Hetzner CPX22, Helsinki (EU) — same server as Supernote Private Cloud; resize to CPX32 when needed
 - Stack: Docker Compose, Mastodon v4.3.x, PostgreSQL 17, Redis 7, Nginx, Let's Encrypt
 - Object storage: Hetzner Object Storage (Falkenstein, S3-compatible)
 - Email: Mailgun EU
@@ -209,7 +209,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 | DNS managed at GoDaddy | Confirmed |
 | WordPress on SiteGround stays for WordPress hosting | Confirmed |
 | Data Center Tool: not deployed until validated | Confirmed |
-| Future Labs Phase 1: Hetzner CX32 (Falkenstein, EU) + Docker Compose | Confirmed 2026-09-15 |
+| Future Labs Phase 1: Hetzner CPX22 (Helsinki, EU) + Docker Compose | Confirmed 2026-09-16 |
 | Future Labs Mastodon domain: futurelabs.social | Confirmed 2026-09-15 |
 | Holochain: Phase 4 only | Confirmed |
 | Two-destination backup minimum | Confirmed |
@@ -220,7 +220,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Decision | Where it blocks |
 |---|---|
 | Register futurelabs.social at GoDaddy | Mastodon deployment |
-| Provision Hetzner CX32 (Falkenstein, Ubuntu 24.04) | Mastodon + Supernote deployment |
+| Provision Hetzner CPX22 (Helsinki, Ubuntu 24.04) | Mastodon + Supernote deployment |
 | Subdomain for Supernote Private Cloud | DNS config + SSL |
 | Subdomain for Data Center Tool | Deployment (after validation) |
 | Future Labs governance structure | Onboarding allied orgs |

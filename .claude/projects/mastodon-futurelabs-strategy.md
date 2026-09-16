@@ -50,7 +50,7 @@ Mastodon requires: Ruby on Rails, PostgreSQL, Redis, Node.js, Sidekiq workers, a
 
 | Provider | Plan | Cost/mo | RAM | Notes |
 |---|---|---|---|---|
-| **Hetzner CX32** ★ Recommended | CX32 | ~€6.80 | 8 GB | Best price/performance, EU jurisdiction (Finland/Germany), excellent Docker support, best tooling |
+| **Hetzner CPX22** ★ Selected | CPX22 | ~$22.99 | 4 GB | AMD shared, Helsinki (EU/Finland), Intel limited in region — CPX22 is Phase 1 start; resize to CPX32 ($41.99, 8 GB) when adding Supernote |
 | **Infomaniak** | VPS-4 | ~€10 | 4 GB | Swiss jurisdiction (strongest data sovereignty), values-aligned, EU GDPR |
 | **Greenhost** | Medium | ~€12 | 4 GB | Amsterdam, 100% renewable, Rapid Response Team for activist clients |
 | **IO Cooperative** | Standard | ~$7.19 | 4 GB | CA cooperative, single US location, no SLA — not recommended for primary |
