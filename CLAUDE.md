@@ -16,6 +16,7 @@ Read this file at the start of every session. It is the authoritative context fo
 | App / D4PG content | WordPress on SiteGround | app.tciamn.org | GoDaddy |
 | Open source pages | Squarespace code blocks | www.tciamn.org/open-source | GoDaddy |
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
+| Git hosting (Future Labs) | Codeberg (Phase 1) → self-hosted Gitea (Phase 2) | codeberg.org/futurelabs | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
 | Supernote Private Cloud | Not yet deployed — pending VPS provision | cloud.tciamn.org (proposed) | GoDaddy |
 | Future Labs Mastodon | Not yet deployed — domain confirmed, VPS pending | futurelabs.social | GoDaddy |
@@ -168,6 +169,36 @@ The Supernote Private Cloud is Phase 1's anchor service.
 
 ---
 
+### 5. Git Hosting — GitHub → Codeberg Migration
+
+**Status: Decided — not yet started**
+
+**Decision:** Codeberg (EU, nonprofit, Forgejo-based) as primary git host for Future Labs. GitHub kept as public mirror for discoverability during transition.
+
+**Phase 1: Codeberg**
+- Create organization at codeberg.org/futurelabs
+- Mirror `tciamn/Darkcenter` and other active repos
+- New Future Labs repos start on Codeberg
+- GitHub remains as read-only public mirror
+
+**Phase 2: Self-hosted Gitea on Hetzner VPS**
+- After Mastodon has been stable for 30 days and VPS headroom confirmed
+- `git.futurelabs.social` — DNS A record at GoDaddy
+- Migrate from Codeberg → self-hosted (same Forgejo/Gitea data format)
+
+**Migration steps (Phase 1):**
+```
+1. Create Codeberg account + futurelabs org
+2. Mirror Darkcenter: Codeberg → New repo → Migration → from GitHub URL
+3. Set default branch to main on Codeberg
+4. Update CLAUDE.md repo reference
+5. Keep GitHub repo — set description to "Mirror — primary at codeberg.org/futurelabs"
+```
+
+**Jurisdiction:** Codeberg e.V. — registered nonprofit, Germany (EU). Data stored in EU. No US primary storage.
+
+---
+
 ### 4. Squarespace → WordPress Migration
 
 Moving content from Squarespace (`www.tciamn.org`) to WordPress on SiteGround (`app.tciamn.org`).
@@ -214,6 +245,8 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Holochain: Phase 4 only | Confirmed |
 | Two-destination backup minimum | Confirmed |
 | Primary data jurisdiction: EU or Switzerland | Confirmed |
+| Git hosting Phase 1: Codeberg (EU nonprofit, Forgejo-based) | Confirmed 2026-09-16 |
+| Git hosting Phase 2: self-hosted Gitea on Hetzner VPS | Planned — after Mastodon stable |
 
 ## Key Decisions Pending
 
