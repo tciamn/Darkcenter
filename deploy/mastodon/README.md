@@ -155,25 +155,38 @@ Log in as admin → Preferences → Administration → Server Settings:
 
 ## Step 9 — Backups
 
+Two destinations, both Restic with owner-controlled encryption:
+- **Primary:** Backblaze B2 EU
+- **Secondary:** Hetzner Storage Box EU (SFTP) — provision at robot.hetzner.com → Storage Boxes
+
 ```bash
 # Install restic
 apt-get install -y restic
 
 # Configure backup secrets (keep this file off-repo, encrypted)
 cat > /root/.mastodon-backup-env << 'EOF'
+# Primary: Backblaze B2 EU
 export RESTIC_REPOSITORY="b2:futurelabs-mastodon-backup"
 export B2_ACCOUNT_ID=CHANGEME
 export B2_ACCOUNT_KEY=CHANGEME
 export RESTIC_PASSWORD=CHANGEME
+
+# Secondary: Hetzner Storage Box EU (SFTP)
+# Format: sftp:u000000@u000000.your-storagebox.de:/mastodon-backup
+export RESTIC_REPOSITORY_SECONDARY=CHANGEME
 EOF
 chmod 600 /root/.mastodon-backup-env
 
-# Init Restic repository
+# Add Storage Box SSH key (run once)
+# ssh-keyscan u000000.your-storagebox.de >> ~/.ssh/known_hosts
+
+# Init both Restic repositories
 source /root/.mastodon-backup-env
 restic -r "$RESTIC_REPOSITORY" init
+restic -r "$RESTIC_REPOSITORY_SECONDARY" init
 
 # Test backup manually
-bash /opt/mastodon/backup.sh
+source /root/.mastodon-backup-env && bash /opt/mastodon/backup.sh
 
 # Add to cron (runs daily at 3am UTC)
 echo "0 3 * * * root source /root/.mastodon-backup-env && bash /opt/mastodon/backup.sh >> /var/log/mastodon-backup.log 2>&1" \

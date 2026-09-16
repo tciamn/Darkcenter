@@ -104,7 +104,7 @@ MariaDB + Redis (Docker containers)
 - Admin bus factor: 2 (two people with independent full access)
 - Primary data jurisdiction: EU or Switzerland — no US primary storage
 
-**Backup strategy:** Two-destination minimum — Backblaze B2 EU (Restic) + May First Nextcloud (Rclone).  
+**Backup strategy:** Two-destination minimum — Backblaze B2 EU (Restic, primary) + Hetzner Storage Box EU (Restic secondary, SFTP).  
 Full backup architecture in `.claude/projects/hdl-technical-reference.md`.
 
 ---
@@ -152,12 +152,12 @@ The Supernote Private Cloud is Phase 1's anchor service.
 **Decided:**
 - Phase 1 stack: Hetzner (or values-aligned VPS) + Coop Cloud
 - Holochain is Phase 4 only — cannot run standard Docker apps, not near-term
-- May First is a backup/fallback layer, not the hosting solution
+- Hetzner Storage Box (EU) is the secondary backup destination — no Nextcloud dependency
 
 **Open questions:**
 - Legal/governance structure for Future Labs within TCIA
 - First 2–3 allied orgs to onboard
-- Should TCIA join May First as an org while building own infra?
+- Should TCIA join May First as an org? (solidarity value, but not infrastructure dependency)
 - Who holds admin credentials (must be ≥ 2 named individuals)
 
 **Detailed docs:**
@@ -225,7 +225,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Subdomain for Data Center Tool | Deployment (after validation) |
 | Future Labs governance structure | Onboarding allied orgs |
 | First allied orgs to onboard | Phase 2 planning |
-| TCIA org membership in May First | Backup strategy |
+| TCIA org membership in May First | Solidarity decision — separate from backup strategy |
 
 ---
 

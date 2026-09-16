@@ -178,8 +178,8 @@ Mastodon data to back up:
 - **Elasticsearch index** — reconstructible from DB, lower priority
 
 Two-destination minimum (aligns with Future Labs backup policy):
-1. Backblaze B2 EU — Restic encrypted backup via cron
-2. May First Nextcloud — Rclone secondary
+1. Backblaze B2 EU — Restic encrypted backup via cron (primary)
+2. Hetzner Storage Box (EU, SFTP) — Restic secondary repo (~€3.39/mo, 100GB)
 
 ---
 
