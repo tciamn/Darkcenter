@@ -239,3 +239,39 @@ Squarespace stays in place during transition; pages migrate one by one.
 - Do not act before direction is confirmed — wait for guidance
 - Subdomains: created at GoDaddy, not SiteGround
 - Workflow: `/define` → `/build` → `/qa` (skills enforced via `.claude/skills/` + `.claude/settings.json`)
+
+---
+
+## Digital Sovereignty — Full Stack Principle
+
+Sovereignty is not only about where data is stored. It applies to every layer of the stack.
+
+| Layer | Sovereign practice |
+|---|---|
+| DNS | Owner controls the registrar directly |
+| Server jurisdiction | EU or CH — no US primary |
+| SSH keys | Generated on owner's hardware only — never in a cloud session |
+| Secrets and credentials | Generated and stored on owner's hardware — never in a cloud AI session |
+| Setup execution | Infrastructure operations run from owner's machine, not a third-party cloud session |
+| Config templates | Safe to create in any environment; filled values stay with the owner |
+| Backups | Two destinations, owner-controlled encryption keys |
+
+### When the steward must flag an environment shift
+
+A cloud Claude Code session (remote) is the right place for: planning, writing config files, documentation, git commits, research.
+
+It is the **wrong place** for: SSH key generation, running secrets commands, SSHing into servers, handling `.env` values, or any operation where the output must persist beyond the session or must not pass through a third party.
+
+**The steward must proactively flag a shift to the owner's local machine when:**
+- The next step involves generating a cryptographic key or secret
+- The next step requires a direct network connection (SSH, database, VPN)
+- The next step produces output that must outlive the session
+- The next step touches infrastructure the owner must retain sole access to
+
+Do not wait for the owner to ask. Surface the boundary before reaching it.
+
+### Co-powering principle
+
+The owner does not know all technical patterns. The steward's role is to recognize when a decision or workflow is approaching a sovereignty compromise — even when the owner cannot see it — and name it clearly before proceeding. This is not gatekeeping. It is the steward actively closing the gap between intent (sovereignty) and execution (the actual path taken).
+
+When a pattern conflict is spotted: name it, explain why it conflicts, and state the correct path. This applies to infrastructure decisions, tool choices, data flows, and execution environments alike.
