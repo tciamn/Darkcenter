@@ -25,6 +25,19 @@
 
 GitHub's "Latest" badge points at `group-happ-v0.16.0-dev.3` — a backend package, not the app. Ignore it.
 
+### Hardware change — 2026-10-16
+
+iPad M4 replaced with the same model; restored from backup; **not yet fully reconfirmed.**
+Moss is a desktop (Electron) app, so the iPad is not a Moss peer — but it may hold credentials this plan depends on.
+
+- [ ] 2FA / authenticator codes work for: GitHub, Codeberg, VPS provider, GoDaddy, Mastodon admin, password manager
+- [ ] Password manager unlocked and synced (restores of unencrypted backups omit saved passwords)
+- [ ] SSH access to the VPS still works from the iPad (if used); remove the old device's key from `authorized_keys`
+- [ ] Tailscale: new iPad re-authenticated; old node removed from the tailnet
+- [ ] Old iPad removed from Find My / Apple ID devices and erased
+- [ ] Supernote app signed in and syncing
+- [ ] Home-screen web apps (e.g. iPad terminal app) re-added if missing — their local data may not restore
+
 ## 2. What the Moss source shows
 
 - **Data folder:** all 0.15.x releases share `<userData>/0.15.x/<profile>/` (`src/main/filesystem.ts`, `breakingVersion()` in `src/main/utils.ts`). A patch update does not create a new folder.
