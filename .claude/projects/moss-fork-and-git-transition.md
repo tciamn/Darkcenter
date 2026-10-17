@@ -13,7 +13,8 @@
 - Tools (assets) intermittently fail to load.
 - Moss drops to "searching for peers"; two peers online at the same time never see each other.
 - VPNs and Tailscale disabled — no change.
-- Earlier report: `no such table: DhtOp` (only this fragment captured; full error still needed).
+- Full error as shown by Moss (confirmed by the operator): `no such table: DhtOp`
+  - Moss shows no further context. It means Holochain opened a database file that lacks its `DhtOp` table — typically an empty or partially created database, or one from a different schema. Check database file sizes (§3).
 
 **Versions (verified 2026-10-17 from git tags):**
 
@@ -46,7 +47,8 @@ GitHub's "Latest" badge points at `group-happ-v0.16.0-dev.3` — a backend packa
 ## 3. To do on Dark Matter (read-only first)
 
 - [ ] **Back up the entire Moss data directory** to a second location before anything else.
-- [ ] Copy the **full** error text (first line of the repro brief).
+- [x] Full error text: `no such table: DhtOp` (first line of the repro brief).
+- [ ] Note where it appears (which screen / which tool) and whether the Moss logs show more lines around it.
 - [ ] List the Moss data directory: is there a `0.15.x` folder only, or also `0.16…`?
 - [ ] Note `.sqlite` file sizes and modified dates under it.
 - [ ] Read the first `[HOLOCHAIN …]` lines in `<userData>/0.15.x/default/logs`.
