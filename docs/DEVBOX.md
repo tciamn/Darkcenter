@@ -88,7 +88,7 @@ This machine is also configured for:
 - **iPad** (iPadOS) app development
 - **iOS** app development
 
-Toolchain details (Xcode version, provisioning, signing) to be documented.
+- **Xcode 27.1** installed
 
 ---
 
