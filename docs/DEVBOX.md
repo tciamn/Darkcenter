@@ -81,6 +81,17 @@ Run `brew doctor` first to check for conflicts.
 
 ---
 
+## Apple Platform Development
+
+This machine is also configured for:
+- **macOS** app development
+- **iPad** (iPadOS) app development
+- **iOS** app development
+
+Toolchain details (Xcode version, provisioning, signing) to be documented.
+
+---
+
 ## LineageOS Device
 
 - Android device running LineageOS (open-source Android)
