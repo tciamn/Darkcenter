@@ -202,8 +202,24 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 ---
 
+## Devices
+
+Source: `handoffs/unXPs-infrastructure-handoff-brief_2026-08-10_v1.4.md` (branch `claude/macwhisper-terms-privacy-or2cwa`).
+
+| Name | Device | Role |
+|---|---|---|
+| OGMax | M1 MacBook Max, 64 GB | Primary co-working station, Ollama host, KORE training |
+| Onyx / Dark Matter | M3 MacBook Pro Max, 36 GB, 14" (Apple Silicon, macOS) | Mobile co-working unit, travel machine |
+| Pluto | Mac Mini | Always-on home server |
+| M4 iPad | iPad M4 | Replaced 2026-10-16 with same model, restored from backup — reconfirmation pending |
+
+All on the Tailscale mesh. Downloads for the Macs: Apple Silicon (`arm64`) builds.
+
+---
+
 ## Working Conventions
 
+- **Look first, ask second.** Before asking the Steward for context (hardware, decisions, prior work), search the repo: all remote branches (`git grep <term> $(git branch -r)`), `handoffs/`, and `.claude/projects/`. Ask only for what isn't recorded, and cite where you found what is.
 - Version control: git, BDD alignment
 - Data sovereignty: EU/CH jurisdiction preferred for primary storage
 - Never commit `.env` files
