@@ -23,6 +23,14 @@
 | Stable (installed) | v0.15.8 | 5 June | 0.6.1 (`0.6.1-rc.7` pinned in repo — unconfirmed for the 0.15.8 build) |
 | Pre-release | v0.16.0-rc.1 (test.24) | 16 Oct | 0.7.1 — own profile folder, groups/tools do not carry over, network-partitioned from stock Moss |
 
+**v0.16.0-rc.1-test.24 (16 Oct) — read 2026-10-20:**
+- Holochain 0.7.1 (`holochain-0.7.1-mdns.5`); new group DNA — group/tool data does not carry over; can import the 0.15 group list.
+- Own profile folder — does not touch 0.15.x data.
+- Tools must be rebuilt for Holochain 0.7.1; older tools fail to install.
+- **Field-test build, intentionally partitioned:** only sees peers on this exact build; no error, just an empty network. Not to be distributed outside the Lightning Rod Labs test group.
+- **mDNS LAN discovery (off by default):** Settings › Services › Local Discovery, then relaunch on each machine. Peers on the same local network connect directly even when bootstrap and relay are unreachable. `--disable-mdns` turns it off for one launch.
+- Auto-update will not move it to the stable 0.16.0 when that ships; install manually.
+
 GitHub's "Latest" badge points at `group-happ-v0.16.0-dev.3` — a backend package, not the app. Ignore it.
 
 ### Hardware change — 2026-10-16
