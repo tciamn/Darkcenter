@@ -7,6 +7,8 @@
 
 ## 1. Where we are
 
+**Machine:** Dark Matter (a.k.a. Onyx) = **M3 MacBook Pro Max, 36 GB, 14", macOS, Apple Silicon** — source: `handoffs/unXPs-infrastructure-handoff-brief_2026-08-10_v1.4.md` on branch `claude/macwhisper-terms-privacy-or2cwa`. Moss downloads: always the `arm64.dmg`.
+
 **Goal:** a working Moss build so Future Labs can begin beta UX/UI and usability testing.
 
 **Symptoms (past week, Dark Matter):**
