@@ -1,7 +1,11 @@
 Feature: Leave Supernote Cloud without losing notes
 
+  # Notes exist only in Supernote Cloud (owner, 2026-10-23). This runs first,
+  # before firmware updates, sideloading or any sync change.
+
   Scenario: Full export before switching sync
     Given the Manta and Nomad sync to Supernote Cloud
+    And Supernote Cloud holds the only copy of the notes
     When I export all notes and documents from each device and from Supernote Cloud
     Then the export holds the same file count and names as the device
     And a copy is stored on hardware we control

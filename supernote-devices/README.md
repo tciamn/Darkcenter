@@ -1,6 +1,6 @@
-# Supernote Manta — Sideload and Sync
+# Supernote Devices — Sideload and Sync
 
-Auditable setup for a Supernote Manta (A5 X2): sideloading, verified app installs,
+Auditable setup for a Supernote Manta (A5 X2) and Nomad (A6 X2): sideloading, verified app installs,
 and a sync path that keeps notes and ebooks on hardware we control.
 
 **Status:** scaffold only. Nothing has been run against the devices. All facts
@@ -12,6 +12,10 @@ marked VERIFY are unconfirmed.
 |---|---|---|
 | Manta (A5 X2) | Supernote beta | Supernote Cloud (hosted by Supernote) |
 | Nomad (A6 X2) | Supernote beta | Supernote Cloud (hosted by Supernote) |
+
+**Notes are only in Supernote Cloud** — no backup exists anywhere we control.
+That makes a verified export the first job, before the firmware update and before
+any sideloading, whatever sync path is chosen later.
 
 Implications:
 - Beta builds change between releases. Check VERIFY facts against the beta's own
@@ -46,6 +50,7 @@ platform-tools / build-tools), `python3`, `sha256sum` or `shasum`.
 
 ## Order of work
 
+0. Export all notes from Supernote Cloud and verify the copy (`migration.feature`).
 1. `device_check.sh` + `sideloading.feature`. Record firmware.
 2. F-Droid (verified). Confirm in-app updates work.
 3. File manager + KOReader. Run `koreader.feature`.

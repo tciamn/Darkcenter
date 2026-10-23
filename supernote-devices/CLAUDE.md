@@ -1,4 +1,4 @@
-# Supernote Manta — Rules for Claude Code
+# Supernote Devices (Manta + Nomad) — Rules for Claude Code
 
 Scope: prepare the user's Supernote Manta (A5 X2) and Nomad (A6 X2) — both on
 Supernote beta firmware, currently syncing to Supernote Cloud — for daily use — sideloading,

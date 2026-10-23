@@ -168,7 +168,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 ### 5. Supernote Manta + Nomad — Sideload and Sync
 
-Prepare the Manta (A5 X2) for daily use: sideloading, F-Droid, a file manager, KOReader,
+Prepare the Manta (A5 X2) and Nomad (A6 X2) for daily use: sideloading, F-Droid, a file manager, KOReader,
 Kobo Books, and a self-hosted sync path. The Kindle app is out of scope.
 
 **Status: Scaffolded 2026-10-23 — nothing run against the devices. Foundation update pending.**
@@ -176,9 +176,10 @@ Kobo Books, and a self-hosted sync path. The Kindle app is out of scope.
 **Current state (confirmed by owner 2026-10-23):**
 - Devices: Manta (A5 X2) and Nomad (A6 X2), both on the Supernote **beta** firmware channel
 - Sync: Supernote Cloud, hosted by Supernote — a third party, outside TCIA control and the EU/CH jurisdiction target
+- **Notes are only in Supernote Cloud — no backup we control.** A verified export is step 0, before the firmware update, sideloading or any sync change
 - Moving to Private Cloud is a migration: export and verify a full copy of notes before any sync target changes
 
-**What exists** (`supernote-manta/`, branch `claude/new-session-3rslbm`):
+**What exists** (`supernote-devices/`, branch `claude/new-session-3rslbm`):
 - `CLAUDE.md` — device rules: confirm before any device-changing command, manifest entry before any download, no credentials/serials/server addresses in git, LAN/VPN only until TLS + auth verified, Docker images pinned by tag + digest
 - `manifest/apps.yaml` — app list; source, version, sha256 and signer all blank until recorded
 - `scripts/` — `device_check.sh` (read-only), `verify_apk.sh` (sha256 + signer), `install_apk.sh` (`--confirm` + typed yes, no retries)
@@ -200,7 +201,7 @@ tag 26.02.23 or newer — both unverified.
 | `claude/squarespace-page-config-yydjup` | React components, doc generators, docs/*.docx | Merged to main 2026-09-14 (PR #7) |
 | `claude/ios-27-ipad-terminal-app-pcpdua` | iPad terminal app + Define/Build/QA skills | Merged to main 2026-09-14 (PR #5) |
 | `claude/siteground-wordpress-setup-al3hdi` | Future Labs project docs in `.claude/projects/` | Reference only |
-| `claude/new-session-3rslbm` | `supernote-manta/` scaffold + this CLAUDE.md update | Not merged |
+| `claude/new-session-3rslbm` | `supernote-devices/` scaffold + this CLAUDE.md update | Not merged |
 
 ---
 
@@ -228,7 +229,7 @@ tag 26.02.23 or newer — both unverified.
 | TCIA org membership in May First | Backup strategy |
 | Manta sync target: TCIA server or LAN host | Manta sync scenarios (ADR 0002) |
 | Kobo Books source: Aurora Store or verified APK | Kobo install (ADR 0001) |
-| Where `supernote-manta/` lives: this repo or its own | Long-term repo layout |
+| Where `supernote-devices/` lives: this repo or its own | Long-term repo layout |
 
 ---
 
