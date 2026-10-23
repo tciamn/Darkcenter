@@ -13,5 +13,5 @@ Never include device serials, account names or server addresses.
 
 | Feature | Scenario | Result | Notes |
 |---|---|---|---|
-| sideloading | Device allows installs from outside the store | pass/fail | |
+| sideloading | Device allows installs from outside the store | Manta: pass/fail · Nomad: pass/fail | |
 ```

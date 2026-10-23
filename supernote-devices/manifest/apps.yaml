@@ -1,4 +1,5 @@
-# Every app installed on the Manta. Record an entry BEFORE downloading the APK.
+# Every app installed on the Manta and Nomad — both carry the same app set.
+# Record installs per device in results/ (status here is the app's overall state). Record an entry BEFORE downloading the APK.
 # Format is deliberately flat: a list of maps, one "key: value" per line, so
 # scripts/verify_apk.sh can read it without a YAML library.
 #

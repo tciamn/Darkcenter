@@ -48,6 +48,13 @@ Implications:
 Requirements on the operator's computer: `adb` and `apksigner` (Android SDK
 platform-tools / build-tools), `python3`, `sha256sum` or `shasum`.
 
+## Same set-up on both devices
+
+The Manta and Nomad carry the same apps and settings (owner, 2026-10-23).
+`manifest/apps.yaml` is one list for both. Each step runs on each device, and each
+device gets its own row in `results/`. Connect one device at a time, or set
+`ANDROID_SERIAL` in your shell to pick one — never write the serial into the repo.
+
 ## Order of work
 
 0. Export all notes from Supernote Cloud and verify the copy (`migration.feature`).
@@ -70,7 +77,8 @@ platform-tools / build-tools), `python3`, `sha256sum` or `shasum`.
 
 Known, lower risk: install via ADB or INBOX + file manager; F-Droid does not scan
 for malware; Supernote warns third-party apps are not guaranteed on its E-Ink
-kernel; Manta system updates guaranteed to at least December 2028.
+kernel; Manta system updates guaranteed to at least December 2028 (Nomad's
+horizon: VERIFY).
 
 ## Relationship to TCIA Supernote Private Cloud
 

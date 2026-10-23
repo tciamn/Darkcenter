@@ -170,6 +170,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 Prepare the Manta (A5 X2) and Nomad (A6 X2) for daily use: sideloading, F-Droid, a file manager, KOReader,
 Kobo Books, and a self-hosted sync path. The Kindle app is out of scope.
+Both devices carry the same apps and settings (confirmed 2026-10-23); every step runs on each device.
 
 **Status: Scaffolded 2026-10-23 — nothing run against the devices. Foundation update pending.**
 

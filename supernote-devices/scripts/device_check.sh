@@ -9,7 +9,8 @@ command -v adb >/dev/null || { echo "adb not found — install Android platform-
 state=$(adb get-state 2>&1 || true)
 case "$state" in
   device) ;;
-  *unauthorized*) echo "Device not authorised — accept the USB debugging prompt on the Manta, then re-run." >&2; exit 3 ;;
+  *"more than one"*) echo "More than one device connected — connect one, or set ANDROID_SERIAL in your shell (never commit it)." >&2; exit 3 ;;
+  *unauthorized*) echo "Device not authorised — accept the USB debugging prompt on the device, then re-run." >&2; exit 3 ;;
   *) echo "No device found (adb: $state)" >&2; exit 3 ;;
 esac
 
