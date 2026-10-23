@@ -2,7 +2,7 @@
 
 **Owner:** aasim@tciamn.org — Twin Cities Innovation Alliance  
 **Repo:** tciamn/Darkcenter  
-**Last updated:** 2026-09-14
+**Last updated:** 2026-10-23
 
 Read this file at the start of every session. It is the authoritative context for all active work.
 
@@ -18,6 +18,7 @@ Read this file at the start of every session. It is the authoritative context fo
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
 | Supernote Private Cloud | Not yet deployed — pending VPS decision | cloud.tciamn.org (proposed) | GoDaddy |
+| Supernote Manta (A5 X2) | End-user device — sideload setup scaffolded, nothing installed | Syncs to Private Cloud and/or WebDAV (ADR pending) | — |
 
 **DNS is managed at GoDaddy — not SiteGround.** Subdomains are created there as CNAME or A records.
 
@@ -165,6 +166,26 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 ---
 
+### 5. Supernote Manta — Sideload and Sync
+
+Prepare the Manta (A5 X2) for daily use: sideloading, F-Droid, a file manager, KOReader,
+Kobo Books, and a self-hosted sync path. The Kindle app is out of scope.
+
+**Status: Scaffolded 2026-10-23 — nothing run against the device. Foundation update pending.**
+
+**What exists** (`supernote-manta/`, branch `claude/new-session-3rslbm`):
+- `CLAUDE.md` — device rules: confirm before any device-changing command, manifest entry before any download, no credentials/serials/server addresses in git, LAN/VPN only until TLS + auth verified, Docker images pinned by tag + digest
+- `manifest/apps.yaml` — app list; source, version, sha256 and signer all blank until recorded
+- `scripts/` — `device_check.sh` (read-only), `verify_apk.sh` (sha256 + signer), `install_apk.sh` (`--confirm` + typed yes, no retries)
+- `features/` — 6 Gherkin features, each with a failure scenario
+- `docs/decisions/` — ADR 0001 Kobo Books source, ADR 0002 sync path (both Proposed)
+
+**Depends on:** Project 2. If the Manta syncs to `cloud.tciamn.org`, it waits on the VPS decision;
+a LAN-only server can proceed independently. Private Cloud needs recent device firmware and image
+tag 26.02.23 or newer — both unverified.
+
+---
+
 ## Branch Map
 
 | Branch | Contents | Status |
@@ -174,6 +195,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 | `claude/squarespace-page-config-yydjup` | React components, doc generators, docs/*.docx | Merged to main 2026-09-14 (PR #7) |
 | `claude/ios-27-ipad-terminal-app-pcpdua` | iPad terminal app + Define/Build/QA skills | Merged to main 2026-09-14 (PR #5) |
 | `claude/siteground-wordpress-setup-al3hdi` | Future Labs project docs in `.claude/projects/` | Reference only |
+| `claude/new-session-3rslbm` | `supernote-manta/` scaffold + this CLAUDE.md update | Not merged |
 
 ---
 
@@ -199,6 +221,9 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Future Labs governance structure | Onboarding allied orgs |
 | First allied orgs to onboard | Phase 2 planning |
 | TCIA org membership in May First | Backup strategy |
+| Manta sync target: TCIA server or LAN host | Manta sync scenarios (ADR 0002) |
+| Kobo Books source: Aurora Store or verified APK | Kobo install (ADR 0001) |
+| Where `supernote-manta/` lives: this repo or its own | Long-term repo layout |
 
 ---
 
