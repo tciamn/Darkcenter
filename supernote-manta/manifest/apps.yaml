@@ -1,0 +1,50 @@
+# Every app installed on the Manta. Record an entry BEFORE downloading the APK.
+# Format is deliberately flat: a list of maps, one "key: value" per line, so
+# scripts/verify_apk.sh can read it without a YAML library.
+#
+# status: planned | verified | installed | removed
+# signer_sha256: SHA-256 of the signing certificate (apksigner --print-certs)
+
+apps:
+  - id: fdroid
+    name: F-Droid
+    package: org.fdroid.fdroid
+    source: https://f-droid.org/
+    version:
+    sha256:
+    signer_sha256:
+    status: planned
+
+  - id: koreader
+    name: KOReader
+    package: org.koreader.launcher
+    source:
+    version:
+    sha256:
+    signer_sha256:
+    status: planned
+
+  - id: filemanager
+    name:          # decide: MiXplorer or an F-Droid file manager
+    package:
+    source:
+    version:
+    sha256:
+    signer_sha256:
+    status: planned
+
+  - id: kobo
+    name: Kobo Books
+    package: com.kobobooks.android
+    source:        # decided in docs/decisions/0001-kobo-books-source.md
+    version:
+    sha256:
+    signer_sha256:
+    status: planned
+
+services:
+  - id: private-cloud
+    image:         # official Supernote Private Cloud image — VERIFY name
+    tag:           # 26.02.23 or newer — VERIFY
+    digest:        # sha256:... required (rule 5)
+    status: planned
