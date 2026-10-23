@@ -4,3 +4,6 @@ dist/
 .env.local
 .DS_Store
 *.log
+
+# Mastodon secrets — template is committed, live file must never be
+deploy/mastodon/.env.production
