@@ -2,7 +2,7 @@
 
 **Owner:** aasim@tciamn.org — Twin Cities Innovation Alliance  
 **Repo:** tciamn/Darkcenter  
-**Last updated:** 2026-09-15
+**Last updated:** 2026-10-23
 
 Read this file at the start of every session. It is the authoritative context for all active work.
 
@@ -18,8 +18,8 @@ Read this file at the start of every session. It is the authoritative context fo
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
 | Git hosting (Future Labs) | Codeberg (Phase 1) → self-hosted Gitea (Phase 2) | codeberg.org/futurelabs | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
-| Supernote Private Cloud | Not yet deployed — pending VPS provision | cloud.tciamn.org (proposed) | GoDaddy |
-| Future Labs Mastodon | Not yet deployed — domain confirmed, VPS pending | futurelabs.social | GoDaddy |
+| Supernote Private Cloud | Not yet deployed — VPS provisioned, pending setup | cloud.tciamn.org (proposed) | GoDaddy |
+| Future Labs Mastodon | **LIVE** — Hetzner CPX22 Helsinki, all containers healthy | futurelabs.social | GoDaddy |
 
 **DNS is managed at GoDaddy — not SiteGround.** Subdomains are created there as CNAME or A records.
 
@@ -67,7 +67,7 @@ Do not deploy. Do not create a subdomain. Validation must happen before any of t
 Self-hosted Docker sync server for Supernote devices (Manta, iPad, iPhone OG Max).  
 Official Ratta software. Identical user experience to Supernote's cloud — data stays on TCIA infrastructure.
 
-**Status: Blocked — pending VPS decision and subdomain confirmation**
+**Status: Blocked — VPS provisioned (shared with Mastodon), subdomain not yet confirmed**
 
 **Architecture:**
 ```
@@ -93,8 +93,9 @@ MariaDB + Redis (Docker containers)
 | IO Cooperative | ~$7.19/mo | CA coop, solidarity value, single US location, no SLA — non-critical only. |
 
 **Pending decisions:**
-- [x] VPS provider: **Hetzner CX32, Falkenstein (EU)** — decided 2026-09-15
+- [x] VPS provider: **Hetzner CPX22, Helsinki (EU)** — shared with Mastodon, provisioned 2026-09-19
 - [ ] Confirm subdomain: `cloud.tciamn.org`?
+- [ ] Begin setup after Mastodon email + backups are resolved
 
 **Once decided:** Docker Compose + `.env` + Nginx config template is documented in `.claude/projects/hdl-technical-reference.md`
 
@@ -114,22 +115,24 @@ Full backup architecture in `.claude/projects/hdl-technical-reference.md`.
 
 Fediverse presence for Future Labs at `futurelabs.social`.
 
-**Status: Ready to deploy — domain confirmed, VPS pending**
+**Status: LIVE — partial configuration pending**
 
-**Decisions made:**
-- Domain: `futurelabs.social` (confirmed available 2026-09-15, register at GoDaddy)
-- VPS: Hetzner CPX22, Helsinki (EU) — same server as Supernote Private Cloud; resize to CPX32 when needed
-- Stack: Docker Compose, Mastodon v4.3.x, PostgreSQL 17, Redis 7, Nginx, Let's Encrypt
-- Object storage: Hetzner Object Storage (Falkenstein, S3-compatible)
-- Email: Mailgun EU
-- Scope: Invite-only at launch; expand to allied orgs in Phase 2
+**Deployed 2026-09-19:**
+- Domain: `futurelabs.social` — registered at GoDaddy, A record → `2.29.7.30`
+- VPS: Hetzner CPX22, Helsinki (EU) — hostname `futurelabs-ma-1`, Ubuntu 26.04 LTS
+- Stack: Docker Compose, Mastodon v4.3.2, PostgreSQL 17, Redis 7, Nginx, Let's Encrypt
+- Object storage: Hetzner Object Storage Helsinki, bucket `futurelabs-mastodon`
+- Admin account: `aasim` (Owner role)
+- SSH key: `~/.ssh/hetzner_futurelabs` on owner's Mac
 
-**Pending:**
-- [ ] Register `futurelabs.social` at GoDaddy
-- [ ] Provision Hetzner CX32
-- [ ] Run `deploy/mastodon/setup.sh` on VPS
-- [ ] Name second admin (bus factor requirement)
+**Pending (blocks full operation):**
+- [ ] Email setup — Mailgun account disabled by fraud detection; switch to Brevo (brevo.com, EU, free tier)
+- [ ] Admin UI configuration — branding, registration mode (invite-only), contact info
+- [ ] Second admin — bus factor requirement unmet (≥ 2 admins required)
+- [ ] Backups — database unprotected; Restic setup not started (see README.md Step 9)
+- [ ] Ops credentials document — both admins must hold independently
 
+**Operations:** `deploy/mastodon/OPERATIONS.md` — recovery, service management, troubleshooting  
 **Deployment config:** `deploy/mastodon/` — docker-compose.yml, .env.production.template, nginx.conf, setup.sh, backup.sh, README.md
 
 ---
@@ -226,6 +229,7 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Branch | Contents | Status |
 |---|---|---|
 | `main` | All branches merged — fully up to date as of 2026-09-14 | Active |
+| `claude/mastodon-setup-nwc3vh` | Mastodon deploy config, operations playbook, dev box docs | **Active — not yet merged to main** |
 | `claude/what-broke-this-should-be-uh7vcn` | Complete React app + all HTML pages | Already in main (confirmed 2026-09-14) |
 | `claude/squarespace-page-config-yydjup` | React components, doc generators, docs/*.docx | Merged to main 2026-09-14 (PR #7) |
 | `claude/ios-27-ipad-terminal-app-pcpdua` | iPad terminal app + Define/Build/QA skills | Merged to main 2026-09-14 (PR #5) |
@@ -242,23 +246,31 @@ Squarespace stays in place during transition; pages migrate one by one.
 | Data Center Tool: not deployed until validated | Confirmed |
 | Future Labs Phase 1: Hetzner CPX22 (Helsinki, EU) + Docker Compose | Confirmed 2026-09-16 |
 | Future Labs Mastodon domain: futurelabs.social | Confirmed 2026-09-15 |
+| futurelabs.social registered at GoDaddy | Done 2026-09-19 |
+| Hetzner CPX22 provisioned (Helsinki, Ubuntu 26.04) | Done 2026-09-19 — IP 2.29.7.30 |
+| Mastodon v4.3.2 deployed and live | Done 2026-09-19 |
+| Object storage: Hetzner Helsinki, bucket futurelabs-mastodon | Done 2026-09-19 |
 | Holochain: Phase 4 only | Confirmed |
 | Two-destination backup minimum | Confirmed |
 | Primary data jurisdiction: EU or Switzerland | Confirmed |
 | Git hosting Phase 1: Codeberg (EU nonprofit, Forgejo-based) | Confirmed 2026-09-16 |
-| Git hosting Phase 2: self-hosted Gitea on Hetzner VPS | Planned — after Mastodon stable |
+| Git hosting Phase 2: self-hosted Gitea on Hetzner VPS | Planned — after Mastodon stable 30 days |
+| Email provider: switch from Mailgun to Brevo (EU) | Decided 2026-10-18 — not yet implemented |
 
 ## Key Decisions Pending
 
 | Decision | Where it blocks |
 |---|---|
-| Register futurelabs.social at GoDaddy | Mastodon deployment |
-| Provision Hetzner CPX22 (Helsinki, Ubuntu 24.04) | Mastodon + Supernote deployment |
+| Email setup (Brevo) | Mastodon signups + password reset |
+| Second admin named | Bus factor requirement |
+| Backup setup (Restic) | Data protection — database at risk |
+| Admin UI configured | Instance branding + registration mode |
 | Subdomain for Supernote Private Cloud | DNS config + SSL |
 | Subdomain for Data Center Tool | Deployment (after validation) |
 | Future Labs governance structure | Onboarding allied orgs |
 | First allied orgs to onboard | Phase 2 planning |
 | TCIA org membership in May First | Solidarity decision — separate from backup strategy |
+| Codeberg org created + Darkcenter mirrored | Git sovereignty Phase 1 |
 
 ---
 
