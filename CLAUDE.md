@@ -18,7 +18,7 @@ Read this file at the start of every session. It is the authoritative context fo
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
 | Future Labs server | Hetzner, Helsinki (EU) — `futurelabs-ma-1`, provisioned (DEVBOX.md, 2026-10-19) | — | — |
-| Future Labs Mastodon | Docker Compose on `futurelabs-ma-1` — deployment state unconfirmed | futurelabs.social | GoDaddy |
+| Future Labs Mastodon | **Running** on `futurelabs-ma-1` (owner, 2026-10-23) — Docker Compose | futurelabs.social | GoDaddy |
 | Supernote Private Cloud | Not yet deployed — planned for `futurelabs-ma-1` | cloud.tciamn.org (proposed) | GoDaddy |
 | Supernote Manta (A5 X2) + Nomad (A6 X2) | End-user devices on Supernote **beta** firmware; sideload setup scaffolded, nothing installed | Sync today: **Supernote Cloud (hosted by Supernote)**. Target: Private Cloud and/or WebDAV (ADR pending) | — |
 
@@ -95,7 +95,8 @@ MariaDB + Redis (Docker containers)
 
 **Server (decided 2026-09-15, branch `claude/mastodon-setup-nwc3vh`):** Hetzner, shared with Mastodon on
 `futurelabs-ma-1` (Helsinki, EU). Starts as CPX22 (4 GB RAM, 40 GB disk); **resize to CPX32 (8 GB) before
-adding Supernote** — 40 GB is below Supernote's 50 GB minimum. Mastodon media lives in Hetzner Object
+adding Supernote**. Mastodon is live on it, so the resize
+needs a short planned shutdown and a backup first — 40 GB is below Supernote's 50 GB minimum. Mastodon media lives in Hetzner Object
 Storage, not on the server disk.
 **Location conflict — confirm:** records say Falkenstein (early CLAUDE.md), Helsinki (Mastodon branch, DEVBOX.md 2026-10-19)
 and Berlin (`docs/handoff-2026-10-02-instruction-validation.md`). Helsinki is the newest and most specific; treated as current until confirmed.
