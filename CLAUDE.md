@@ -18,7 +18,7 @@ Read this file at the start of every session. It is the authoritative context fo
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
 | Supernote Private Cloud | Not yet deployed — pending VPS decision | cloud.tciamn.org (proposed) | GoDaddy |
-| Supernote Manta (A5 X2) | End-user device — sideload setup scaffolded, nothing installed | Syncs to Private Cloud and/or WebDAV (ADR pending) | — |
+| Supernote Manta (A5 X2) + Nomad (A6 X2) | End-user devices on Supernote **beta** firmware; sideload setup scaffolded, nothing installed | Sync today: **Supernote Cloud (hosted by Supernote)**. Target: Private Cloud and/or WebDAV (ADR pending) | — |
 
 **DNS is managed at GoDaddy — not SiteGround.** Subdomains are created there as CNAME or A records.
 
@@ -166,12 +166,17 @@ Squarespace stays in place during transition; pages migrate one by one.
 
 ---
 
-### 5. Supernote Manta — Sideload and Sync
+### 5. Supernote Manta + Nomad — Sideload and Sync
 
 Prepare the Manta (A5 X2) for daily use: sideloading, F-Droid, a file manager, KOReader,
 Kobo Books, and a self-hosted sync path. The Kindle app is out of scope.
 
-**Status: Scaffolded 2026-10-23 — nothing run against the device. Foundation update pending.**
+**Status: Scaffolded 2026-10-23 — nothing run against the devices. Foundation update pending.**
+
+**Current state (confirmed by owner 2026-10-23):**
+- Devices: Manta (A5 X2) and Nomad (A6 X2), both on the Supernote **beta** firmware channel
+- Sync: Supernote Cloud, hosted by Supernote — a third party, outside TCIA control and the EU/CH jurisdiction target
+- Moving to Private Cloud is a migration: export and verify a full copy of notes before any sync target changes
 
 **What exists** (`supernote-manta/`, branch `claude/new-session-3rslbm`):
 - `CLAUDE.md` — device rules: confirm before any device-changing command, manifest entry before any download, no credentials/serials/server addresses in git, LAN/VPN only until TLS + auth verified, Docker images pinned by tag + digest

@@ -3,8 +3,21 @@
 Auditable setup for a Supernote Manta (A5 X2): sideloading, verified app installs,
 and a sync path that keeps notes and ebooks on hardware we control.
 
-**Status:** scaffold only. Nothing has been run against the device. All facts
+**Status:** scaffold only. Nothing has been run against the devices. All facts
 marked VERIFY are unconfirmed.
+
+## Current state (confirmed by owner 2026-10-23)
+
+| Device | Firmware channel | Sync today |
+|---|---|---|
+| Manta (A5 X2) | Supernote beta | Supernote Cloud (hosted by Supernote) |
+| Nomad (A6 X2) | Supernote beta | Supernote Cloud (hosted by Supernote) |
+
+Implications:
+- Beta builds change between releases. Check VERIFY facts against the beta's own
+  release notes, and record the exact build in every result.
+- Leaving Supernote Cloud is a migration, not a fresh setup. A full, verified export
+  comes first (`features/migration.feature`).
 
 ## Principles
 

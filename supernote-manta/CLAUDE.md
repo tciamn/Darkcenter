@@ -1,6 +1,7 @@
 # Supernote Manta — Rules for Claude Code
 
-Scope: prepare the user's Supernote Manta (A5 X2) for daily use — sideloading,
+Scope: prepare the user's Supernote Manta (A5 X2) and Nomad (A6 X2) — both on
+Supernote beta firmware, currently syncing to Supernote Cloud — for daily use — sideloading,
 F-Droid, a file manager, KOReader, Kobo Books, and a self-hosted sync path.
 The Kindle app is out of scope.
 
@@ -28,6 +29,10 @@ repo-root `CLAUDE.md`; where they are stricter, they win.
 8. Where a fact is marked **VERIFY** (see `README.md`), fetch the official
    Supernote page and cite it in the commit or ADR before acting on it.
 9. If a step fails, stop and report. Never retry a destructive step automatically.
+10. Devices run beta firmware. Record the exact build and channel in every result;
+    do not assume stable-release behaviour or notes apply.
+11. Do not change or sign out of the Supernote Cloud sync until a full export has
+    been made and verified (`features/migration.feature`).
 
 ## Workflow
 

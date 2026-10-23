@@ -6,7 +6,8 @@ Never include device serials, account names or server addresses.
 ```markdown
 # Run YYYY-MM-DD
 
-- Firmware:
+- Device: Manta / Nomad
+- Firmware (exact build, channel):
 - Operator:
 - Commit:
 

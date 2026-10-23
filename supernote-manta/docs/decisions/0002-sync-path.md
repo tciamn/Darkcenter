@@ -5,7 +5,10 @@
 
 ## Context
 
-Notes and ebooks should stay on hardware we control, with no recurring cloud fees.
+Both devices (Manta, Nomad) currently sync to Supernote Cloud, hosted by Supernote,
+and run beta firmware. Notes and ebooks should move to hardware we control, with
+no recurring cloud fees, in line with the EU/CH primary-jurisdiction target.
+Whatever is chosen, the move starts with a verified export (features/migration.feature).
 
 ## Options
 
