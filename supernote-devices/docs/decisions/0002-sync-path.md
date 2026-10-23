@@ -20,10 +20,18 @@ Whatever is chosen, the move starts with a verified export (features/migration.f
    with an app password. Good for the ebook library; not native note sync.
 3. **Both** — Private Cloud for notes, WebDAV for the library.
 
+## Hosts (from the repo record, 2026-10-23)
+
+| Host | Fit | Notes |
+|---|---|---|
+| `futurelabs-ma-1` (Hetzner Helsinki, EU) | Planned home | Already decided as the shared Mastodon + Supernote server. Needs resize CPX22 → CPX32: 40 GB disk is below the 50 GB minimum, 4 GB RAM is tight beside Mastodon. Backups to B2 EU + Storage Box. |
+| NAS on OGMax | Step 0 now; second copy later | Not configured, model unrecorded. Holds the export immediately as plain storage. Not always-on while attached to a laptop. |
+| SiteGround | No | Shared hosting, no Docker. |
+
 ## Open questions
 
-- Is there an existing server or NAS, or is this a new build?
-- Personal LAN host, or the TCIA Future Labs server once it exists?
+- Does the EU/CH primary-storage rule apply to owner-held hardware (NAS in the US)?
+- NAS make/model — does it run Docker, or is it storage only?
 
 ## Decision
 

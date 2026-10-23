@@ -17,7 +17,9 @@ Read this file at the start of every session. It is the authoritative context fo
 | Open source pages | Squarespace code blocks | www.tciamn.org/open-source | GoDaddy |
 | Static assets | GitHub Pages (tcia-admin/tcia-website) | tcia-admin.github.io/tcia-website/main/open-source/ | — |
 | Data Center Tool | Not yet deployed — pending validation | TBD subdomain | GoDaddy |
-| Supernote Private Cloud | Not yet deployed — pending VPS decision | cloud.tciamn.org (proposed) | GoDaddy |
+| Future Labs server | Hetzner, Helsinki (EU) — `futurelabs-ma-1`, provisioned (DEVBOX.md, 2026-10-19) | — | — |
+| Future Labs Mastodon | Docker Compose on `futurelabs-ma-1` — deployment state unconfirmed | futurelabs.social | GoDaddy |
+| Supernote Private Cloud | Not yet deployed — planned for `futurelabs-ma-1` | cloud.tciamn.org (proposed) | GoDaddy |
 | Supernote Manta (A5 X2) + Nomad (A6 X2) | End-user devices on Supernote **beta** firmware; sideload setup scaffolded, nothing installed | Sync today: **Supernote Cloud (hosted by Supernote)**. Target: Private Cloud and/or WebDAV (ADR pending) | — |
 
 **DNS is managed at GoDaddy — not SiteGround.** Subdomains are created there as CNAME or A records.
@@ -63,10 +65,10 @@ Do not deploy. Do not create a subdomain. Validation must happen before any of t
 
 ### 2. Supernote Private Cloud
 
-Self-hosted Docker sync server for Supernote devices (Manta, iPad, iPhone OG Max).  
+Self-hosted Docker sync server for Supernote devices (Manta, Nomad, iPad).  
 Official Ratta software. Identical user experience to Supernote's cloud — data stays on TCIA infrastructure.
 
-**Status: Blocked — pending VPS decision and subdomain confirmation**
+**Status: Blocked — pending server resize and subdomain confirmation**
 
 **Architecture:**
 ```
@@ -91,8 +93,15 @@ MariaDB + Redis (Docker containers)
 | Greenhost | ~€5–22/mo | Mission-aligned Amsterdam, Rapid Response Team for activist clients. |
 | IO Cooperative | ~$7.19/mo | CA coop, solidarity value, single US location, no SLA — non-critical only. |
 
+**Server (decided 2026-09-15, branch `claude/mastodon-setup-nwc3vh`):** Hetzner, shared with Mastodon on
+`futurelabs-ma-1` (Helsinki, EU). Starts as CPX22 (4 GB RAM, 40 GB disk); **resize to CPX32 (8 GB) before
+adding Supernote** — 40 GB is below Supernote's 50 GB minimum. Mastodon media lives in Hetzner Object
+Storage, not on the server disk.
+Note: an earlier entry said CX32 Falkenstein; the later Mastodon record and DEVBOX.md say Helsinki. Helsinki is current.
+
 **Pending decisions:**
-- [ ] Which VPS provider?
+- [x] VPS provider — Hetzner, `futurelabs-ma-1` (see above)
+- [ ] Resize `futurelabs-ma-1` to CPX32
 - [ ] Confirm subdomain: `cloud.tciamn.org`?
 
 **Once decided:** Docker Compose + `.env` + Nginx config template is documented in `.claude/projects/hdl-technical-reference.md`
@@ -104,7 +113,8 @@ MariaDB + Redis (Docker containers)
 - Admin bus factor: 2 (two people with independent full access)
 - Primary data jurisdiction: EU or Switzerland — no US primary storage
 
-**Backup strategy:** Two-destination minimum — Backblaze B2 EU (Restic) + May First Nextcloud (Rclone).  
+**Backup strategy:** Two-destination minimum — Backblaze B2 EU (Restic, primary) + Hetzner Storage Box EU (Restic, SFTP, secondary).
+(Replaced May First Nextcloud as secondary — branch `claude/mastodon-setup-nwc3vh`.)  
 Full backup architecture in `.claude/projects/hdl-technical-reference.md`.
 
 ---
@@ -128,7 +138,8 @@ The Supernote Private Cloud is Phase 1's anchor service.
 **Decided:**
 - Phase 1 stack: Hetzner (or values-aligned VPS) + Coop Cloud
 - Holochain is Phase 4 only — cannot run standard Docker apps, not near-term
-- May First is a backup/fallback layer, not the hosting solution
+- May First is a fallback layer, not the hosting solution
+- Hetzner Storage Box (EU) is the secondary backup destination — no Nextcloud dependency
 
 **Open questions:**
 - Legal/governance structure for Future Labs within TCIA
@@ -187,9 +198,28 @@ Both devices carry the same apps and settings (confirmed 2026-10-23); every step
 - `features/` — 6 Gherkin features, each with a failure scenario
 - `docs/decisions/` — ADR 0001 Kobo Books source, ADR 0002 sync path (both Proposed)
 
-**Depends on:** Project 2. If the Manta syncs to `cloud.tciamn.org`, it waits on the VPS decision;
-a LAN-only server can proceed independently. Private Cloud needs recent device firmware and image
+**Depends on:** Project 2. Syncing to `cloud.tciamn.org` waits on the `futurelabs-ma-1` resize.
+Step 0 (export) can go to the NAS on OGMax now — no server needed. Private Cloud needs recent device firmware and image
 tag 26.02.23 or newer — both unverified.
+
+---
+
+## Devices
+
+Source: `handoffs/unXPs-infrastructure-handoff-brief_2026-08-10_v1.4.md` (branch `claude/macwhisper-terms-privacy-or2cwa`),
+ported from branch `claude/moss-fork-transition-plan`.
+
+| Name | Device | Role |
+|---|---|---|
+| OGMax | M1 MacBook Max, 64 GB | Primary co-working station, Ollama host, KORE training |
+| Onyx / Dark Matter | M3 MacBook Pro Max, 36 GB, 14" | Mobile co-working unit, travel machine |
+| Pluto | Mac Mini | Always-on home server — partially configured |
+| M4 iPad | iPad M4 | Replaced 2026-10-16, restored from backup — reconfirmation pending |
+| NAS | Connected to OGMax — model not recorded | Not configured (owner, 2026-10-23) |
+| Supernote Manta / Nomad | A5 X2 / A6 X2 | E-ink notes — see Project 5 |
+
+All Macs and the iPad are on the Tailscale mesh. Downloads for the Macs: Apple Silicon (`arm64`) builds.
+**OGMax is a MacBook, not an iPhone** — earlier entries that said "iPhone OG Max" were wrong.
 
 ---
 
@@ -203,6 +233,9 @@ tag 26.02.23 or newer — both unverified.
 | `claude/ios-27-ipad-terminal-app-pcpdua` | iPad terminal app + Define/Build/QA skills | Merged to main 2026-09-14 (PR #5) |
 | `claude/siteground-wordpress-setup-al3hdi` | Future Labs project docs in `.claude/projects/` | Reference only |
 | `claude/new-session-3rslbm` | `supernote-devices/` scaffold + this CLAUDE.md update | Not merged |
+| `claude/mastodon-setup-nwc3vh` | Mastodon deploy config (`deploy/mastodon/`), DEVBOX.md, Hetzner decision | Not merged |
+| `claude/moss-fork-transition-plan` | Moss fork plan; device inventory (ported here) | Not merged |
+| `claude/macwhisper-terms-privacy-or2cwa` | `handoffs/` — infrastructure brief v1.4, KORE | Reference |
 
 ---
 
@@ -214,6 +247,7 @@ tag 26.02.23 or newer — both unverified.
 | WordPress on SiteGround stays for WordPress hosting | Confirmed |
 | Data Center Tool: not deployed until validated | Confirmed |
 | Future Labs Phase 1: Hetzner/Infomaniak VPS + Coop Cloud | Confirmed |
+| Hetzner `futurelabs-ma-1` (Helsinki) hosts Mastodon + Supernote Private Cloud | Confirmed 2026-09-15 |
 | Holochain: Phase 4 only | Confirmed |
 | Two-destination backup minimum | Confirmed |
 | Primary data jurisdiction: EU or Switzerland | Confirmed |
@@ -222,13 +256,13 @@ tag 26.02.23 or newer — both unverified.
 
 | Decision | Where it blocks |
 |---|---|
-| VPS provider for Supernote/Future Labs | Supernote Private Cloud setup |
 | Subdomain for Supernote Private Cloud | DNS config + SSL |
 | Subdomain for Data Center Tool | Deployment (after validation) |
 | Future Labs governance structure | Onboarding allied orgs |
 | First allied orgs to onboard | Phase 2 planning |
 | TCIA org membership in May First | Backup strategy |
-| Manta sync target: TCIA server or LAN host | Manta sync scenarios (ADR 0002) |
+| Manta/Nomad sync target: `futurelabs-ma-1` or NAS | Device sync scenarios (ADR 0002) |
+| Does the EU/CH rule cover owner-held hardware (NAS in the US)? | NAS as primary store |
 | Kobo Books source: Aurora Store or verified APK | Kobo install (ADR 0001) |
 | Where `supernote-devices/` lives: this repo or its own | Long-term repo layout |
 
@@ -242,5 +276,6 @@ tag 26.02.23 or newer — both unverified.
 - Always QA before checkout or deploy
 - Review first, reduce tech debt later
 - Do not act before direction is confirmed — wait for guidance
+- **Look first, ask second.** Before asking for context, search all remote branches (`git grep <term> $(git branch -r)`), `handoffs/` and `.claude/projects/`. Ask only for what isn't recorded, and cite where you found what is.
 - Subdomains: created at GoDaddy, not SiteGround
 - Workflow: `/define` → `/build` → `/qa` (skills enforced via `.claude/skills/` + `.claude/settings.json`)
