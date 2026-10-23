@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf '\\n── DARKCENTER WORKFLOW CHECK ──\\nDefine /define → Build /build → Test /qa\\nHave all three phases run for this change?\\n────────────────────────────────────\\n'"
+            "command": "printf '\\n\u2500\u2500 DARKCENTER WORKFLOW CHECK \u2500\u2500\\nDefine /define \u2192 Build /build \u2192 Test /qa\\nHave all three phases run for this change?\\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\\n'"
           }
         ]
       }
@@ -16,7 +16,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "last_cmd=\"$CLAUDE_TOOL_INPUT_command\"; case \"$last_cmd\" in *'git push'*) printf '\\n[workflow] pushed — confirm /qa ran before this push\\n';; esac"
+            "command": "last_cmd=\"$CLAUDE_TOOL_INPUT_command\"; case \"$last_cmd\" in *'git push'*) printf '\\n[workflow] pushed \u2014 confirm /qa ran before this push\\n';; esac"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/look-first.sh"
           }
         ]
       }
