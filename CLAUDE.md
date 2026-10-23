@@ -97,7 +97,8 @@ MariaDB + Redis (Docker containers)
 `futurelabs-ma-1` (Helsinki, EU). Starts as CPX22 (4 GB RAM, 40 GB disk); **resize to CPX32 (8 GB) before
 adding Supernote** — 40 GB is below Supernote's 50 GB minimum. Mastodon media lives in Hetzner Object
 Storage, not on the server disk.
-Note: an earlier entry said CX32 Falkenstein; the later Mastodon record and DEVBOX.md say Helsinki. Helsinki is current.
+**Location conflict — confirm:** records say Falkenstein (early CLAUDE.md), Helsinki (Mastodon branch, DEVBOX.md 2026-10-19)
+and Berlin (`docs/handoff-2026-10-02-instruction-validation.md`). Helsinki is the newest and most specific; treated as current until confirmed.
 
 **Pending decisions:**
 - [x] VPS provider — Hetzner, `futurelabs-ma-1` (see above)
@@ -278,4 +279,7 @@ All Macs and the iPad are on the Tailscale mesh. Downloads for the Macs: Apple S
 - Do not act before direction is confirmed — wait for guidance
 - **Look first, ask second.** Before asking for context, search all remote branches (`git grep <term> $(git branch -r)`), `handoffs/` and `.claude/projects/`. Ask only for what isn't recorded, and cite where you found what is.
 - Subdomains: created at GoDaddy, not SiteGround
-- Workflow: `/define` → `/build` → `/qa` (skills enforced via `.claude/skills/` + `.claude/settings.json`)
+- Workflow: `/define` → `/build` → `/qa`. **Known broken (handoff 2026-10-02, branch `ccr-a35270a1-8ifduu`):** the skills are flat
+  `.claude/skills/*.md` files and don't load (need `<name>/SKILL.md`), and the push hook reads an env var that isn't set.
+  The fix and the proposed instruction-validation protocol are waiting on Operator review.
+- A SessionStart hook (`.claude/hooks/look-first.sh`) lists every remote branch at session start so recorded context is checked first.
